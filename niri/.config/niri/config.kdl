@@ -1,270 +1,49 @@
-input {
-    keyboard {
-        xkb {
-            layout "us,ru"
-            options "grp:win_space_toggle,caps:swapescape"
-        }
+// ─────────────────────────────────────────────────────────────────────────────
+// iNiR — Niri Compositor Configuration
+// ─────────────────────────────────────────────────────────────────────────────
+//
+// This config is split into modular files under config.d/ so you can edit
+// individual sections without touching the rest. Niri auto-reloads on save.
+//
+//   10  Input, touchpad, mouse, cursor
+//   20  Layout, gaps, borders, shadows, overview
+//   30  Window rules (corner radius, per-app tweaks)
+//   40  Environment variables (Qt, XDG, theming)
+//   50  Processes spawned at login
+//   60  Animations (spring physics tuning)
+//   70  Key bindings (iNiR shell + window management)
+//   80  Layer rules (backdrop surfaces for iNiR panels)
+//   90  Your personal overrides (never touched by updates)
+//
+// Docs: https://niri-wm.github.io/niri/Configuration:-Introduction
+// KDL format: https://kdl.dev
+// ─────────────────────────────────────────────────────────────────────────────
 
-	repeat-delay 300
-	repeat-rate 30
-    }
+// Ask apps to drop client-side decorations so Niri draws borders around them.
+// This also fixes border/focus-ring rendering behind semitransparent windows.
+// Restart apps after toggling this.
+prefer-no-csd
 
-    touchpad {
-        tap
-        dwt
-        natural-scroll
-        accel-profile "adaptive"
-	scroll-factor 0.5
-    }
-
-    mouse {
-        // off
-        // natural-scroll
-        // accel-speed 0.2
-        // accel-profile "flat"
-	// scroll-factor 0.5
-        // scroll-method "no-scroll"
-    }
-
-    trackpoint {
-        // off
-        accel-speed -0.7
-        accel-profile "adaptive"
-    }
-
-    focus-follows-mouse max-scroll-amount="0%"
-}
-
-output "eDP-1" {
-    // off
-    mode "1920x1080"
-    scale 1
-    transform "normal"
-
-    hot-corners {
-	off
-    }
-}
-
-layout {
-    gaps 10
-    center-focused-column "never"
-    preset-column-widths {
-        proportion 0.33333
-        proportion 0.5
-        proportion 0.66667
-    }
-
-    default-column-width { proportion 0.5; }
-    focus-ring {
-        off
-        width 3
-
-        // active-color "#ff6363"
-        // inactive-color "#8563ff"
-
-        active-gradient from="#ff6363" to="#8563ff" angle=45
-        // inactive-gradient from="#505050" to="#808080" angle=45 relative-to="workspace-view"
-    }
-
-    border {
-        // off
-        width 3
-
-        // active-color "#ff6363"
-        inactive-color "#a8a8a8"
-        urgent-color "#9b0000"
-
-        active-gradient from="#ff6363" to="#8563ff" angle=45
-    }
-
-    shadow {
-        // on
-        // draw-behind-window true
-        softness 30
-        spread 5
-        offset x=0 y=5
-        color "#0007"
-    }
-
-    struts {
-        // left 64
-        // right 64
-        // top 64
-        // bottom 64
-    }
-}
-
-spawn-at-startup "qs" "-c" "noctalia-shell"
-spawn-at-startup "xwayland-satellite"
-
+// Hide the built-in hotkey cheatsheet on startup (iNiR has its own: Mod+/).
 hotkey-overlay {
     skip-at-startup
 }
 
-prefer-no-csd
-
+// Where native Niri screenshots land (Print key).
+// iNiR's region selector (Mod+Shift+S) uses its own path.
 screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
 
-animations {
-    // off
-    // slowdown 3.0
-}
+// ── Modular includes ────────────────────────────────────────────────────────
+include "config.d/10-input-and-cursor.kdl"
+include "config.d/20-layout-and-overview.kdl"
+include "config.d/30-window-rules.kdl"
+include "config.d/40-environment.kdl"
+include "config.d/50-startup.kdl"
+include "config.d/60-animations.kdl"
+include "config.d/70-binds.kdl"
+include "config.d/80-layer-rules.kdl"
+include "config.d/90-user-extra.kdl"
 
-window-rule {
-    match app-id=r#"firefox$"# title="^Picture-in-Picture$"
-    open-floating true
-}
-
-/-window-rule {
-    match app-id=r#"^org\.keepassxc\.KeePassXC$"#
-    match app-id=r#"^org\.gnome\.World\.Secrets$"#
-    block-out-from "screen-capture"
-}
-
-window-rule {
-    geometry-corner-radius 10
-    draw-border-with-background false
-    clip-to-geometry true
-}
-
-switch-events {
-    lid-close { spawn "qs" "-c" "noctalia-shell" "ipc" "call" "lockScreen" "lock"; }
-}
-
-binds {
-    Mod+Shift+Slash { show-hotkey-overlay; }
-    Mod+T hotkey-overlay-title="Open a Terminal: kitty" { spawn "kitty"; }
-    Super+Alt+L hotkey-overlay-title="Lock the Screen: noctalia-shell lock" { spawn-sh "qs -c noctalia-shell ipc call lockScreen lock"; }
-
-    Alt+Space     { spawn-sh "qs -c noctalia-shell ipc call launcher toggle"; }
-    Mod+Alt+C     { spawn-sh "qs -c noctalia-shell ipc call controlCenter toggle"; }
-    Mod+Alt+Comma { spawn-sh "qs -c noctalia-shell ipc call settings toggle"; }
-
-    XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+ -l 1.0"; }
-    XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-"; }
-    XF86AudioMute        allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
-    XF86AudioMicMute     allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
-
-    XF86AudioPlay        allow-when-locked=true { spawn-sh "playerctl play-pause"; }
-    XF86AudioStop        allow-when-locked=true { spawn-sh "playerctl stop"; }
-    XF86AudioPrev        allow-when-locked=true { spawn-sh "playerctl previous"; }
-    XF86AudioNext        allow-when-locked=true { spawn-sh "playerctl next"; }
-
-    XF86MonBrightnessUp allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "+10%"; }
-    XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "10%-"; }
-
-    Mod+O repeat=false { toggle-overview; }
-
-    Mod+Q repeat=false { close-window; }
-
-    Mod+H { focus-column-left; }
-    Mod+J { focus-window-down; }
-    Mod+K { focus-window-up; }
-    Mod+L { focus-column-right; }
-
-    Mod+Ctrl+H { move-column-left; }
-    Mod+Ctrl+J { move-window-down; }
-    Mod+Ctrl+K { move-window-up; }
-    Mod+Ctrl+L { move-column-right; }
-
-    // Mod+J      { focus-window-or-workspace-down; }
-    // Mod+K      { focus-window-or-workspace-up; }
-    // Mod+Ctrl+J { move-window-down-or-to-workspace-down; }
-    // Mod+Ctrl+K { move-window-up-or-to-workspace-up; }
-
-    Mod+Home      { focus-column-first; }
-    Mod+End       { focus-column-last; }
-    Mod+Ctrl+Home { move-column-to-first; }
-    Mod+Ctrl+End  { move-column-to-last; }
-
-    Mod+Shift+H { focus-monitor-left; }
-    Mod+Shift+J { focus-monitor-down; }
-    Mod+Shift+K { focus-monitor-up; }
-    Mod+Shift+L { focus-monitor-right; }
-
-    Mod+Shift+Ctrl+H { move-window-to-monitor-left; }
-    Mod+Shift+Ctrl+J { move-window-to-monitor-down; }
-    Mod+Shift+Ctrl+K { move-window-to-monitor-up; }
-    Mod+Shift+Ctrl+L { move-window-to-monitor-right; }
-
-    Mod+U { focus-workspace-down; }
-    Mod+I { focus-workspace-up; }
-
-    Mod+Ctrl+U { move-window-to-workspace-down; }
-    Mod+Ctrl+I { move-window-to-workspace-up; }
-
-    Mod+Shift+U { move-workspace-down; }
-    Mod+Shift+I { move-workspace-up; }
-
-    // Mod+TouchpadScrollDown { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.02+"; }
-    // Mod+TouchpadScrollUp   { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.02-"; }
-
-    Mod+1 { focus-workspace 1; }
-    Mod+2 { focus-workspace 2; }
-    Mod+3 { focus-workspace 3; }
-    Mod+4 { focus-workspace 4; }
-    Mod+5 { focus-workspace 5; }
-    Mod+6 { focus-workspace 6; }
-    Mod+7 { focus-workspace 7; }
-    Mod+8 { focus-workspace 8; }
-    Mod+9 { focus-workspace 9; }
-
-    Mod+BracketLeft  { consume-or-expel-window-left; }
-    Mod+BracketRight { consume-or-expel-window-right; }
-
-    Mod+Comma  { consume-window-into-column; }
-    Mod+Period { expel-window-from-column; }
-
-    Mod+R { switch-preset-column-width; }
-    Mod+Shift+R { switch-preset-column-width-back; }
-
-    Mod+Ctrl+Shift+R { switch-preset-window-height; }
-    Mod+Ctrl+R { reset-window-height; }
-
-    Mod+F { maximize-column; }
-    Mod+Shift+F { fullscreen-window; }
-
-    Mod+M { maximize-window-to-edges; }
-
-    Mod+C { center-column; }
-
-    Mod+Ctrl+C { center-visible-columns; }
-
-    Mod+Minus { set-column-width "-10%"; }
-    Mod+Equal { set-column-width "+10%"; }
-
-    // Finer height adjustments when in column with other windows.
-    Mod+Shift+Minus { set-window-height "-10%"; }
-    Mod+Shift+Equal { set-window-height "+10%"; }
-
-    // Move the focused window between the floating and the tiling layout.
-    Mod+V       { toggle-window-floating; }
-    Mod+Shift+V { switch-focus-between-floating-and-tiling; }
-
-    Mod+W { toggle-column-tabbed-display; }
-
-    // Mod+Space       { switch-layout "next"; }
-    // Mod+Shift+Space { switch-layout "prev"; }
-
-    Print      { screenshot; }
-    Ctrl+Print { screenshot-screen; }
-    Alt+Print  { screenshot-window; }
-
-    Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
-
-    Mod+Shift+E     { quit; }
-    Ctrl+Alt+Delete { quit; }
-
-    Mod+Shift+P { power-off-monitors; }
-}
-
-cursor {
-    xcursor-size 20
-}
-
-gestures {
-    hot-corners {
-	off
-    }
+output "eDP-1" {
+    scale 1
 }
