@@ -33,8 +33,8 @@ vim.opt.encoding = "utf-8"
 vim.opt.smartcase = true
 vim.opt.ignorecase = true
 
--- Disable line wrap
-vim.opt.wrap = false
+-- Line wrap
+vim.opt.wrap = true
 
 -- Consistent space indentation
 vim.opt.tabstop = 2
@@ -427,7 +427,15 @@ if not vim.g.vscode then
         "lervag/vimtex",
         lazy = false,
         init = function()
-          vim.g.vimtex_view_method = "skim"
+          local is_mac = vim.fn.has("mac") == 1
+
+          vim.g.vimtex_view_method = is_mac and "skim" or "zathura"
+
+          if is_mac then
+            vim.g.vimtex_view_skim_sync = 1
+            vim.g.vimtex_view_skim_activate = 1
+          end
+
           vim.g.vimtex_compiler_method = "latexmk"
           vim.g.vimtex_compiler_latexmk = {
             aux_dir = "build",
