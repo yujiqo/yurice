@@ -13,3 +13,4 @@ source $ZSH/oh-my-zsh.sh
 
 alias nvim="nvim -p"
 alias quote="fortune | cowsay"
+export PATH="/Library/TeX/texbin:$PATH"
