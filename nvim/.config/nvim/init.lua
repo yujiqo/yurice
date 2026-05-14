@@ -424,6 +424,46 @@ if not vim.g.vscode then
       },
       { "szw/vim-maximizer" },
       {
+        "lervag/vimtex",
+        lazy = false,
+        init = function()
+          vim.g.vimtex_view_method = "skim"
+          vim.g.vimtex_compiler_method = "latexmk"
+          vim.g.vimtex_compiler_latexmk = {
+            aux_dir = "build",
+            out_dir = "out",
+            callback = 1,
+            continuous = 1,
+            executable = "latexmk",
+            options = {
+              "-pdf",
+              "-shell-escape",
+              "-synctex=1",
+              "-interaction=nonstopmode",
+            },
+          }
+
+          vim.g.vimtex_syntax_conceal = {
+            accents = 1,
+            ligatures = 1,
+            cites = 1,
+            fancy = 1,
+            spacing = 0,
+            greek = 1,
+            math_bounds = 0,
+            math_delimiters = 1,
+            math_fracs = 0,
+            math_super_sub = 0,
+            math_symbols = 1,
+            sections = 0,
+            styles = 1,
+          }
+
+          vim.g.vimtex_quickfix_mode = 2
+          vim.g.vimtex_quickfix_open_on_warning = 0
+        end,
+      },
+      {
         "williamboman/mason.nvim",
         opts = {
           ui = {
@@ -578,6 +618,7 @@ if not vim.g.vscode then
               ["<CR>"] = cmp.mapping.confirm({ select = true })
             }),
             sources = {
+              { name = "vimtex" },
               { name = "nvim_lsp" },
               { name = "path" },
               { name = "buffer" },
