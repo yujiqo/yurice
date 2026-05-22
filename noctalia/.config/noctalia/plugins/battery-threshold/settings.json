@@ -1,4 +1,0 @@
-{
-  "chargeThreshold": 90,
-  "batteryDevice": "/sys/class/power_supply/BAT0"
-}

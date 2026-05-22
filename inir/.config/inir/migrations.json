@@ -1,7 +1,0 @@
-{
-  "applied": [
-    "014-malloc-arena-optimization",
-    "019-config-dir-rename-compat"
-  ],
-  "skipped": []
-}
