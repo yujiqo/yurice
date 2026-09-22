@@ -1,0 +1,9 @@
+[user]
+    name = yujiqo
+    email = danilastolyarov97@gmail.com
+
+[init]
+    defaultBranch = main
+
+[pull]
+    rebase = true
