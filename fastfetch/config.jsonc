@@ -22,11 +22,6 @@
     },
     "break",
     {
-      "type": "os",
-      "key": " ",
-      "keyColor": "34",
-    },
-    {
       "type": "kernel",
       "key": " ",
       "keyColor": "34",
