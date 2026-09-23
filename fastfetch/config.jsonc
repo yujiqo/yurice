@@ -28,7 +28,7 @@
     },
     {
       "type": "packages",
-      "format": "{} (pacman)",
+      "format": "{} (nixpkgs)",
       "key": " ",
       "keyColor": "34",
     },
@@ -68,11 +68,6 @@
       "key": "󰍛 ",
       "keyColor": "34",
       "folders": "/"
-    },
-    {
-      "type": "disk",
-      "key": "  ",
-      "folders": "/home"
     },
     {
       "type": "datetime",
