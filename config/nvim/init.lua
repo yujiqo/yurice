@@ -17,26 +17,20 @@ vim.opt.rtp:prepend(lazypath)
 
 --------------- Options ---------------
 
--- Disable NetRW
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
--- Disable Backup/Swap files
 vim.opt.backup = false
 vim.opt.writebackup = false
 vim.opt.swapfile = false
 
--- Encoding to UTF-8
 vim.opt.encoding = "utf-8"
 
--- Case insensitive search
 vim.opt.smartcase = true
 vim.opt.ignorecase = true
 
--- Line wrap
 vim.opt.wrap = true
 
--- Consistent space indentation
 vim.opt.tabstop = 2
 vim.opt.softtabstop = 2
 vim.opt.shiftwidth = 2
@@ -45,20 +39,16 @@ vim.opt.smartindent = true
 vim.opt.expandtab = true
 vim.opt.autoindent = true
 
--- Status line
 vim.opt.showmode = true
 vim.opt.showcmd = true
 vim.opt.ruler = true
 vim.opt.number = true
 
--- Sign/Number column
 vim.opt.number = true
 vim.opt.signcolumn = "yes:1"
 
--- Remove ~ at the end of files
 vim.opt.fillchars = { eob = " " }
 
--- Hide native menu for nvim-cmp
 vim.o.wildmenu = false
 vim.opt.completeopt = "menu,menuone,noselect"
 
@@ -94,7 +84,9 @@ vim.api.nvim_create_user_command("Indent", function(opts)
   vim.opt.softtabstop = tabsize
   vim.opt.shiftwidth = tabsize
 end, { nargs = 1 })
+
 --------------- Plugins setup ---------------
+
 if not vim.g.vscode then
   require("lazy").setup({
     spec = {
@@ -114,21 +106,6 @@ if not vim.g.vscode then
           vim.cmd("colorscheme rose-pine")
         end
       },
-      -- {
-      --   "f-person/auto-dark-mode.nvim",
-      --   opts = {
-      --     set_dark_mode = function()
-      --       vim.api.nvim_set_option_value("background", "dark", {})
-      --       -- vim.cmd("colorscheme base16-grayscale-dark")
-      --     end,
-      --     set_light_mode = function()
-      --       vim.api.nvim_set_option_value("background", "light", {})
-      --       -- vim.cmd("colorscheme base16-grayscale-light")
-      --     end,
-      --     update_interval = 5000,
-      --     fallback = "dark"
-      --   }
-      -- },
       {
         "lewis6991/gitsigns.nvim",
         lazy = true,
@@ -252,9 +229,6 @@ if not vim.g.vscode then
           require("nvim-treesitter.configs").setup({
             ensure_installed = {
               "c", "cpp", "rust", "python", "lua",
-              "javascript", "typescript", "html", "css",
-              "json", "jsonc", "toml", "yaml", "vim",
-              "markdown", "markdown_inline"
             },
             highlight = { enable = true },
             indent = { enable = true }
@@ -344,133 +318,7 @@ if not vim.g.vscode then
           telescope.load_extension("file_browser")
         end
       },
-      {
-        "nvim-neo-tree/neo-tree.nvim",
-        lazy = false,
-        branch = "v3.x",
-        dependencies = {
-          "nvim-lua/plenary.nvim",
-          "nvim-tree/nvim-web-devicons",
-          "MunifTanjim/nui.nvim",
-        },
-        keys = {
-          { "<leader>v", "<cmd>Neotree toggle<cr>" }
-        },
-        opts = {
-          popup_border_style = "rounded",
-          enable_git_status = true,
-          enable_diagnostics = true,
-          default_component_configs = {
-            indent = {
-              indent_size = 2,
-              padding = 1,
-              with_markers = true,
-              indent_marker = "│",
-              last_indent_marker = "└",
-              with_expanders = nil,
-              expander_collapsed = "",
-              expander_expanded = "",
-            },
-            icon = {
-              folder_closed = "",
-              folder_open = "",
-              folder_empty = "󰜌",
-            },
-          },
-          window = {
-            position = "left",
-            width = 40,
-            mappings = {
-              ["<space>"] = { "toggle_node", nowait = false },
-              ["<cr>"] = "open",
-              ["<t>"] = "open_tab_drop",
-              ["<esc>"] = "cancel",
-              ["a"] = { "add", config = { show_path = "none" } },
-              ["A"] = "add_directory",
-              ["d"] = "delete",
-              ["r"] = "rename",
-              ["y"] = "copy_to_clipboard",
-              ["x"] = "cut_to_clipboard",
-              ["p"] = "paste_from_clipboard",
-              ["R"] = "refresh",
-            },
-            filesystem = {
-              filtered_items = {
-                visible = false,
-                hide_dotfiles = true,
-                hide_gitignored = true,
-                hide_hidden = true
-              },
-              group_empty_dirs = false,
-              hijack_netrw_behavior = "open_default",
-              window = {
-                mappings = {
-                  ["."] = "set_root",
-                  ["H"] = "toggle_hidden"
-                }
-              }
-            }
-          }
-        }
-      },
-      {
-        "ggandor/leap.nvim",
-        lazy = true,
-        keys = "s",
-        dependencies = { "tpope/vim-repeat" },
-        config = function()
-          require("leap").set_default_mappings()
-        end
-      },
       { "szw/vim-maximizer" },
-      {
-        "lervag/vimtex",
-        lazy = false,
-        init = function()
-          local is_mac = vim.fn.has("mac") == 1
-
-          vim.g.vimtex_view_method = is_mac and "skim" or "zathura"
-
-          if is_mac then
-            vim.g.vimtex_view_skim_sync = 1
-            vim.g.vimtex_view_skim_activate = 1
-          end
-
-          vim.g.vimtex_compiler_method = "latexmk"
-          vim.g.vimtex_compiler_latexmk = {
-            aux_dir = "build",
-            out_dir = "out",
-            callback = 1,
-            continuous = 1,
-            executable = "latexmk",
-            options = {
-              "-pdf",
-              "-shell-escape",
-              "-synctex=1",
-              "-interaction=nonstopmode",
-            },
-          }
-
-          vim.g.vimtex_syntax_conceal = {
-            accents = 1,
-            ligatures = 1,
-            cites = 1,
-            fancy = 1,
-            spacing = 0,
-            greek = 1,
-            math_bounds = 0,
-            math_delimiters = 1,
-            math_fracs = 0,
-            math_super_sub = 0,
-            math_symbols = 1,
-            sections = 0,
-            styles = 1,
-          }
-
-          vim.g.vimtex_quickfix_mode = 2
-          vim.g.vimtex_quickfix_open_on_warning = 0
-        end,
-      },
       {
         "williamboman/mason.nvim",
         opts = {
@@ -487,7 +335,6 @@ if not vim.g.vscode then
           ensure_installed = {
             "clangd", "rust_analyzer",
             "pyright", "lua_ls",
-            "ts_ls", "html", "cssls", "emmet_ls"
           },
           automatic_enable = false,
           automatic_installation = true
@@ -530,11 +377,6 @@ if not vim.g.vscode then
                 },
               },
             },
-            marksman = {},
-            ts_ls = {},
-            html = {},
-            cssls = {},
-            emmet_ls = {},
           }
 
           for name, opts in pairs(servers) do
@@ -671,37 +513,28 @@ if not vim.g.vscode then
 end
 
 --------------- Keymaps ---------------
--- Moving
-vim.keymap.set("n", "<C-d>", "<C-d>")
-vim.keymap.set("n", "<C-u>", "<C-u>")
 
--- Search
 vim.keymap.set("n", "n", "nzzzv")
 vim.keymap.set("n", "N", "Nzzzv")
 vim.keymap.set("n", "<leader>nh", "<cmd>nohl<cr>", { silent = true })
 
--- Do not yank when x/X & p/P
 vim.keymap.set("n", "x", '"_x')
 vim.keymap.set("n", "X", '"_X')
 vim.keymap.set("x", "p", '"_dP')
 vim.keymap.set("x", "P", '"_dP')
 
--- Increment/Decrement
 vim.keymap.set("n", "=", "<C-a>")
 vim.keymap.set("n", "-", "<C-x>")
 
--- Tab management
 vim.keymap.set("n", "<leader>te", "<cmd>tabedit<cr>", { silent = true })
 vim.keymap.set("n", "<leader>h", "<cmd>tabmove -<cr>", { silent = true })
 vim.keymap.set("n", "<leader>l", "<cmd>tabmove +<cr>", { silent = true })
 vim.keymap.set("n", "<TAB>", "<cmd>tabnext<cr>", { silent = true })
 vim.keymap.set("n", "<S-TAB>", "<cmd>tabprev<cr>", { silent = true })
 
--- Split screen
 vim.keymap.set("n", "<leader>sv", "<C-w>v<C-w>w")
 vim.keymap.set("n", "<leader>sh", "<C-w>s<C-w>w")
 vim.keymap.set("n", "<leader>sm", "<cmd>MaximizerToggle<cr>", { silent = true })
 
--- Commenting
 vim.keymap.set("n", "<leader>/", ":lua require('Comment.api').toggle.linewise.current()<CR>", { silent = true })
 vim.keymap.set("v", "<leader>/", ":lua require('Comment.api').toggle.linewise(vim.fn.visualmode())<CR>", { silent = true })
