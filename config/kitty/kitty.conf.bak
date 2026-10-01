@@ -31,7 +31,7 @@ editor nvim
 shell_integration no-cursor
 
 # BEGIN_KITTY_FONTS
-font_family      family="ComicShannsMono Nerd Font"
+font_family      family="M+1Code Nerd Font Mono"
 bold_font        auto
 italic_font      auto
 bold_italic_font auto
