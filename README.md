@@ -1,7 +1,7 @@
 # yurice ✨
 
 A scroll-tiling rice built around **niri** and a custom **quickshell** shell.
-Bring your own wallpaper; matugen turns it into a full Material You theme. // TODO: rewrite this fully
+Bring your own wallpaper; matugen turns it into a full Material You theme. // TODO: rewrite this fully + don't forget kitty.local.conf quirk in kitty configuration
 
 ## Components
 
