@@ -39,7 +39,7 @@ output "eDP-1" {
     transform "normal"
 
     hot-corners {
-	off
+        off
     }
 }
 
