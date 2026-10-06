@@ -48,6 +48,12 @@ vim.lsp.config("lua_ls", {
 	},
 })
 
+vim.lsp.config("qmlls", {
+	cmd = { "qmlls" },
+	filetypes = { "qml", "qtquick" },
+	root_dir = vim.fs.root(0, { ".qmlls.ini", ".git", "shell.qml" }),
+})
+
 vim.lsp.enable({
 	"efm",
 	"lua_ls",
