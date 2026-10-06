@@ -5,6 +5,7 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 	desc = "format on save",
 	pattern = {
 		"*.lua",
+		"*.nix",
 	},
 	callback = function(args)
 		if vim.bo[args.buf].buftype ~= "" then

@@ -49,9 +49,11 @@ vim.lsp.config("lua_ls", {
 })
 
 vim.lsp.enable({
+	"efm",
 	"lua_ls",
+	"nil_ls",
 	"pyright",
 	"rust_analyzer",
 	"svelte",
-	"efm",
+	"qmlls",
 })
