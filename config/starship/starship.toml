@@ -1,6 +1,6 @@
 add_newline = false
 
-format = "$directory$git_branch$git_status$character"
+format = "$python$directory$git_branch$git_status$character"
 
 [character]
 success_symbol = "[❯](bold green)"
@@ -15,6 +15,10 @@ symbol = " "
 
 [git_status]
 style = "bold purple"
+
+[python]
+format = "[($virtualenv) ]($style)"
+style = "bold yellow"
 
 [cmd_duration]
 min_time = 2000
