@@ -56,4 +56,5 @@ vim.lsp.enable({
 	"rust_analyzer",
 	"svelte",
 	"qmlls",
+	"marksman",
 })

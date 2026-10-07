@@ -6,6 +6,7 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 	pattern = {
 		"*.lua",
 		"*.nix",
+		"*.md",
 	},
 	callback = function(args)
 		if vim.bo[args.buf].buftype ~= "" then

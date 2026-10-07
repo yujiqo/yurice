@@ -5,6 +5,7 @@ vim.pack.add({
 	{ src = github .. "echasnovski/mini.nvim" },
 	{ src = github .. "ibhagwan/fzf-lua" },
 	{ src = github .. "christoomey/vim-tmux-navigator" },
+	{ src = github .. "3rd/image.nvim" },
 
 	{ src = github .. "neovim/nvim-lspconfig" },
 	{ src = github .. "mason-org/mason.nvim" },
@@ -15,4 +16,5 @@ vim.pack.add({
 
 require("plugins/rose-pine")
 require("plugins/mini-nvim")
+require("plugins/image-nvim")
 require("plugins/fzf-lua")
