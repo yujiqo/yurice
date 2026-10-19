@@ -57,4 +57,5 @@ vim.lsp.enable({
 	"svelte",
 	"qmlls",
 	"marksman",
+	"sqls",
 })

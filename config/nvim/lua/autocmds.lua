@@ -7,6 +7,7 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 		"*.lua",
 		"*.nix",
 		"*.md",
+		"*.sql",
 	},
 	callback = function(args)
 		if vim.bo[args.buf].buftype ~= "" then
@@ -88,7 +89,7 @@ local function lsp_on_attach(ev)
 	local opts = { noremap = true, silent = true, buffer = bufnr }
 
 	vim.keymap.set("n", "<leader>gd", function()
-		require("fzf-lua").lsp_definitions({ jump_to_single_result = true })
+		require("fzf-lua").lsp_definitions()
 	end, opts)
 
 	vim.keymap.set("n", "<leader>gD", vim.lsp.buf.definition, opts)

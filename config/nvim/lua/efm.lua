@@ -3,12 +3,14 @@ do
 	local stylua = require("efmls-configs.formatters.stylua")
 	local alejandra = require("efmls-configs.formatters.alejandra")
 	local prettier = require("efmls-configs.formatters.prettier")
+	local sql_formatter = require("efmls-configs.formatters.sql-formatter")
 
 	vim.lsp.config("efm", {
 		filetypes = {
 			"lua",
 			"nix",
 			"markdown",
+			"sql",
 		},
 		init_options = { documentFormatting = true },
 		settings = {
@@ -17,6 +19,7 @@ do
 				lua = { selene, stylua },
 				nix = { alejandra },
 				markdown = { prettier },
+				sql = { sql_formatter },
 			},
 		},
 	})
