@@ -32,19 +32,28 @@ ShellRoot {
         Item { Layout.fillWidth: true }
         Pill {
           id: wifi
-          property string ssid: ""
-          text: ssid === "" ? "📶 off" : "📶 " + ssid
+          property string netStatus: "📶 off"
+          text: netStatus
 
           Process {
             id: proc
-            command: ["sh", "-c", "nmcli -t -f ACTIVE,SSID dev wifi | grep '^yes' | cut -d: -f2"]
+            command: ["sh", "-c", "
+              ssid=\$(nmcli -t -f ACTIVE,SSID dev wifi | grep '^yes' | cut -d: -f2);
+              if [ -n \"\$ssid\" ]; then
+                echo \"📶 \$ssid\";
+              elif nmcli -t -f TYPE,STATE dev | grep -q '^ethernet:connected'; then
+                echo \"󰈀  ethernet\";
+              else
+                echo \"📶 off\";
+              fi
+            "]
             stdout: StdioCollector {
-              onStreamFinished: wifi.ssid = text.trim()
+              onStreamFinished: wifi.netStatus = text.trim()
             }
           }
 
           Timer {
-            interval: 5000; running: true; repeat: true; triggeredOnStart: true
+            interval: 3000; running: true; repeat: true; triggeredOnStart: true
             onTriggered: proc.running = true
           }
         }
