@@ -42,6 +42,7 @@ vim.keymap.set("n", "J", "mzJ`z", { desc = "join lines and keep cursor position"
 
 vim.keymap.set("n", "<Tab>", ":bn<CR>", { desc = "next buffer" })
 vim.keymap.set("n", "<S-Tab>", ":bp<CR>", { desc = "previous buffer" })
+vim.keymap.set("n", "<leader>x", ":bd<CR>", { desc = "delete buffer" })
 
 vim.keymap.set("n", "<leader>td", function()
 	vim.diagnostic.enable(not vim.diagnostic.is_enabled())
