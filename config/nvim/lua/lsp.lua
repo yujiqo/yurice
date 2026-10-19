@@ -48,6 +48,14 @@ vim.lsp.config("lua_ls", {
 	},
 })
 
+vim.lsp.config("nil_ls", {
+	nix = {
+		flake = {
+			autoArchive = true,
+		},
+	},
+})
+
 vim.lsp.config("qmlls", {
 	cmd = { "qmlls" },
 	filetypes = { "qml", "qtquick" },
