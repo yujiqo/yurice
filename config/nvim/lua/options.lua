@@ -3,6 +3,8 @@ vim.opt.termguicolors = true
 vim.opt.number = true
 vim.opt.cursorline = false
 vim.opt.wrap = true
+vim.opt.linebreak = true
+vim.opt.breakindent = true
 vim.opt.scrolloff = 10
 vim.opt.sidescrolloff = 10
 
