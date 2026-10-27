@@ -8,6 +8,7 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 		"*.nix",
 		"*.md",
 		"*.sql",
+		"*.py",
 	},
 	callback = function(args)
 		if vim.bo[args.buf].buftype ~= "" then
