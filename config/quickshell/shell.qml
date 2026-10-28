@@ -3,6 +3,9 @@ import Quickshell.Io
 import Quickshell.Services.UPower
 import QtQuick
 import QtQuick.Layouts
+import qs.theme
+import qs.components
+import qs.modules.bar
 
 ShellRoot {
   SystemClock {
@@ -18,13 +21,13 @@ ShellRoot {
       screen: modelData
 
       anchors { top: true; left: true; right: true }
-      implicitHeight: 32
-      color: "#1e1e2e"
+      implicitHeight: Theme.s5
+      color: Theme.bg
 
       RowLayout {
         anchors.fill: parent
-        anchors.margins: 6
-        spacing: 8
+        anchors.margins: Theme.s2
+        spacing: Theme.s3
 
         Workspace { output: modelData.name }
         Item { Layout.fillWidth: true }
@@ -60,7 +63,7 @@ ShellRoot {
         Pill {
           readonly property var bat: UPower.displayDevice
           text: (bat.state === UPowerDeviceState.Charging ? "⚡ " : "🔋 ") + Math.round(bat.percentage * 100) + "%"
-          fg: bat.percentage === 0.2 ? "#f38ba8": "#cdd6f4"
+          fg: bat.percentage === 0.2 ? Theme.warn : Theme.text
         }
       }
     }

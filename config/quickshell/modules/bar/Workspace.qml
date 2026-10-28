@@ -1,12 +1,13 @@
 import QtQuick
 import Quickshell
 import Quickshell.Io
+import qs.theme
 
 Row {
   id: root
   property string output: ""
   property var workspaces: []
-  spacing: 4
+  spacing: Theme.s1
 
   Process {
     id: query
@@ -35,10 +36,10 @@ Row {
 
     Rectangle {
       required property var modelData
-      width: modelData.is_active ? 32 : 22
-      height: 22
-      radius: 11
-      color: modelData.is_active ? "#ff6b6b" : "#313244"
+      width: modelData.is_active ? Theme.s5 : Theme.s4
+      height: Theme.s4
+      radius: Theme.rNormal
+      color: modelData.is_active ? Theme.accent : Theme.surface
 
       MouseArea {
         anchors.fill: parent
