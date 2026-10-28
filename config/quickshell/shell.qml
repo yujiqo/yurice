@@ -6,12 +6,15 @@ import QtQuick.Layouts
 import qs.theme
 import qs.components
 import qs.modules.bar
+import qs.modules.demo
 
 ShellRoot {
   SystemClock {
     id: clock
     precision: SystemClock.Seconds
   }
+
+  DemoPanels {}
 
   Variants {
     model: Quickshell.screens
@@ -63,7 +66,7 @@ ShellRoot {
         Pill {
           readonly property var bat: UPower.displayDevice
           text: (bat.state === UPowerDeviceState.Charging ? "⚡ " : "🔋 ") + Math.round(bat.percentage * 100) + "%"
-          fg: bat.percentage === 0.2 ? Theme.warn : Theme.text
+          fg: bat.state === UPowerDeviceState.Charging ? Theme.ok: (bat.percentage === 0.2 ? Theme.warn : Theme.text)
         }
       }
     }

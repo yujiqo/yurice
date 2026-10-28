@@ -11,6 +11,7 @@ Singleton {
   property color accent: "#ff6b6b" // active workspace
   property color warn: "#f38ba8" // low battery
   property color border: "#45475a" // not wired up yet (future: popup borders)
+  property color ok: "#a6e3a1"
 
   // --- Spacing scale ---
   property int s1: 4 // Workspace row spacing
