@@ -1,26 +1,17 @@
-// PopupPanel.qml — shared edge-sliding popup used by every panel (center/left/top/right/bottom).
-// Owns its own IPC target, so every future panel gets `qs ipc call <target> toggle/open/close`
-// for free instead of each module wiring an IpcHandler by hand (see docs/DESIGN.md "Panels").
 import QtQuick
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
 import qs.theme
 
-// Scope: a non-visual container, since this component's job is to own windows/IPC, not render.
 Scope {
   id: root
 
-  // Which screen edge this panel slides from. "center" fades + scales instead of sliding.
   property string edge: "center" // "left" | "top" | "right" | "bottom" | "center"
-  // Unique `qs ipc call <ipcTarget> ...` name — required, every popup must be IPC-toggleable.
   required property string ipcTarget
-  // Panel body, set by the consumer: `content: Component { Pill { text: "hi" } }`.
   property Component content
 
   property bool panelVisible: false
-  // Stays true a little past panelVisible=false, so PanelWindow.visible (which has no
-  // animation of its own) doesn't cut the close animation off mid-flight.
   property bool shown: false
 
   function open() { panelVisible = true }
@@ -47,10 +38,8 @@ Scope {
     color: "transparent"
     anchors { top: true; left: true; right: true; bottom: true }
     WlrLayershell.layer: WlrLayer.Overlay
-    // OnDemand only while open, so the panel doesn't hold keyboard focus once closed.
     WlrLayershell.keyboardFocus: root.panelVisible ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
 
-    // Click anywhere outside the content area closes the panel.
     MouseArea {
       anchors.fill: parent
       onClicked: mouse => {
@@ -88,7 +77,6 @@ Scope {
           margins: Theme.s5
         }
 
-        // Distance still slid off-screen; animates to 0 on open, back out on close.
         readonly property bool horizontalEdge: root.edge === "left" || root.edge === "right"
         property real _hiddenAmount: root.panelVisible ? 0 : ((horizontalEdge ? width : height) + Theme.s5)
 
