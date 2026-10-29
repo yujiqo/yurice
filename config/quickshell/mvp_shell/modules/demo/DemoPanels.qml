@@ -1,16 +1,12 @@
 // DemoPanels.qml — temporary M2 scaffold proving PopupPanel works on every edge value.
-// Delete this file (and its "demo*" IPC targets) once M3 adds the real center panel.
+// "center" is now the real CenterPanel (M3a); left/top/right/bottom stay demos until their
+// milestones (M4-M7) land.
 import QtQuick
 import Quickshell
 import qs.theme
 import qs.components
 
 Scope {
-  PopupPanel {
-    edge: "center"
-    ipcTarget: "demoCenter"
-    content: Component { Pill { text: "edge: center" } }
-  }
   PopupPanel {
     edge: "left"
     ipcTarget: "demoLeft"
