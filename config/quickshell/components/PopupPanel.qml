@@ -13,10 +13,31 @@ Scope {
 
   property bool panelVisible: false
   property bool shown: false
+  property string _focusedScreenName: ""
 
-  function open() { panelVisible = true }
+  function open() {
+    if (outputDetector.running) return
+    outputDetector.running = true
+  }
   function close() { panelVisible = false }
-  function toggle() { panelVisible = !panelVisible }
+  function toggle() {
+    if (panelVisible) close()
+    else open()
+  }
+
+  Process {
+    id: outputDetector
+    command: ["niri", "msg", "-j", "focused-output"]
+    stdout: StdioCollector {
+      onStreamFinished: {
+        try {
+          const name = JSON.parse(text).name
+          if (name) root._focusedScreenName = name
+        } catch (e) {}
+        root.panelVisible = true
+      }
+    }
+  }
 
   onPanelVisibleChanged: {
     if (panelVisible) { closeTimer.stop(); shown = true }
@@ -33,7 +54,7 @@ Scope {
 
   PanelWindow {
     id: win
-    screen: Quickshell.screens[0]
+    screen: Quickshell.screens.find(s => s.name === root._focusedScreenName) ?? Quickshell.screens[0]
     visible: root.shown
     color: "transparent"
     anchors { top: true; left: true; right: true; bottom: true }
