@@ -17,3 +17,6 @@ if status is-interactive
 end
 
 function fish_greeting; end
+
+# path for uv tools
+fish_add_path "~/.local/bin"
