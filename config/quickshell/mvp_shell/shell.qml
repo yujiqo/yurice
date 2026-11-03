@@ -71,6 +71,58 @@ ShellRoot {
           }
         }
         Pill {
+          id: powerProfile
+          property string profile: "?"
+          property var profiles: []
+          text: "󰓅  " + profile
+
+          // `powerprofilesctl list` prints one "  name:" header per profile, the active one as "* name:"
+          Process {
+            id: profileProc
+            command: ["powerprofilesctl", "list"]
+            stdout: StdioCollector {
+              onStreamFinished: {
+                const found = []
+                let active = "?"
+                for (const line of text.split("\n")) {
+                  const m = line.match(/^([* ]) (\S+):$/)
+                  if (!m) continue
+                  found.push(m[2])
+                  if (m[1] === "*") active = m[2]
+                }
+                powerProfile.profiles = found
+                powerProfile.profile = active
+              }
+            }
+          }
+
+          Process {
+            id: profileSet
+            onExited: profileProc.running = true
+          }
+
+          // left click: next profile, right click: previous
+          MouseArea {
+            anchors.fill: parent
+            acceptedButtons: Qt.LeftButton | Qt.RightButton
+            cursorShape: Qt.PointingHandCursor
+            onClicked: mouse => {
+              const list = powerProfile.profiles
+              if (list.length === 0 || profileSet.running) return
+              const step = mouse.button === Qt.RightButton ? -1 : 1
+              const next = list[(list.indexOf(powerProfile.profile) + step + list.length) % list.length]
+              powerProfile.profile = next
+              profileSet.command = ["powerprofilesctl", "set", next]
+              profileSet.running = true
+            }
+          }
+
+          Timer {
+            interval: 3000; running: true; repeat: true; triggeredOnStart: true
+            onTriggered: profileProc.running = true
+          }
+        }
+        Pill {
           readonly property var bat: UPower.displayDevice
           text: (bat.state === UPowerDeviceState.Charging ? "⚡ " : "🔋 ") + Math.round(bat.percentage * 100) + "%"
           fg: bat.state === UPowerDeviceState.Charging ? Theme.ok: (bat.percentage === 0.2 ? Theme.warn : Theme.text)
