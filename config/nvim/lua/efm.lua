@@ -6,6 +6,12 @@ do
 	local sql_formatter = require("efmls-configs.formatters.sql-formatter")
 	local ruff_linter = require("efmls-configs.linters.ruff")
 	local ruff_formatter = require("efmls-configs.formatters.ruff")
+	local qmlformat = {
+		formatCommand = [[
+      sh -c 't=$(mktemp --suffix=.qml); cat > "$t"; qmlformat -w 2 "$t"; s=$?; rm -f "$t"; exit $s'
+    ]],
+		formatStdin = true,
+	}
 
 	vim.lsp.config("efm", {
 		filetypes = {
@@ -14,6 +20,7 @@ do
 			"markdown",
 			"sql",
 			"python",
+			"qml",
 		},
 		init_options = { documentFormatting = true },
 		settings = {
@@ -24,6 +31,7 @@ do
 				markdown = { prettier },
 				sql = { sql_formatter },
 				python = { ruff_linter, ruff_formatter },
+				qml = { qmlformat },
 			},
 		},
 	})
