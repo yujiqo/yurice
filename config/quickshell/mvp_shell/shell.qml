@@ -101,9 +101,17 @@ ShellRoot {
             onExited: profileProc.running = true
           }
 
+          // hover/press feedback, since this is the only clickable Pill in the bar
+          color: profileMouse.containsMouse ? Theme.surfaceAlt : Theme.surface
+          scale: profileMouse.pressed ? 0.94 : 1
+          Behavior on color { ColorAnimation { duration: Theme.animFast; easing.type: Theme.easeOut } }
+          Behavior on scale { NumberAnimation { duration: Theme.animFast; easing.type: Theme.easeOut } }
+
           // left click: next profile, right click: previous
           MouseArea {
+            id: profileMouse
             anchors.fill: parent
+            hoverEnabled: true
             acceptedButtons: Qt.LeftButton | Qt.RightButton
             cursorShape: Qt.PointingHandCursor
             onClicked: mouse => {

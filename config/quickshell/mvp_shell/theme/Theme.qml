@@ -5,7 +5,7 @@ import QtQuick
 Singleton {
   property color bg: "#1e1e2e" // bar background
   property color surface: "#313244" // pill background, inactive workspace
-  property color surfaceAlt: "#45475a" // not wired up yet (future: hover/alt surface)
+  property color surfaceAlt: "#45475a" // hover surface (power profile Pill)
   property color text: "#cdd6f4" // default pill text
   property color textDim: "#a6adc8" // not wired up yet (future: secondary text)
   property color accent: "#ff6b6b" // active workspace
@@ -31,7 +31,7 @@ Singleton {
   property int fsNormal: 15 // Pill text size
   property int fsLarge: 18 // ClockWidget time, BatteryWidget icon
 
-  // --- Animation (not wired up yet; for M2's PopupPanel motion) ---
+  // --- Animation (PopupPanel motion, Pill hover) ---
   property int animFast: 100
   property int animNormal: 200
   property int animSlow: 350
