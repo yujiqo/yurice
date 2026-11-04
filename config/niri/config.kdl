@@ -122,6 +122,7 @@ layout {
 }
 
 spawn-at-startup "xwayland-satellite"
+spawn-at-startup "qs"
 
 hotkey-overlay {
   skip-at-startup
