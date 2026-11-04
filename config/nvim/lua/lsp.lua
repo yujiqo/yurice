@@ -49,9 +49,13 @@ vim.lsp.config("lua_ls", {
 })
 
 vim.lsp.config("nil_ls", {
-	nix = {
-		flake = {
-			autoArchive = true,
+	settings = {
+		["nil"] = {
+			nix = {
+				flake = {
+					autoArchive = true,
+				},
+			},
 		},
 	},
 })
