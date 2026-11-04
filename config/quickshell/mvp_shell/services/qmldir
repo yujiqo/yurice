@@ -1,2 +1,0 @@
-module qs.services
-singleton Brightness 1.0 Brightness.qml
