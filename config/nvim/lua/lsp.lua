@@ -60,6 +60,12 @@ vim.lsp.config("qmlls", {
 	cmd = { "qmlls" },
 	filetypes = { "qml", "qmljs" },
 	root_markers = { ".qmlls.ini", "shell.qml" },
+	on_init = function(client)
+		local st = client.server_capabilities.semanticTokensProvider
+		if st and type(st.full) == "table" then
+			st.full = true
+		end
+	end,
 })
 
 vim.lsp.enable({
