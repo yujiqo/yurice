@@ -58,8 +58,8 @@ vim.lsp.config("nil_ls", {
 
 vim.lsp.config("qmlls", {
 	cmd = { "qmlls" },
-	filetypes = { "qml", "qtquick" },
-	root_dir = vim.fs.root(0, { ".qmlls.ini", ".git", "shell.qml" }),
+	filetypes = { "qml", "qmljs" },
+	root_markers = { ".qmlls.ini", "shell.qml" },
 })
 
 vim.lsp.enable({
