@@ -5,6 +5,7 @@ import Quickshell.Services.Mpris
 import Quickshell.Services.UPower
 import Quickshell.Bluetooth
 import Quickshell.Services.Pipewire
+import Quickshell.Io
 
 PanelWindow {
   id: bar
@@ -24,6 +25,7 @@ PanelWindow {
   readonly property color colBluetooth: "#4d8eff"
   readonly property color colOff: "#5c6664"
   readonly property color colVolume: "#c792ea"
+  readonly property color colBrightness: "#ffcb6b"
   readonly property color colGood: "#7bd88f"
   readonly property color colCharging: "#f9e26b"
   readonly property color colWarn: "#ff9e64"
@@ -96,6 +98,36 @@ PanelWindow {
       label: volumePercent + "%",
       color: colVolume
     };
+  }
+
+  readonly property string backlightDir: "/sys/class/backlight/intel_backlight"
+
+  FileView {
+    id: brightnessMax
+    path: bar.backlightDir + "/max_brightness"
+  }
+
+  FileView {
+    id: brightnessCur
+    path: bar.backlightDir + "/actual_brightness"
+    watchChanges: true
+    onFileChanged: reload()
+  }
+
+  readonly property bool hasBacklight: brightnessMax.loaded && brightnessCur.loaded
+  readonly property int brightnessPercent: Math.round(parseInt(brightnessCur.text()) / parseInt(brightnessMax.text()) * 100) || 0
+
+  readonly property var brightnessSegment: {
+    const icon = brightnessPercent < 33 ? "brightness_low" : brightnessPercent < 66 ? "brightness_medium" : "brightness_high";
+    return {
+      icon: icon,
+      label: brightnessPercent + "%",
+      color: colBrightness
+    };
+  }
+
+  Process {
+    id: brightnessWrite
   }
 
   readonly property var bluetoothSegment: {
@@ -212,6 +244,21 @@ PanelWindow {
 
     Pill {
       segments: [bar.bluetoothSegment]
+    }
+
+    Pill {
+      visible: bar.hasBacklight
+      segments: [bar.brightnessSegment]
+
+      WheelHandler {
+        onWheel: event => {
+          if (brightnessWrite.running)
+            return;
+          const step = event.angleDelta.y > 0 ? "5%+" : "5%-";
+          brightnessWrite.command = ["brightnessctl", "-c", "backlight", "-n", "1%", "-q", "s", step];
+          brightnessWrite.running = true;
+        }
+      }
     }
 
     Pill {
