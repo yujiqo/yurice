@@ -14,6 +14,18 @@ Rectangle {
   radius: height / 2
   color: Theme.surface
 
+  function indexOfWs(wsId) {
+    for (let k = 0; k < wsModel.count; k++) {
+      if (wsModel.get(k).wsId === wsId)
+        return k;
+    }
+    return -1;
+  }
+
+  function patchWs(wsId, fields) {
+    return all.map(w => w.id === wsId ? Object.assign({}, w, fields) : w);
+  }
+
   function sync() {
     const target = all.filter(w => root.output === "" || w.output === root.output).sort((a, b) => a.idx - b.idx);
     const ids = target.map(w => w.id);
@@ -31,13 +43,7 @@ Rectangle {
         urgent: w.is_urgent,
         occupied: w.active_window_id !== null
       };
-      let j = -1;
-      for (let k = 0; k < wsModel.count; k++) {
-        if (wsModel.get(k).wsId === w.id) {
-          j = k;
-          break;
-        }
-      }
+      const j = indexOfWs(w.id);
       if (j === -1) {
         wsModel.insert(i, item);
       } else {
@@ -68,17 +74,17 @@ Rectangle {
         workspace_id,
         active_window_id
       } = event.WorkspaceActiveWindowChanged;
-      all = all.map(w => w.id === workspace_id ? Object.assign({}, w, {
-          active_window_id
-        }) : w);
+      all = patchWs(workspace_id, {
+        active_window_id
+      });
     } else if (event.WorkspaceUrgencyChanged) {
       const {
         id,
         urgent
       } = event.WorkspaceUrgencyChanged;
-      all = all.map(w => w.id === id ? Object.assign({}, w, {
-          is_urgent: urgent
-        }) : w);
+      all = patchWs(id, {
+        is_urgent: urgent
+      });
     } else {
       return;
     }
