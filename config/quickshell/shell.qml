@@ -42,28 +42,16 @@ PanelWindow {
     const segments = [];
 
     if (ethernet)
-      segments.push({
-        icon: "settings_ethernet",
-        label: "Wired",
-        color: Theme.ethernet
-      });
+      segments.push(Utility.seg("settings_ethernet", "Wired", Theme.ethernet));
     if (wifi !== "") {
       const sep = wifi.indexOf(":");
       const signal = parseInt(wifi.slice(0, sep));
       const ssid = wifi.slice(sep + 1).replace(/\\:/g, ":");
-      const icon = signal >= 80 ? "network_wifi" : signal >= 60 ? "network_wifi_3_bar" : signal >= 40 ? "network_wifi_2_bar" : signal >= 20 ? "network_wifi_1_bar" : "signal_wifi_0_bar";
-      segments.push({
-        icon: icon,
-        label: ssid,
-        color: Theme.wifi
-      });
+      const icon = Utility.pick(signal, [[80, "network_wifi"], [60, "network_wifi_3_bar"], [40, "network_wifi_2_bar"], [20, "network_wifi_1_bar"]], "signal_wifi_0_bar");
+      segments.push(Utility.seg(icon, ssid, Theme.wifi));
     }
     if (segments.length === 0)
-      segments.push({
-        icon: "wifi_off",
-        label: "Not connected",
-        color: Theme.off
-      });
+      segments.push(Utility.seg("wifi_off", "Not connected", Theme.off));
     return segments;
   }
 
@@ -85,32 +73,12 @@ PanelWindow {
   }
 
   readonly property var volumeSegment: {
-    if (wiredHeadphones) {
-      if (muted)
-        return {
-          icon: "headset_off",
-          label: "Muted",
-          color: Theme.off
-        };
-      return {
-        icon: "headphones",
-        label: volumePercent + "%",
-        color: Theme.volume
-      };
-    }
-
+    if (wiredHeadphones)
+      return muted ? Utility.seg("headset_off", "Muted", Theme.off) : Utility.seg("headphones", volumePercent + "%", Theme.volume);
     if (muted || volumePercent === 0)
-      return {
-        icon: "volume_off",
-        label: muted ? "Muted" : "0%",
-        color: Theme.off
-      };
-    const icon = volumePercent < 33 ? "volume_mute" : volumePercent < 66 ? "volume_down" : "volume_up";
-    return {
-      icon: icon,
-      label: volumePercent + "%",
-      color: Theme.volume
-    };
+      return Utility.seg("volume_off", muted ? "Muted" : "0%", Theme.off);
+    const icon = Utility.pick(volumePercent, [[66, "volume_up"], [33, "volume_down"]], "volume_mute");
+    return Utility.seg(icon, volumePercent + "%", Theme.volume);
   }
 
   readonly property string backlightDir: "/sys/class/backlight/intel_backlight"
@@ -131,12 +99,8 @@ PanelWindow {
   readonly property int brightnessPercent: Math.round(parseInt(brightnessCur.text()) / parseInt(brightnessMax.text()) * 100) || 0
 
   readonly property var brightnessSegment: {
-    const icon = brightnessPercent < 33 ? "brightness_low" : brightnessPercent < 66 ? "brightness_medium" : "brightness_high";
-    return {
-      icon: icon,
-      label: brightnessPercent + "%",
-      color: Theme.brightness
-    };
+    const icon = Utility.pick(brightnessPercent, [[66, "brightness_high"], [33, "brightness_medium"]], "brightness_low");
+    return Utility.seg(icon, brightnessPercent + "%", Theme.brightness);
   }
 
   Process {
@@ -146,49 +110,35 @@ PanelWindow {
   readonly property var bluetoothSegment: {
     const adapter = Bluetooth.defaultAdapter;
     if (!adapter || !adapter.enabled)
-      return {
-        icon: "bluetooth_disabled",
-        label: "Off",
-        color: Theme.off
-      };
+      return Utility.seg("bluetooth_disabled", "Off", Theme.off);
 
     const connected = Bluetooth.devices.values.filter(d => d.connected);
     if (connected.length === 0)
-      return {
-        icon: "bluetooth",
-        label: "No connected devices",
-        color: Theme.bluetooth
-      };
+      return Utility.seg("bluetooth", "No connected devices", Theme.bluetooth);
 
     const name = connected[0].name || connected[0].deviceName;
     const extra = connected.length > 1 ? ` +${connected.length - 1}` : "";
-    return {
-      icon: "bluetooth_connected",
-      label: name + extra,
-      color: Theme.bluetooth
-    };
+    return Utility.seg("bluetooth_connected", name + extra, Theme.bluetooth);
   }
 
   readonly property var battery: UPower.displayDevice
   readonly property int batteryPercent: Math.round(battery.percentage * 100)
   readonly property bool batteryPlugged: battery.state === UPowerDeviceState.Charging || battery.state === UPowerDeviceState.FullyCharged || battery.state === UPowerDeviceState.PendingCharge
 
-  function batteryIcon(p, plugged) {
-    if (plugged) {
-      if (p >= 95)
-        return "battery_charging_full";
-      for (const step of [90, 80, 60, 50, 30, 20]) {
-        if (p >= step)
-          return `battery_charging_${step}`;
-      }
-      return "battery_charging_20";
-    }
+  readonly property string batteryIcon: {
+    const p = batteryPercent;
+    if (batteryPlugged)
+      return Utility.pick(p, [[95, "battery_charging_full"], [90, "battery_charging_90"], [80, "battery_charging_80"], [60, "battery_charging_60"], [50, "battery_charging_50"], [30, "battery_charging_30"]], "battery_charging_20");
     if (p >= 95)
       return "battery_full";
     if (p < 10)
       return "battery_alert";
     return `battery_${Math.min(6, Math.floor(p / 100 * 7))}_bar`;
   }
+
+  readonly property color batteryColor: batteryPlugged ? Theme.charging : Utility.pick(batteryPercent, [[20, Theme.good], [10, Theme.warn]], Theme.bad)
+
+  readonly property var batterySegment: Utility.seg(batteryIcon, batteryPercent + "%", batteryColor)
 
   readonly property var profiles: PowerProfiles.hasPerformanceProfile ? [PowerProfile.PowerSaver, PowerProfile.Balanced, PowerProfile.Performance] : [PowerProfile.PowerSaver, PowerProfile.Balanced]
 
@@ -200,23 +150,11 @@ PanelWindow {
   readonly property var profileSegment: {
     switch (PowerProfiles.profile) {
     case PowerProfile.PowerSaver:
-      return {
-        icon: "eco",
-        label: "power-saver",
-        color: Theme.good
-      };
+      return Utility.seg("eco", "power-saver", Theme.good);
     case PowerProfile.Performance:
-      return {
-        icon: "speed",
-        label: "performance",
-        color: Theme.warn
-      };
+      return Utility.seg("speed", "performance", Theme.warn);
     default:
-      return {
-        icon: "balance",
-        label: "balanced",
-        color: Theme.balanced
-      };
+      return Utility.seg("balance", "balanced", Theme.balanced);
     }
   }
 
@@ -293,13 +231,7 @@ PanelWindow {
     Pill {
       clickable: true
       onClicked: mouse => bar.cycleProfile(mouse.button === Qt.RightButton ? -1 : 1)
-      segments: [
-        {
-          icon: bar.batteryIcon(bar.batteryPercent, bar.batteryPlugged),
-          label: bar.batteryPercent + "%",
-          color: bar.batteryPlugged ? Theme.charging : bar.batteryPercent < 10 ? Theme.bad : bar.batteryPercent < 20 ? Theme.warn : Theme.good
-        },
-        bar.profileSegment]
+      segments: [bar.batterySegment, bar.profileSegment]
     }
   }
 }
