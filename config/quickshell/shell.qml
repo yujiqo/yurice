@@ -15,7 +15,8 @@ PanelWindow {
     left: true
     right: true
   }
-  implicitHeight: 40
+  implicitHeight: 30
+  margins.top: 10
   color: "transparent"
 
   readonly property color colClock: "#f5c26b"
