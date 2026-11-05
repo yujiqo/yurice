@@ -82,11 +82,34 @@ PanelWindow {
   readonly property bool muted: sink?.audio?.muted ?? false
   readonly property int volumePercent: Math.round((sink?.audio?.volume ?? 0) * 100)
 
+  readonly property bool wiredHeadphones: {
+    const props = sink?.properties ?? {};
+    if (String(props["device.api"] ?? "") !== "alsa")
+      return false;
+    const icon = String(props["device.icon_name"] ?? props["device.icon-name"] ?? "").toLowerCase();
+    const name = String(props["node.nick"] ?? sink?.nickname ?? sink?.name ?? "").toLowerCase();
+    return icon === "audio-headphones" || name.includes("headphone");
+  }
+
   PwObjectTracker {
     objects: [bar.sink]
   }
 
   readonly property var volumeSegment: {
+    if (wiredHeadphones) {
+      if (muted)
+        return {
+          icon: "headset_off",
+          label: "Muted",
+          color: colOff
+        };
+      return {
+        icon: "headphones",
+        label: volumePercent + "%",
+        color: colVolume
+      };
+    }
+
     if (muted || volumePercent === 0)
       return {
         icon: "volume_off",
