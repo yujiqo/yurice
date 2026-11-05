@@ -16,6 +16,7 @@ vim.pack.add({
 })
 
 require("plugins/rose-pine")
+require("plugins/nvim-highlight-colors")
 require("plugins/mini-nvim")
 require("plugins/image-nvim")
 require("plugins/fzf-lua")
