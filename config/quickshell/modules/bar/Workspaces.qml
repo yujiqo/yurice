@@ -132,12 +132,12 @@ Rectangle {
       MouseArea {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
-        onClicked: Niri.focusWorkspace(dot.idx)
+        onClicked: Niri.focusWorkspace(root.output, dot.idx)
       }
     }
   }
 
   WheelHandler {
-    onWheel: event => Niri.focusWorkspaceRelative(event.angleDelta.y > 0)
+    onWheel: event => Niri.focusWorkspaceRelative(root.output, event.angleDelta.y > 0)
   }
 }

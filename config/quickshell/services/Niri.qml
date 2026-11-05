@@ -8,12 +8,20 @@ Singleton {
 
   property var workspaces: []
 
-  function focusWorkspace(idx) {
-    Quickshell.execDetached(["niri", "msg", "action", "focus-workspace", String(idx)]);
+  function _onOutput(output, action) {
+    if (output === "") {
+      Quickshell.execDetached(["niri", "msg", "action", ...action]);
+      return;
+    }
+    Quickshell.execDetached(["sh", "-c", 'niri msg action focus-monitor "$1" && shift && niri msg action "$@"', "sh", output, ...action]);
   }
 
-  function focusWorkspaceRelative(up) {
-    Quickshell.execDetached(["niri", "msg", "action", up ? "focus-workspace-up" : "focus-workspace-down"]);
+  function focusWorkspace(output, idx) {
+    _onOutput(output, ["focus-workspace", String(idx)]);
+  }
+
+  function focusWorkspaceRelative(output, up) {
+    _onOutput(output, [up ? "focus-workspace-up" : "focus-workspace-down"]);
   }
 
   function patchWs(wsId, fields) {
