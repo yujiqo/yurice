@@ -6,6 +6,9 @@ import Quickshell.Services.UPower
 import Quickshell.Bluetooth
 import Quickshell.Services.Pipewire
 import Quickshell.Io
+import qs.theme
+import qs.components
+import qs.modules.bar
 
 PanelWindow {
   id: bar
@@ -15,23 +18,9 @@ PanelWindow {
     left: true
     right: true
   }
-  implicitHeight: 30
-  margins.top: 10
+  implicitHeight: Theme.barHeight
+  margins.top: Theme.barMarginTop
   color: "transparent"
-
-  readonly property color colClock: "#f5c26b"
-  readonly property color colMusic: "#f78fb3"
-  readonly property color colWifi: "#6bb8ff"
-  readonly property color colEthernet: "#a0a8a8"
-  readonly property color colBluetooth: "#4d8eff"
-  readonly property color colOff: "#5c6664"
-  readonly property color colVolume: "#c792ea"
-  readonly property color colBrightness: "#ffcb6b"
-  readonly property color colGood: "#7bd88f"
-  readonly property color colCharging: "#f9e26b"
-  readonly property color colWarn: "#ff9e64"
-  readonly property color colBad: "#ff6b6b"
-  readonly property color colBalanced: "#7fd1c7"
 
   SystemClock {
     id: clock
@@ -56,7 +45,7 @@ PanelWindow {
       segments.push({
         icon: "settings_ethernet",
         label: "Wired",
-        color: colEthernet
+        color: Theme.ethernet
       });
     if (wifi !== "") {
       const sep = wifi.indexOf(":");
@@ -66,14 +55,14 @@ PanelWindow {
       segments.push({
         icon: icon,
         label: ssid,
-        color: colWifi
+        color: Theme.wifi
       });
     }
     if (segments.length === 0)
       segments.push({
         icon: "wifi_off",
         label: "Not connected",
-        color: colOff
+        color: Theme.off
       });
     return segments;
   }
@@ -101,12 +90,12 @@ PanelWindow {
         return {
           icon: "headset_off",
           label: "Muted",
-          color: colOff
+          color: Theme.off
         };
       return {
         icon: "headphones",
         label: volumePercent + "%",
-        color: colVolume
+        color: Theme.volume
       };
     }
 
@@ -114,13 +103,13 @@ PanelWindow {
       return {
         icon: "volume_off",
         label: muted ? "Muted" : "0%",
-        color: colOff
+        color: Theme.off
       };
     const icon = volumePercent < 33 ? "volume_mute" : volumePercent < 66 ? "volume_down" : "volume_up";
     return {
       icon: icon,
       label: volumePercent + "%",
-      color: colVolume
+      color: Theme.volume
     };
   }
 
@@ -146,7 +135,7 @@ PanelWindow {
     return {
       icon: icon,
       label: brightnessPercent + "%",
-      color: colBrightness
+      color: Theme.brightness
     };
   }
 
@@ -160,7 +149,7 @@ PanelWindow {
       return {
         icon: "bluetooth_disabled",
         label: "Off",
-        color: colOff
+        color: Theme.off
       };
 
     const connected = Bluetooth.devices.values.filter(d => d.connected);
@@ -168,7 +157,7 @@ PanelWindow {
       return {
         icon: "bluetooth",
         label: "No connected devices",
-        color: colBluetooth
+        color: Theme.bluetooth
       };
 
     const name = connected[0].name || connected[0].deviceName;
@@ -176,7 +165,7 @@ PanelWindow {
     return {
       icon: "bluetooth_connected",
       label: name + extra,
-      color: colBluetooth
+      color: Theme.bluetooth
     };
   }
 
@@ -214,19 +203,19 @@ PanelWindow {
       return {
         icon: "eco",
         label: "power-saver",
-        color: colGood
+        color: Theme.good
       };
     case PowerProfile.Performance:
       return {
         icon: "speed",
         label: "performance",
-        color: colWarn
+        color: Theme.warn
       };
     default:
       return {
         icon: "balance",
         label: "balanced",
-        color: colBalanced
+        color: Theme.balanced
       };
     }
   }
@@ -234,18 +223,18 @@ PanelWindow {
   RowLayout {
     anchors.left: parent.left
     anchors.verticalCenter: parent.verticalCenter
-    anchors.leftMargin: 10
-    spacing: 5
+    anchors.leftMargin: Theme.barMargin
+    spacing: Theme.barGap
 
     Pill {
       icon: "schedule"
-      iconColor: bar.colClock
+      iconColor: Theme.clock
       label: Qt.formatDateTime(clock.date, "HH:mm ddd dd MMM")
     }
 
     Pill {
       icon: "music_note"
-      iconColor: bar.colMusic
+      iconColor: Theme.music
       maxLabelWidth: 300
       label: bar.player ? `${bar.player.trackArtist || "Unknown"} — ${bar.player.trackTitle || ""}` : "Nothing is playing"
     }
@@ -259,8 +248,8 @@ PanelWindow {
   RowLayout {
     anchors.right: parent.right
     anchors.verticalCenter: parent.verticalCenter
-    anchors.rightMargin: 10
-    spacing: 5
+    anchors.rightMargin: Theme.barMargin
+    spacing: Theme.barGap
 
     Pill {
       segments: bar.networkSegments
@@ -308,7 +297,7 @@ PanelWindow {
         {
           icon: bar.batteryIcon(bar.batteryPercent, bar.batteryPlugged),
           label: bar.batteryPercent + "%",
-          color: bar.batteryPlugged ? bar.colCharging : bar.batteryPercent < 10 ? bar.colBad : bar.batteryPercent < 20 ? bar.colWarn : bar.colGood
+          color: bar.batteryPlugged ? Theme.charging : bar.batteryPercent < 10 ? Theme.bad : bar.batteryPercent < 20 ? Theme.warn : Theme.good
         },
         bar.profileSegment]
     }

@@ -1,6 +1,7 @@
 import Quickshell
 import Quickshell.Io
 import QtQuick
+import qs.theme
 
 Rectangle {
   id: root
@@ -8,10 +9,10 @@ Rectangle {
   property string output: ""
   property var all: []
 
-  implicitWidth: view.contentWidth + 20
-  implicitHeight: 30
+  implicitWidth: view.contentWidth + Theme.pillPadding * 2
+  implicitHeight: Theme.pillHeight
   radius: height / 2
-  color: "#040e0d"
+  color: Theme.surface
 
   function sync() {
     const target = all.filter(w => root.output === "" || w.output === root.output).sort((a, b) => a.idx - b.idx);
@@ -108,10 +109,10 @@ Rectangle {
     id: view
     anchors.centerIn: parent
     width: contentWidth
-    height: 12
+    height: Theme.wsDot
     orientation: ListView.Horizontal
     interactive: false
-    spacing: 6
+    spacing: Theme.wsGap
     model: wsModel
 
     add: Transition {
@@ -119,7 +120,7 @@ Rectangle {
         properties: "opacity,scale"
         from: 0
         to: 1
-        duration: 250
+        duration: Theme.animMove
         easing.type: Easing.OutBack
       }
     }
@@ -127,22 +128,22 @@ Rectangle {
       NumberAnimation {
         properties: "opacity,scale"
         to: 0
-        duration: 200
+        duration: Theme.animRemove
         easing.type: Easing.InCubic
       }
     }
     displaced: Transition {
       NumberAnimation {
         properties: "x"
-        duration: 250
-        easing.type: Easing.OutCubic
+        duration: Theme.animMove
+        easing.type: Theme.easeOut
       }
     }
     move: Transition {
       NumberAnimation {
         properties: "x"
-        duration: 250
-        easing.type: Easing.OutCubic
+        duration: Theme.animMove
+        easing.type: Theme.easeOut
       }
     }
 
@@ -153,20 +154,20 @@ Rectangle {
       required property bool urgent
       required property bool occupied
 
-      width: active ? 28 : 12
-      height: 12
+      width: active ? Theme.wsDotActive : Theme.wsDot
+      height: Theme.wsDot
       radius: height / 2
-      color: urgent ? "#ff9e64" : active ? "#ff6b6b" : occupied ? "#8a7d6b" : "#2a3634"
+      color: urgent ? Theme.wsUrgent : active ? Theme.wsActive : occupied ? Theme.wsOccupied : Theme.wsEmpty
 
       Behavior on width {
         NumberAnimation {
-          duration: 250
-          easing.type: Easing.OutCubic
+          duration: Theme.animMove
+          easing.type: Theme.easeOut
         }
       }
       Behavior on color {
         ColorAnimation {
-          duration: 200
+          duration: Theme.animColor
         }
       }
 
