@@ -6,6 +6,7 @@ vim.pack.add({
 	{ src = github .. "ibhagwan/fzf-lua" },
 	{ src = github .. "christoomey/vim-tmux-navigator" },
 	{ src = github .. "3rd/image.nvim" },
+	{ src = github .. "brenoprata10/nvim-highlight-colors" },
 
 	{ src = github .. "neovim/nvim-lspconfig" },
 	{ src = github .. "mason-org/mason.nvim" },
