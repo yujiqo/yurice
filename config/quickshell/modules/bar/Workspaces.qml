@@ -1,13 +1,11 @@
-import Quickshell
-import Quickshell.Io
 import QtQuick
 import qs.theme
+import qs.services
 
 Rectangle {
   id: root
 
   property string output: ""
-  property var all: []
 
   implicitWidth: view.contentWidth + Theme.pillPadding * 2
   implicitHeight: Theme.pillHeight
@@ -22,12 +20,8 @@ Rectangle {
     return -1;
   }
 
-  function patchWs(wsId, fields) {
-    return all.map(w => w.id === wsId ? Object.assign({}, w, fields) : w);
-  }
-
   function sync() {
-    const target = all.filter(w => root.output === "" || w.output === root.output).sort((a, b) => a.idx - b.idx);
+    const target = Niri.workspaces.filter(w => root.output === "" || w.output === root.output).sort((a, b) => a.idx - b.idx);
     const ids = target.map(w => w.id);
 
     for (let i = wsModel.count - 1; i >= 0; i--) {
@@ -54,61 +48,19 @@ Rectangle {
     });
   }
 
-  function handleEvent(event) {
-    if (event.WorkspacesChanged) {
-      all = event.WorkspacesChanged.workspaces;
-    } else if (event.WorkspaceActivated) {
-      const {
-        id,
-        focused
-      } = event.WorkspaceActivated;
-      const target = all.find(w => w.id === id);
-      if (!target)
-        return;
-      all = all.map(w => Object.assign({}, w, {
-          is_active: w.output === target.output ? w.id === id : w.is_active,
-          is_focused: focused ? w.id === id : w.is_focused
-        }));
-    } else if (event.WorkspaceActiveWindowChanged) {
-      const {
-        workspace_id,
-        active_window_id
-      } = event.WorkspaceActiveWindowChanged;
-      all = patchWs(workspace_id, {
-        active_window_id
-      });
-    } else if (event.WorkspaceUrgencyChanged) {
-      const {
-        id,
-        urgent
-      } = event.WorkspaceUrgencyChanged;
-      all = patchWs(id, {
-        is_urgent: urgent
-      });
-    } else {
-      return;
+  onOutputChanged: sync()
+
+  Connections {
+    target: Niri
+    function onWorkspacesChanged() {
+      root.sync();
     }
-    sync();
   }
 
-  onOutputChanged: sync()
+  Component.onCompleted: sync()
 
   ListModel {
     id: wsModel
-  }
-
-  Process {
-    command: ["niri", "msg", "--json", "event-stream"]
-    running: true
-    stdout: SplitParser {
-      onRead: line => {
-        try {
-          root.handleEvent(JSON.parse(line));
-        } catch (e) {
-          console.warn("Workspaces: bad event line:", line);
-        }
-      }
-    }
   }
 
   ListView {
@@ -180,12 +132,12 @@ Rectangle {
       MouseArea {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
-        onClicked: Quickshell.execDetached(["niri", "msg", "action", "focus-workspace", String(dot.idx)])
+        onClicked: Niri.focusWorkspace(dot.idx)
       }
     }
   }
 
   WheelHandler {
-    onWheel: event => Quickshell.execDetached(["niri", "msg", "action", event.angleDelta.y > 0 ? "focus-workspace-up" : "focus-workspace-down"])
+    onWheel: event => Niri.focusWorkspaceRelative(event.angleDelta.y > 0)
   }
 }
