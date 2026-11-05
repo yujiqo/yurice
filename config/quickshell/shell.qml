@@ -4,43 +4,52 @@ import QtQuick.Layouts
 import qs.theme
 import qs.modules.bar
 
-PanelWindow {
-  id: bar
+ShellRoot {
+  Variants {
+    model: Quickshell.screens
 
-  anchors {
-    top: true
-    left: true
-    right: true
-  }
-  implicitHeight: Theme.barHeight
-  margins.top: Theme.barMarginTop
-  color: "transparent"
+    PanelWindow {
+      id: bar
 
-  RowLayout {
-    anchors.left: parent.left
-    anchors.verticalCenter: parent.verticalCenter
-    anchors.leftMargin: Theme.barMargin
-    spacing: Theme.barGap
+      required property ShellScreen modelData
+      screen: modelData
 
-    ClockPill {}
-    MediaPill {}
-  }
+      anchors {
+        top: true
+        left: true
+        right: true
+      }
+      implicitHeight: Theme.barHeight
+      margins.top: Theme.barMarginTop
+      color: "transparent"
 
-  Workspaces {
-    anchors.centerIn: parent
-    output: bar.screen?.name ?? ""
-  }
+      RowLayout {
+        anchors.left: parent.left
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.leftMargin: Theme.barMargin
+        spacing: Theme.barGap
 
-  RowLayout {
-    anchors.right: parent.right
-    anchors.verticalCenter: parent.verticalCenter
-    anchors.rightMargin: Theme.barMargin
-    spacing: Theme.barGap
+        ClockPill {}
+        MediaPill {}
+      }
 
-    NetworkPill {}
-    BluetoothPill {}
-    BrightnessPill {}
-    VolumePill {}
-    BatteryPill {}
+      Workspaces {
+        anchors.centerIn: parent
+        output: bar.modelData.name
+      }
+
+      RowLayout {
+        anchors.right: parent.right
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.rightMargin: Theme.barMargin
+        spacing: Theme.barGap
+
+        NetworkPill {}
+        BluetoothPill {}
+        BrightnessPill {}
+        VolumePill {}
+        BatteryPill {}
+      }
+    }
   }
 }
