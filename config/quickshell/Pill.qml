@@ -82,7 +82,7 @@ Rectangle {
           visible: text !== ""
           color: "#f5e2c5"
           font.family: "Agave Nerd Font"
-          font.pixelSize: 16
+          font.pixelSize: 18
           elide: Text.ElideRight
           Layout.maximumWidth: root.maxLabelWidth
         }
