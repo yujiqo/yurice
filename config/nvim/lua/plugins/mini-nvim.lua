@@ -3,7 +3,12 @@ require("mini.surround").setup()
 require("mini.indentscope").setup()
 require("mini.trailspace").setup()
 require("mini.icons").setup()
-require("mini.files").setup()
+require("mini.files").setup({
+	mappings = {
+		go_in = "L",
+		go_in_plus = "l",
+	},
+})
 require("mini.git").setup()
 require("mini.diff").setup({ view = { style = "sign" } })
 
