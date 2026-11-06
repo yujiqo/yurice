@@ -1,6 +1,7 @@
 import Quickshell
 import Quickshell.Wayland
 import QtQuick
+import QtQuick.Effects
 import qs.theme
 import qs.components
 import qs.services
@@ -15,6 +16,7 @@ PanelWindow {
   property int anchorIndex: 0
   property int selected: 0
   property int preloadIndex: -1
+  property string backdropPath: ""
 
   readonly property real progress: progressSpring.value
   readonly property real zoom: 1 + (Theme.pickerScale - 1) * progress
@@ -73,6 +75,7 @@ PanelWindow {
   function syncItems() {
     if (items.join("\n") !== Wallpapers.wallpapers.join("\n"))
       items = Wallpapers.wallpapers;
+    backdropPath = Wallpapers.current;
   }
 
   function open() {
@@ -97,6 +100,8 @@ PanelWindow {
   }
 
   function allReady() {
+    if (backdropImage.status === Image.Loading)
+      return false;
     for (let i = 0; i < tiles.count; i++) {
       const tile = tiles.itemAt(i);
       if (!tile || !tile.ready)
@@ -270,6 +275,11 @@ PanelWindow {
         root.syncItems();
     }
 
+    function onCurrentChanged() {
+      if (root.phase === "closed")
+        root.syncItems();
+    }
+
     function onPickerOpenChanged() {
       if (Wallpapers.pickerOpen)
         root.open();
@@ -286,9 +296,40 @@ PanelWindow {
     focus: true
     Keys.onPressed: event => root.handleKey(event)
 
-    Rectangle {
+    Item {
+      id: backdrop
+
       anchors.fill: parent
-      color: Theme.surface
+
+      Image {
+        id: backdropImage
+        width: root.tileW * Theme.pickerBlurScale
+        height: root.tileH * Theme.pickerBlurScale
+        fillMode: Image.PreserveAspectCrop
+        asynchronous: true
+        source: Utility.fileUrl(root.backdropPath)
+        sourceSize: Qt.size(width, height)
+        visible: false
+        onStatusChanged: Qt.callLater(root.tryStart, false)
+      }
+
+      MultiEffect {
+        width: backdropImage.width
+        height: backdropImage.height
+        transformOrigin: Item.TopLeft
+        scale: 1 / Theme.pickerBlurScale
+        source: backdropImage
+        autoPaddingEnabled: false
+        blurEnabled: true
+        blur: 1.0
+        blurMax: Theme.pickerBlurMax
+      }
+
+      Rectangle {
+        anchors.fill: parent
+        color: Theme.surface
+        opacity: Theme.pickerDim
+      }
     }
 
     Item {
@@ -338,7 +379,7 @@ PanelWindow {
             mipmap: true
             source: Utility.fileUrl(tile.modelData)
             sourceSize: root.thumbSize
-            visible: !full.visible
+            visible: false
           }
 
           Image {
@@ -348,21 +389,32 @@ PanelWindow {
             asynchronous: true
             source: tile.needsFull ? Utility.fileUrl(tile.modelData) : ""
             sourceSize: Qt.size(root.tileW * root.dpr, root.tileH * root.dpr)
-            visible: status === Image.Ready
+            visible: false
           }
 
-          Rectangle {
-            readonly property real band: 2 / root.zoom
+          ShaderEffect {
+            readonly property Image image: full.status === Image.Ready ? full : thumb
+            property Image source: image
+            property size size: Qt.size(width, height)
+            property real radius: tile.radius
+            property vector4d uvRect: {
+              const iw = image.implicitWidth;
+              const ih = image.implicitHeight;
+              if (iw <= 0 || ih <= 0 || width <= 0 || height <= 0)
+                return Qt.vector4d(0, 0, 1, 1);
+              const tileAspect = width / height;
+              const imageAspect = iw / ih;
+              if (imageAspect > tileAspect) {
+                const sx = tileAspect / imageAspect;
+                return Qt.vector4d((1 - sx) / 2, 0, sx, 1);
+              }
+              const sy = imageAspect / tileAspect;
+              return Qt.vector4d(0, (1 - sy) / 2, 1, sy);
+            }
 
-            x: -band
-            y: -band
-            width: tile.width + 2 * band
-            height: tile.height + 2 * band
-            color: "transparent"
-            border.color: Theme.surface
-            border.width: band
-            radius: tile.radius + band
-            visible: tile.radius > 0
+            anchors.fill: parent
+            visible: image.status === Image.Ready
+            fragmentShader: Qt.resolvedUrl("../../shaders/roundedimage.frag.qsb")
           }
 
           Rectangle {

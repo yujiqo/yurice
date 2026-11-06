@@ -70,5 +70,8 @@ Singleton {
   readonly property real pickerRevealWidth: 0.35
   readonly property real pickerFadeOutAt: 0.03
   readonly property real pickerThumbOversample: 1.0
+  readonly property real pickerBlurMax: 48
+  readonly property real pickerBlurScale: 0.25
+  readonly property real pickerDim: 0.45
   readonly property int easeOut: Easing.OutCubic
 }
