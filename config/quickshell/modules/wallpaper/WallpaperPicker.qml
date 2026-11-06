@@ -15,10 +15,9 @@ PanelWindow {
   property int originIndex: 0
   property int anchorIndex: 0
   property int selected: 0
-  property real zoom: 1
-  property real focusX: 0
-  property real focusY: 0
 
+  readonly property real progress: progressSpring.value
+  readonly property real zoom: 1 + (Theme.pickerScale - 1) * progress
   readonly property bool interactive: phase === "opening" || phase === "open"
   readonly property real tileW: targetScreen?.width ?? 1920
   readonly property real tileH: targetScreen?.height ?? 1080
@@ -26,9 +25,18 @@ PanelWindow {
   readonly property real gap: Theme.pickerGap / Theme.pickerScale
   readonly property int cols: Math.max(1, Math.ceil(Math.sqrt(items.length)))
   readonly property real cornerRadius: Theme.pickerRadius * (1 - zoom) / (1 - Theme.pickerScale) / zoom
+  readonly property size thumbSize: {
+    let w = 0;
+    let h = 0;
+    for (const s of Quickshell.screens) {
+      w = Math.max(w, s.width * s.devicePixelRatio);
+      h = Math.max(h, s.height * s.devicePixelRatio);
+    }
+    return Qt.size(w * Theme.pickerScale * 1.5, h * Theme.pickerScale * 1.5);
+  }
 
   screen: targetScreen
-  visible: phase !== "closed"
+  visible: phase !== "closed" && phase !== "loading"
   anchors {
     top: true
     bottom: true
@@ -49,50 +57,67 @@ PanelWindow {
     return Math.floor(i / cols);
   }
 
-  function focusOn(i) {
-    focusX = col(i) * (tileW + gap) + tileW / 2;
-    focusY = row(i) * (tileH + gap) + tileH / 2;
+  function focusOn(i, animate) {
+    const x = col(i) * (tileW + gap) + tileW / 2;
+    const y = row(i) * (tileH + gap) + tileH / 2;
+    if (animate) {
+      focusXSpring.target = x;
+      focusYSpring.target = y;
+    } else {
+      focusXSpring.jump(x);
+      focusYSpring.jump(y);
+    }
+  }
+
+  function syncItems() {
+    if (items.join("\n") !== Wallpapers.wallpapers.join("\n"))
+      items = Wallpapers.wallpapers;
   }
 
   function open() {
-    const list = Wallpapers.wallpapers;
-    if (phase !== "closed" || list.length === 0) {
-      if (phase === "closed")
-        Wallpapers.pickerOpen = false;
+    if (phase !== "closed")
+      return;
+    syncItems();
+    if (items.length === 0) {
+      Wallpapers.pickerOpen = false;
       return;
     }
     targetScreen = Quickshell.screens.find(s => s.name === Niri.focusedOutput) ?? Quickshell.screens[0];
-    originIndex = Math.max(0, list.indexOf(Wallpapers.current));
+    originIndex = Math.max(0, items.indexOf(Wallpapers.current));
     anchorIndex = originIndex;
     selected = originIndex;
-    items = list;
-    zoom = 1;
+    progressSpring.jump(0);
     content.opacity = 0;
-    focusOn(originIndex);
-    phase = "opening";
-    content.forceActiveFocus();
-    openAnim.start();
+    focusOn(originIndex, false);
+    phase = "loading";
+    loadTimeout.restart();
+    tryStart(false);
   }
 
-  function reveal(show) {
+  function allReady() {
     for (let i = 0; i < tiles.count; i++) {
       const tile = tiles.itemAt(i);
-      if (!tile)
-        continue;
-      if (i === anchorIndex) {
-        tile.fadeTo(1, 0);
-        continue;
-      }
-      const dist = Math.abs(col(i) - col(anchorIndex)) + Math.abs(row(i) - row(anchorIndex));
-      tile.fadeTo(show ? 1 : 0, show ? dist * Theme.animPickerStagger : 0);
+      if (!tile || !tile.ready)
+        return false;
     }
+    return true;
+  }
+
+  function tryStart(force) {
+    if (phase !== "loading" || (!force && !allReady()))
+      return;
+    loadTimeout.stop();
+    phase = "opening";
+    content.forceActiveFocus();
+    fadeIn.start();
+    progressSpring.target = 1;
   }
 
   function select(i) {
     if (i < 0 || i >= items.length)
       return;
     selected = i;
-    focusOn(i);
+    focusOn(i, true);
   }
 
   function move(dx, dy) {
@@ -109,6 +134,12 @@ PanelWindow {
   }
 
   function cancel() {
+    if (phase === "loading") {
+      loadTimeout.stop();
+      phase = "closed";
+      Wallpapers.pickerOpen = false;
+      return;
+    }
     if (!interactive)
       return;
     select(originIndex);
@@ -116,20 +147,25 @@ PanelWindow {
   }
 
   function close(index) {
-    openAnim.stop();
     phase = "closing";
     Wallpapers.pickerOpen = false;
     anchorIndex = index;
     if (index !== originIndex)
       Wallpapers.set(items[index]);
-    reveal(false);
-    closeAnim.start();
+    progressSpring.target = 0;
+  }
+
+  function maybeFadeOut() {
+    if (phase !== "closing" || fadeOut.running || progress > Theme.pickerFadeOutAt)
+      return;
+    fadeIn.stop();
+    fadeOut.start();
   }
 
   function finishClose() {
     phase = "closed";
-    items = [];
-    zoom = 1;
+    progressSpring.jump(0);
+    syncItems();
     Wallpapers.pickerOpen = false;
   }
 
@@ -166,77 +202,66 @@ PanelWindow {
     event.accepted = true;
   }
 
-  Behavior on focusX {
-    enabled: root.phase !== "closed"
-    NumberAnimation {
-      duration: Theme.animMove
-      easing.type: Theme.easeOut
+  Component.onCompleted: syncItems()
+
+  Spring {
+    id: progressSpring
+    onValueChanged: root.maybeFadeOut()
+    onSettled: {
+      if (root.phase === "opening" && target === 1)
+        root.phase = "open";
+      root.maybeFadeOut();
     }
   }
 
-  Behavior on focusY {
-    enabled: root.phase !== "closed"
-    NumberAnimation {
-      duration: Theme.animMove
-      easing.type: Theme.easeOut
-    }
+  Spring {
+    id: focusXSpring
+    epsilon: 0.01
+  }
+
+  Spring {
+    id: focusYSpring
+    epsilon: 0.01
+  }
+
+  Timer {
+    id: loadTimeout
+    interval: 1000
+    onTriggered: root.tryStart(true)
+  }
+
+  NumberAnimation {
+    id: fadeIn
+    target: content
+    property: "opacity"
+    to: 1
+    duration: Theme.animPickerFade
+    easing.type: Theme.easeOut
+  }
+
+  NumberAnimation {
+    id: fadeOut
+    target: content
+    property: "opacity"
+    to: 0
+    duration: Theme.animPickerFade
+    easing.type: Theme.easeOut
+    onFinished: root.finishClose()
   }
 
   Connections {
     target: Wallpapers
+
+    function onWallpapersChanged() {
+      if (root.phase === "closed")
+        root.syncItems();
+    }
 
     function onPickerOpenChanged() {
       if (Wallpapers.pickerOpen)
         root.open();
       else
         root.cancel();
-    }
-  }
-
-  SequentialAnimation {
-    id: openAnim
-
-    NumberAnimation {
-      target: content
-      property: "opacity"
-      to: 1
-      duration: Theme.animPickerFade
-      easing.type: Theme.easeOut
-    }
-    ScriptAction {
-      script: root.reveal(true)
-    }
-    NumberAnimation {
-      target: root
-      property: "zoom"
-      to: Theme.pickerScale
-      duration: Theme.animPickerZoom
-      easing.type: Easing.InOutCubic
-    }
-    ScriptAction {
-      script: root.phase = "open"
-    }
-  }
-
-  SequentialAnimation {
-    id: closeAnim
-
-    NumberAnimation {
-      target: root
-      property: "zoom"
-      to: 1
-      duration: Theme.animPickerZoom
-      easing.type: Easing.InOutCubic
-    }
-    NumberAnimation {
-      target: content
-      property: "opacity"
-      to: 0
-      duration: Theme.animPickerFade
-      easing.type: Theme.easeOut
-    }
-    ScriptAction {
-      script: root.finishClose()
     }
   }
 
@@ -258,8 +283,8 @@ PanelWindow {
 
       transformOrigin: Item.TopLeft
       scale: root.zoom
-      x: content.width / 2 - root.focusX * root.zoom
-      y: content.height / 2 - root.focusY * root.zoom
+      x: content.width / 2 - focusXSpring.value * root.zoom
+      y: content.height / 2 - focusYSpring.value * root.zoom
 
       Repeater {
         id: tiles
@@ -273,7 +298,11 @@ PanelWindow {
           required property int index
 
           readonly property bool isSelected: index === root.selected
-          readonly property bool needsFull: isSelected || index === root.anchorIndex
+          readonly property bool isAnchor: index === root.anchorIndex
+          readonly property bool needsFull: root.phase !== "closed" && (isSelected || isAnchor)
+          readonly property bool ready: done(thumb) && (!isAnchor || done(full))
+          readonly property int distance: Math.abs(root.col(index) - root.col(root.anchorIndex)) + Math.abs(root.row(index) - root.row(root.anchorIndex))
+          readonly property real revealAt: Math.min(distance * Theme.pickerStagger, 1 - Theme.pickerRevealWidth)
 
           x: root.col(index) * (root.tileW + root.gap)
           y: root.row(index) * (root.tileH + root.gap)
@@ -281,41 +310,26 @@ PanelWindow {
           height: root.tileH
           radius: root.cornerRadius
           color: Theme.surface
-          opacity: 0
+          opacity: isAnchor ? 1 : Math.max(0, Math.min(1, (root.progress - revealAt) / Theme.pickerRevealWidth))
 
-          Component.onCompleted: opacity = index === root.anchorIndex ? 1 : 0
+          onReadyChanged: Qt.callLater(root.tryStart, false)
 
-          function fadeTo(value, delay) {
-            fadeAnim.stop();
-            fadeDelay.duration = delay;
-            fadeOpacity.to = value;
-            fadeAnim.start();
-          }
-
-          SequentialAnimation {
-            id: fadeAnim
-
-            PauseAnimation {
-              id: fadeDelay
-            }
-            NumberAnimation {
-              id: fadeOpacity
-              target: tile
-              property: "opacity"
-              duration: Theme.animPickerReveal
-              easing.type: Theme.easeOut
-            }
+          function done(img) {
+            return img.status === Image.Ready || img.status === Image.Error;
           }
 
           Image {
+            id: thumb
             anchors.fill: parent
             fillMode: Image.PreserveAspectCrop
             asynchronous: true
+            mipmap: true
             source: Utility.fileUrl(tile.modelData)
-            sourceSize: Qt.size(root.tileW * root.dpr * Theme.pickerScale * 1.5, root.tileH * root.dpr * Theme.pickerScale * 1.5)
+            sourceSize: root.thumbSize
           }
 
           Image {
+            id: full
             anchors.fill: parent
             fillMode: Image.PreserveAspectCrop
             asynchronous: true
@@ -330,7 +344,7 @@ PanelWindow {
             radius: tile.radius
             border.width: Theme.pickerBorder / root.zoom
             border.color: Theme.text
-            opacity: tile.isSelected && root.phase === "open" ? 1 : 0
+            opacity: tile.isSelected && root.interactive && root.progress > 0.9 ? 1 : 0
 
             Behavior on opacity {
               NumberAnimation {

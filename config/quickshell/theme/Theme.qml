@@ -60,10 +60,14 @@ Singleton {
   readonly property int animColor: 200
   readonly property int animRemove: 200
   readonly property int animMove: 250
-  readonly property int animWallpaper: 600
+  readonly property int animWallpaper: 800
   readonly property int animPickerFade: 200
-  readonly property int animPickerZoom: 350
-  readonly property int animPickerReveal: 250
-  readonly property int animPickerStagger: 40
+  readonly property real animSlowdown: 1.7
+  readonly property real springStiffness: 800
+  readonly property real springDamping: 1.0
+  readonly property real springEpsilon: 0.0001
+  readonly property real pickerStagger: 0.06
+  readonly property real pickerRevealWidth: 0.35
+  readonly property real pickerFadeOutAt: 0.03
   readonly property int easeOut: Easing.OutCubic
 }
