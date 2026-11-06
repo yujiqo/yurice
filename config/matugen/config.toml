@@ -22,3 +22,8 @@ output_path = "~/.cache/yurice/colors.json"
 input_path = "templates/kitty.conf"
 output_path = "~/.cache/yurice/kitty-colors.conf"
 post_hook = "pkill -USR1 kitty || true"
+
+[templates.niri]
+input_path = "templates/niri.kdl"
+output_path = "~/.cache/yurice/niri-colors.kdl"
+post_hook = "niri msg action load-config-file || true"
