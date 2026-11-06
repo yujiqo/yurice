@@ -67,6 +67,12 @@ output "DP-3" {
   }
 }
 
+overview {
+  workspace-shadow {
+    off
+  }
+}
+
 layout {
   gaps 10
   background-color "transparent"
