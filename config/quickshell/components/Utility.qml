@@ -17,4 +17,10 @@ Singleton {
     }
     return fallback;
   }
+
+  function fileUrl(path) {
+    if (!path)
+      return "";
+    return "file://" + path.split("/").map(encodeURIComponent).join("/");
+  }
 }

@@ -56,5 +56,6 @@ Singleton {
   readonly property int animColor: 200
   readonly property int animRemove: 200
   readonly property int animMove: 250
+  readonly property int animWallpaper: 600
   readonly property int easeOut: Easing.OutCubic
 }
