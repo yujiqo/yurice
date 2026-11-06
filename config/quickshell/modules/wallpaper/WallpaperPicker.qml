@@ -1,6 +1,5 @@
 import Quickshell
 import Quickshell.Wayland
-import Quickshell.Widgets
 import QtQuick
 import qs.theme
 import qs.components
@@ -15,6 +14,7 @@ PanelWindow {
   property int originIndex: 0
   property int anchorIndex: 0
   property int selected: 0
+  property int preloadIndex: -1
 
   readonly property real progress: progressSpring.value
   readonly property real zoom: 1 + (Theme.pickerScale - 1) * progress
@@ -32,7 +32,8 @@ PanelWindow {
       w = Math.max(w, s.width * s.devicePixelRatio);
       h = Math.max(h, s.height * s.devicePixelRatio);
     }
-    return Qt.size(w * Theme.pickerScale * 1.5, h * Theme.pickerScale * 1.5);
+    const factor = Theme.pickerScale * Theme.pickerThumbOversample;
+    return Qt.size(w * factor, h * factor);
   }
 
   screen: targetScreen
@@ -86,6 +87,7 @@ PanelWindow {
     originIndex = Math.max(0, items.indexOf(Wallpapers.current));
     anchorIndex = originIndex;
     selected = originIndex;
+    preloadIndex = -1;
     progressSpring.jump(0);
     content.opacity = 0;
     focusOn(originIndex, false);
@@ -108,6 +110,7 @@ PanelWindow {
       return;
     loadTimeout.stop();
     phase = "opening";
+    Wallpapers.coveredOutput = targetScreen?.name ?? "";
     content.forceActiveFocus();
     fadeIn.start();
     progressSpring.target = 1;
@@ -118,6 +121,7 @@ PanelWindow {
       return;
     selected = i;
     focusOn(i, true);
+    fullPreload.restart();
   }
 
   function move(dx, dy) {
@@ -164,6 +168,9 @@ PanelWindow {
 
   function finishClose() {
     phase = "closed";
+    fullPreload.stop();
+    preloadIndex = -1;
+    Wallpapers.coveredOutput = "";
     progressSpring.jump(0);
     syncItems();
     Wallpapers.pickerOpen = false;
@@ -230,6 +237,12 @@ PanelWindow {
     onTriggered: root.tryStart(true)
   }
 
+  Timer {
+    id: fullPreload
+    interval: 200
+    onTriggered: root.preloadIndex = root.selected
+  }
+
   NumberAnimation {
     id: fadeIn
     target: content
@@ -291,15 +304,16 @@ PanelWindow {
 
         model: root.items
 
-        delegate: ClippingRectangle {
+        delegate: Item {
           id: tile
 
           required property string modelData
           required property int index
 
+          readonly property real radius: root.cornerRadius
           readonly property bool isSelected: index === root.selected
           readonly property bool isAnchor: index === root.anchorIndex
-          readonly property bool needsFull: root.phase !== "closed" && (isSelected || isAnchor)
+          readonly property bool needsFull: root.phase !== "closed" && (isAnchor || index === root.preloadIndex)
           readonly property bool ready: done(thumb) && (!isAnchor || done(full))
           readonly property int distance: Math.abs(root.col(index) - root.col(root.anchorIndex)) + Math.abs(root.row(index) - root.row(root.anchorIndex))
           readonly property real revealAt: Math.min(distance * Theme.pickerStagger, 1 - Theme.pickerRevealWidth)
@@ -308,8 +322,6 @@ PanelWindow {
           y: root.row(index) * (root.tileH + root.gap)
           width: root.tileW
           height: root.tileH
-          radius: root.cornerRadius
-          color: Theme.surface
           opacity: isAnchor ? 1 : Math.max(0, Math.min(1, (root.progress - revealAt) / Theme.pickerRevealWidth))
 
           onReadyChanged: Qt.callLater(root.tryStart, false)
@@ -326,6 +338,7 @@ PanelWindow {
             mipmap: true
             source: Utility.fileUrl(tile.modelData)
             sourceSize: root.thumbSize
+            visible: !full.visible
           }
 
           Image {
@@ -336,6 +349,20 @@ PanelWindow {
             source: tile.needsFull ? Utility.fileUrl(tile.modelData) : ""
             sourceSize: Qt.size(root.tileW * root.dpr, root.tileH * root.dpr)
             visible: status === Image.Ready
+          }
+
+          Rectangle {
+            readonly property real band: 2 / root.zoom
+
+            x: -band
+            y: -band
+            width: tile.width + 2 * band
+            height: tile.height + 2 * band
+            color: "transparent"
+            border.color: Theme.surface
+            border.width: band
+            radius: tile.radius + band
+            visible: tile.radius > 0
           }
 
           Rectangle {

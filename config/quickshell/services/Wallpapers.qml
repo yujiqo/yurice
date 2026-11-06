@@ -15,6 +15,7 @@ Singleton {
   readonly property string current: state.path || (wallpapers.length > 0 ? wallpapers[0] : "")
 
   property bool pickerOpen: false
+  property string coveredOutput: ""
 
   function expand(path) {
     return path.startsWith("~/") ? home + path.slice(1) : path;

@@ -47,6 +47,10 @@ PanelWindow {
       return;
     back.z = 1;
     front.z = 0;
+    if (modelData.name === Wallpapers.coveredOutput) {
+      swap();
+      return;
+    }
     fade.target = back;
     fade.start();
   }
