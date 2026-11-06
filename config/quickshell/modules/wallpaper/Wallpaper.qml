@@ -77,7 +77,7 @@ PanelWindow {
     fillMode: Image.PreserveAspectCrop
     sourceSize: root.imageSize
     asynchronous: true
-    cache: false
+    cache: true
     smooth: true
     onStatusChanged: root.startFade(this)
   }

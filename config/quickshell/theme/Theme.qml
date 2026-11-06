@@ -42,6 +42,10 @@ Singleton {
   readonly property int wsDot: 12
   readonly property int wsDotActive: 28
   readonly property int wsGap: 6
+  readonly property real pickerScale: 0.3
+  readonly property int pickerGap: 24
+  readonly property int pickerRadius: 14
+  readonly property int pickerBorder: 3
 
   // --- Fonts ---
   readonly property string iconFont: "Material Symbols Sharp"
@@ -57,5 +61,9 @@ Singleton {
   readonly property int animRemove: 200
   readonly property int animMove: 250
   readonly property int animWallpaper: 600
+  readonly property int animPickerFade: 200
+  readonly property int animPickerZoom: 350
+  readonly property int animPickerReveal: 250
+  readonly property int animPickerStagger: 40
   readonly property int easeOut: Easing.OutCubic
 }
