@@ -7,6 +7,7 @@ Singleton {
   id: root
 
   property var workspaces: []
+  readonly property string focusedOutput: workspaces.find(w => w.is_focused)?.output ?? ""
 
   function _onOutput(output, action) {
     if (output === "") {
