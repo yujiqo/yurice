@@ -15,7 +15,7 @@ vim.pack.add({
 	{ src = github .. "saghen/blink.cmp" },
 })
 
-require("plugins/rose-pine")
+require("plugins/colorscheme")
 require("plugins/nvim-highlight-colors")
 require("plugins/mini-nvim")
 require("plugins/image-nvim")

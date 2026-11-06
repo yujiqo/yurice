@@ -1,0 +1,18 @@
+return {
+	base00 = "{{colors.surface.default.hex}}",
+	base01 = "{{colors.surface_container.default.hex}}",
+	base02 = "{{colors.surface_container_highest.default.hex}}",
+	base03 = "{{colors.outline.default.hex}}",
+	base04 = "{{colors.on_surface_variant.default.hex}}",
+	base05 = "{{colors.on_surface.default.hex}}",
+	base06 = "{{colors.primary_fixed.default.hex}}",
+	base07 = "{{colors.tertiary_fixed.default.hex}}",
+	base08 = "{{colors.bad.default.hex}}",
+	base09 = "{{colors.warn.default.hex}}",
+	base0A = "{{colors.charging.default.hex}}",
+	base0B = "{{colors.good.default.hex}}",
+	base0C = "{{colors.balanced.default.hex}}",
+	base0D = "{{colors.primary.default.hex}}",
+	base0E = "{{colors.tertiary.default.hex}}",
+	base0F = "{{colors.music.default.hex}}",
+}
