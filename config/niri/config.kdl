@@ -136,6 +136,11 @@ animations {
   slowdown 1.7
 }
 
+layer-rule {
+  match namespace="^yurice-wallpaper$"
+  place-within-backdrop true
+}
+
 window-rule {
   geometry-corner-radius 10
   draw-border-with-background false
