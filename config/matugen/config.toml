@@ -17,3 +17,8 @@ balanced = { color = "#7fd1c7", blend = true }
 [templates.quickshell]
 input_path = "templates/quickshell.json"
 output_path = "~/.cache/yurice/colors.json"
+
+[templates.kitty]
+input_path = "templates/kitty.conf"
+output_path = "~/.cache/yurice/kitty-colors.conf"
+post_hook = "pkill -USR1 kitty || true"
