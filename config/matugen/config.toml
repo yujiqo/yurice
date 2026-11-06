@@ -1,0 +1,19 @@
+[config]
+
+[config.custom_colors]
+clock = { color = "#f5c26b", blend = true }
+music = { color = "#f78fb3", blend = true }
+wifi = { color = "#6bb8ff", blend = true }
+ethernet = { color = "#a0a8a8", blend = true }
+bluetooth = { color = "#4d8eff", blend = true }
+volume = { color = "#c792ea", blend = true }
+brightness = { color = "#ffcb6b", blend = true }
+good = { color = "#7bd88f", blend = true }
+charging = { color = "#f9e26b", blend = true }
+warn = { color = "#ff9e64", blend = true }
+bad = { color = "#ff6b6b", blend = true }
+balanced = { color = "#7fd1c7", blend = true }
+
+[templates.quickshell]
+input_path = "templates/quickshell.json"
+output_path = "~/.cache/yurice/colors.json"

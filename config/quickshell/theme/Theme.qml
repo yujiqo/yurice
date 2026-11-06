@@ -1,34 +1,74 @@
 pragma Singleton
 import Quickshell
+import Quickshell.Io
 import QtQuick
 
 Singleton {
+  id: root
+
+  readonly property string paletteFile: Quickshell.env("HOME") + "/.cache/yurice/colors.json"
+
+  function reloadPalette() {
+    paletteView.reload();
+  }
+
   // --- Accent palette ---
-  readonly property color clock: "#f5c26b"
-  readonly property color music: "#f78fb3"
-  readonly property color wifi: "#6bb8ff"
-  readonly property color ethernet: "#a0a8a8"
-  readonly property color bluetooth: "#4d8eff"
-  readonly property color off: "#5c6664"
-  readonly property color volume: "#c792ea"
-  readonly property color brightness: "#ffcb6b"
-  readonly property color good: "#7bd88f"
-  readonly property color charging: "#f9e26b"
-  readonly property color warn: "#ff9e64"
-  readonly property color bad: "#ff6b6b"
-  readonly property color balanced: "#7fd1c7"
+  readonly property color clock: palette.clock || "#f5c26b"
+  readonly property color music: palette.music || "#f78fb3"
+  readonly property color wifi: palette.wifi || "#6bb8ff"
+  readonly property color ethernet: palette.ethernet || "#a0a8a8"
+  readonly property color bluetooth: palette.bluetooth || "#4d8eff"
+  readonly property color off: palette.outline || "#5c6664"
+  readonly property color volume: palette.volume || "#c792ea"
+  readonly property color brightness: palette.brightness || "#ffcb6b"
+  readonly property color good: palette.good || "#7bd88f"
+  readonly property color charging: palette.charging || "#f9e26b"
+  readonly property color warn: palette.warn || "#ff9e64"
+  readonly property color bad: palette.bad || "#ff6b6b"
+  readonly property color balanced: palette.balanced || "#7fd1c7"
 
   // --- Surfaces / text ---
-  readonly property color surface: "#040e0d"
-  readonly property color surfaceHover: "#0d1f1d"
-  readonly property color divider: "#3a4a48"
-  readonly property color text: "#f5e2c5"
+  readonly property color surface: palette.surface || "#040e0d"
+  readonly property color surfaceHover: palette.surfaceContainerHigh || "#0d1f1d"
+  readonly property color divider: palette.outlineVariant || "#3a4a48"
+  readonly property color text: palette.onSurface || "#f5e2c5"
 
   // --- Workspace dots ---
   readonly property color wsActive: bad
   readonly property color wsUrgent: warn
-  readonly property color wsOccupied: "#8a7d6b"
-  readonly property color wsEmpty: "#2a3634"
+  readonly property color wsOccupied: palette.outline || "#8a7d6b"
+  readonly property color wsEmpty: palette.surfaceContainerHighest || "#2a3634"
+
+  FileView {
+    id: paletteView
+    path: root.paletteFile
+    watchChanges: true
+    printErrors: false
+    onFileChanged: reload()
+
+    JsonAdapter {
+      id: palette
+      property string clock
+      property string music
+      property string wifi
+      property string ethernet
+      property string bluetooth
+      property string volume
+      property string brightness
+      property string good
+      property string charging
+      property string warn
+      property string bad
+      property string balanced
+      property string surface
+      property string surfaceContainer
+      property string surfaceContainerHigh
+      property string surfaceContainerHighest
+      property string onSurface
+      property string outline
+      property string outlineVariant
+    }
+  }
 
   // --- Metrics ---
   readonly property int barHeight: 30
