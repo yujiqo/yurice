@@ -16,6 +16,10 @@ if status is-interactive
   abbr -a darwin-switch "sudo darwin-rebuild switch --flake"
 end
 
+function files
+    setsid -f nautilus $argv[1] (or echo .) &>/dev/null
+end
+
 function fish_greeting; end
 
 # path for uv tools
