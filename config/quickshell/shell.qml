@@ -3,8 +3,17 @@ import QtQuick
 import QtQuick.Layouts
 import qs.theme
 import qs.modules.bar
+import qs.modules.wallpaper
 
 ShellRoot {
+  Variants {
+    model: Quickshell.screens
+
+    Wallpaper {}
+  }
+
+  WallpaperPicker {}
+
   Variants {
     model: Quickshell.screens
 

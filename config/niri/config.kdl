@@ -69,6 +69,7 @@ output "DP-3" {
 
 layout {
   gaps 10
+  background-color "transparent"
 
   center-focused-column "never"
   always-center-single-column
@@ -162,6 +163,7 @@ window-rule {
 }
 
 binds {
+  Mod+W { spawn "qs" "ipc" "call" "wallpaper" "toggle"; }
   Mod+Shift+Slash { show-hotkey-overlay; }
 
   Mod+T hotkey-overlay-title="Open a Terminal: kitty" { spawn "kitty"; }
