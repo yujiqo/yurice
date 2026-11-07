@@ -11,6 +11,7 @@ Rectangle {
   property string title: ""
   property string subtitle: ""
   property bool active: false
+  property Component leading: null
   default property alias trailing: trailingRow.data
 
   signal clicked
@@ -33,18 +34,30 @@ Rectangle {
     onClicked: root.clicked()
   }
 
-  Icon {
-    id: iconText
+  Item {
+    id: lead
     anchors.left: parent.left
     anchors.leftMargin: 12
     anchors.verticalCenter: parent.verticalCenter
-    text: root.icon
-    color: root.active ? root.onActive : root.iconColor
-    size: Theme.menuIconSize
+    width: root.leading ? leadLoader.width : iconText.implicitWidth
+    height: root.leading ? leadLoader.height : iconText.implicitHeight
+
+    Icon {
+      id: iconText
+      visible: !root.leading
+      text: root.icon
+      color: root.active ? root.onActive : root.iconColor
+      size: Theme.menuIconSize
+    }
+
+    Loader {
+      id: leadLoader
+      sourceComponent: root.leading
+    }
   }
 
   Column {
-    anchors.left: iconText.right
+    anchors.left: lead.right
     anchors.leftMargin: 12
     anchors.right: trailingRow.left
     anchors.rightMargin: 8

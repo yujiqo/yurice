@@ -7,6 +7,8 @@ Item {
   property real value: 0
   property color accent: Theme.primary
   property real step: 0.05
+  property bool interactive: true
+  property real trackHeight: 14
   readonly property bool pressed: mouse.pressed
   property real dragValue: 0
   readonly property real shown: Math.max(0, Math.min(1, pressed ? dragValue : value))
@@ -15,7 +17,6 @@ Item {
 
   readonly property real handleWidth: 4
   readonly property real handleGap: 4
-  readonly property real trackHeight: 14
   readonly property real handleX: shown * (width - handleWidth)
 
   implicitWidth: 200
@@ -67,6 +68,7 @@ Item {
   MouseArea {
     id: mouse
     anchors.fill: parent
+    enabled: root.interactive
     cursorShape: Qt.PointingHandCursor
     preventStealing: true
     onPressed: event => root.emitAt(event.x)
@@ -74,6 +76,7 @@ Item {
   }
 
   WheelHandler {
+    enabled: root.interactive
     onWheel: event => root.moved(Math.max(0, Math.min(1, root.value + (event.angleDelta.y > 0 ? root.step : -root.step))))
   }
 }

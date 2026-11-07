@@ -26,6 +26,8 @@ Singleton {
   readonly property color warn: error
   readonly property color bad: error
   readonly property color balanced: secondary
+  readonly property color weather: primary
+  readonly property color wallpaper: secondary
 
   // --- Surfaces / text ---
   readonly property color surface: palette.surface || "#040e0d"
@@ -110,6 +112,11 @@ Singleton {
   readonly property int menuGap: 4
   readonly property int menuIconSize: 22
   readonly property int menuHeaderSize: 20
+  readonly property int mediaPanelWidth: 340
+  readonly property int searchPanelWidth: 520
+  readonly property int launcherWidth: 560
+  readonly property int discSize: 220
+  readonly property int thumbHeight: 110
   readonly property int menuTitleSize: 17
   readonly property int menuSubtitleSize: 14
   readonly property int closeGrace: 400
