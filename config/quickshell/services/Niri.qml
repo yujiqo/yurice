@@ -8,6 +8,11 @@ Singleton {
 
   property var workspaces: []
   readonly property string focusedOutput: workspaces.find(w => w.is_focused)?.output ?? ""
+  property var layoutNames: []
+  property int layoutIndex: 0
+  readonly property string layoutName: layoutNames[layoutIndex] ?? ""
+
+  signal layoutSwitched(int index)
 
   function action(body) {
     if (!ipc.connected)
@@ -81,6 +86,13 @@ Singleton {
       workspaces = patchWs(workspace_id, {
         active_window_id
       });
+    } else if (event.KeyboardLayoutsChanged) {
+      const layouts = event.KeyboardLayoutsChanged.keyboard_layouts;
+      layoutNames = layouts.names;
+      layoutIndex = layouts.current_idx;
+    } else if (event.KeyboardLayoutSwitched) {
+      layoutIndex = event.KeyboardLayoutSwitched.idx;
+      layoutSwitched(layoutIndex);
     } else if (event.WorkspaceUrgencyChanged) {
       const {
         id,

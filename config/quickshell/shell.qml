@@ -7,6 +7,8 @@ import qs.modules.bar
 import qs.modules.wallpaper
 
 ShellRoot {
+  Component.onCompleted: Keyboard.watch()
+
   Variants {
     model: Quickshell.screens
 
