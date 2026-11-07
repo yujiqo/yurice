@@ -9,7 +9,25 @@ Singleton {
 
   readonly property var liveNames: poller.value.split("\n").filter(n => n !== "")
   readonly property var players: Mpris.players.values.filter(p => liveNames.some(n => n === p.dbusName || n === "org.mpris.MediaPlayer2." + p.dbusName))
-  readonly property var active: players.find(p => p.isPlaying) ?? null
+  readonly property var playing: players.find(p => p.isPlaying) ?? null
+  property string selected: ""
+  readonly property var active: players.find(p => p.dbusName === selected) ?? playing ?? null
+
+  onPlayingChanged: {
+    if (playing)
+      selected = playing.dbusName;
+  }
+
+  function select(player) {
+    selected = player?.dbusName ?? "";
+  }
+
+  function seek(seconds) {
+    const p = active;
+    if (!p || !p.canSeek)
+      return;
+    p.position = Math.max(0, Math.min(p.length > 0 ? p.length - 1 : seconds, seconds));
+  }
 
   Poller {
     id: poller

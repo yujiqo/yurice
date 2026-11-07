@@ -7,19 +7,36 @@ Island {
   id: root
 
   readonly property var player: Media.active
-  readonly property bool playing: player !== null
+  readonly property bool present: player !== null
+  readonly property bool playing: player?.isPlaying ?? false
   readonly property int barsWidth: 14
 
+  open: current === "media"
+  panel: current === "media" ? mediaPanel : null
+  panelWidth: Theme.mediaPanelWidth
+  clickable: true
+  onClicked: request("media")
   padding: (Theme.pillHeight - barsWidth) / 2
   spacing: 0
   width: implicitWidth * Math.max(0, appear.value)
   opacity: Math.max(0, Math.min(1, appear.value))
   visible: appear.value > 0.01
 
+  onPresentChanged: {
+    if (!present && open)
+      dismissed();
+  }
+
   Spring {
     id: appear
-    target: root.playing ? 1 : 0
+    target: root.present ? 1 : 0
     Component.onCompleted: value = target
+  }
+
+  Component {
+    id: mediaPanel
+
+    MediaPanel {}
   }
 
   Item {
@@ -43,11 +60,21 @@ Island {
           width: 3
           height: 4
           radius: 1.5
-          color: Theme.music
+          color: root.playing ? Theme.music : Theme.off
+
+          Behavior on color {
+            ColorAnimation {
+              duration: Theme.animColor
+            }
+          }
 
           SequentialAnimation on height {
             running: root.playing
             loops: Animation.Infinite
+            onRunningChanged: {
+              if (!running)
+                bar.height = 4;
+            }
             NumberAnimation {
               to: root.barsWidth
               duration: bar.period
@@ -65,7 +92,7 @@ Island {
   }
 
   Reveal {
-    shown: root.expanded && root.playing
+    shown: root.expanded && root.present
     leading: Theme.pillSegmentGap
 
     Label {

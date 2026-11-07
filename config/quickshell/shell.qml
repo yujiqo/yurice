@@ -71,7 +71,11 @@ ShellRoot {
           onRequest: name => bar.request(name)
           onDismissed: bar.dropdown = ""
         }
-        MediaIsland {}
+        MediaIsland {
+          current: bar.dropdown
+          onRequest: name => bar.request(name)
+          onDismissed: bar.dropdown = ""
+        }
       }
 
       Row {
