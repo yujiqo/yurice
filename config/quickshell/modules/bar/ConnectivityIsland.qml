@@ -7,8 +7,8 @@ import qs.services
 Island {
   id: root
 
-  open: current === "wifi"
-  panel: current === "wifi" ? wifiPanel : null
+  open: current === "wifi" || current === "bluetooth"
+  panel: current === "wifi" ? wifiPanel : current === "bluetooth" ? bluetoothPanel : null
 
   readonly property var networkSegments: {
     const result = [];
@@ -53,10 +53,18 @@ Island {
     WifiPanel {}
   }
 
+  Component {
+    id: bluetoothPanel
+
+    BluetoothPanel {}
+  }
+
   Segment {
     icon: root.bluetoothSegment.icon
     label: root.bluetoothSegment.label
     color: root.bluetoothSegment.color
     showLabel: root.expanded
+    clickable: true
+    onClicked: root.request("bluetooth")
   }
 }

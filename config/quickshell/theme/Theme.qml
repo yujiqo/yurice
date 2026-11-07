@@ -108,17 +108,18 @@ Singleton {
   readonly property int pickerGap: 24
   readonly property int pickerRadius: 14
   readonly property int pickerBorder: 3
-  readonly property int panelWidth: 340
+  readonly property int panelWidth: 360
   readonly property int panelRadius: 22
   readonly property int panelPadding: 10
   readonly property int dropdownMaxHeight: 520
-  readonly property int menuListMaxHeight: 336
-  readonly property int menuItemHeight: 48
+  readonly property int menuListMaxHeight: 372
+  readonly property int menuItemHeight: 54
   readonly property int menuItemRadius: 14
   readonly property int menuGap: 4
-  readonly property int menuIconSize: 20
-  readonly property int menuTitleSize: 15
-  readonly property int menuSubtitleSize: 12
+  readonly property int menuIconSize: 22
+  readonly property int menuHeaderSize: 20
+  readonly property int menuTitleSize: 17
+  readonly property int menuSubtitleSize: 14
   readonly property int closeGrace: 400
 
   // --- Fonts ---
