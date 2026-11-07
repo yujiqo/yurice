@@ -8,7 +8,7 @@ Item {
 
   required property string kind
   readonly property bool isVolume: kind === "volume"
-  readonly property color accent: isVolume ? (Audio.muted ? Theme.off : Theme.volume) : Theme.brightness
+  readonly property color accent: isVolume && Audio.muted ? Theme.off : Theme.primary
   readonly property real value: isVolume ? Audio.volume : Brightness.percent / 100
 
   implicitHeight: 44
