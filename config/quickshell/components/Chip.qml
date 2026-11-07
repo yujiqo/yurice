@@ -16,7 +16,7 @@ Rectangle {
   implicitHeight: 32
   radius: height / 2
   opacity: available ? 1 : 0.45
-  color: flat ? "transparent" : selected ? Theme.secondaryContainer : mouse.containsMouse ? Theme.surfaceContainerHighest : Theme.surfaceContainerHigh
+  color: flat ? "transparent" : selected ? Theme.primary : mouse.containsMouse ? Theme.surfaceContainerHighest : Theme.surfaceContainerHigh
   border.width: flat || selected ? 0 : 1
   border.color: Theme.divider
   scale: mouse.pressed ? 0.95 : 1
@@ -41,7 +41,7 @@ Rectangle {
       anchors.verticalCenter: parent.verticalCenter
       visible: root.icon !== ""
       text: root.icon
-      color: root.selected ? Theme.onSecondaryContainer : Theme.textVariant
+      color: root.selected ? Theme.onPrimary : Theme.textVariant
       size: Theme.iconSize + 2
     }
 
@@ -49,7 +49,7 @@ Rectangle {
       anchors.verticalCenter: parent.verticalCenter
       visible: root.text !== ""
       text: root.text
-      color: root.selected ? Theme.onSecondaryContainer : Theme.text
+      color: root.selected ? Theme.onPrimary : Theme.text
       font.family: Theme.labelFont
       font.pixelSize: Theme.menuSubtitleSize
     }

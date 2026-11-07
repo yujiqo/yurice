@@ -32,7 +32,7 @@ Item {
     y: 4
     height: parent.height - 8
     radius: height / 2
-    color: Theme.secondaryContainer
+    color: Theme.primary
     visible: root.currentItem !== null
     x: root.currentItem ? row.x + root.currentItem.x : 4
     width: root.currentItem ? root.currentItem.width : 0

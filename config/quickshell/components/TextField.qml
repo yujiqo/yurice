@@ -9,6 +9,7 @@ Rectangle {
   property string placeholder: ""
   property string leadingIcon: ""
   property string hint: ""
+  property bool clearable: false
   default property alias trailing: trailingRow.data
 
   signal accepted(string text)
@@ -102,6 +103,18 @@ Rectangle {
       opacity: 0.7
       font.family: Theme.labelFont
       font.pixelSize: Theme.menuSubtitleSize
+    }
+
+    IconButton {
+      anchors.verticalCenter: parent.verticalCenter
+      visible: root.clearable && input.text !== ""
+      implicitWidth: 28
+      implicitHeight: 28
+      icon: "close"
+      onClicked: {
+        input.clear();
+        input.forceActiveFocus();
+      }
     }
   }
 }

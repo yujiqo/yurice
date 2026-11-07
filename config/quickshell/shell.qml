@@ -71,6 +71,11 @@ ShellRoot {
           onRequest: name => bar.request(name)
           onDismissed: bar.dropdown = ""
         }
+        WallpaperSearchIsland {
+          current: bar.dropdown
+          onRequest: name => bar.request(name)
+          onDismissed: bar.dropdown = ""
+        }
         MediaIsland {
           current: bar.dropdown
           onRequest: name => bar.request(name)
