@@ -102,7 +102,7 @@ ShellRoot {
           onRequest: name => bar.request(name)
           onDismissed: bar.dropdown = ""
         }
-        BooruIsland {
+        DanbooruIsland {
           current: bar.dropdown
           onRequest: name => bar.request(name)
           onDismissed: bar.dropdown = ""
