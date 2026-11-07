@@ -78,7 +78,7 @@ Column {
   WheelHandler {
     acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
     onWheel: event => {
-      root.wheelDelta += event.angleDelta.y;
+      root.wheelDelta += event.inverted ? event.angleDelta.y : -event.angleDelta.y;
       while (root.wheelDelta >= 120) {
         root.wheelDelta -= 120;
         root.shift(1);
