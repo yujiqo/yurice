@@ -13,8 +13,38 @@ Column {
 
   spacing: Theme.menuGap
 
-  Component.onCompleted: Network.setScanning(true)
+  property bool scanning: true
+  property int baseline: 0
+
+  function startScan() {
+    baseline = Network.networks.length;
+    scanning = true;
+    scanTimeout.restart();
+  }
+
+  Component.onCompleted: {
+    Network.setScanning(true);
+    startScan();
+  }
   Component.onDestruction: Network.setScanning(false)
+
+  Connections {
+    target: Network
+    function onNetworksChanged() {
+      if (root.scanning && Network.networks.length > root.baseline)
+        root.scanning = false;
+    }
+    function onWifiEnabledChanged() {
+      if (Network.wifiEnabled)
+        root.startScan();
+    }
+  }
+
+  Timer {
+    id: scanTimeout
+    interval: 6000
+    onTriggered: root.scanning = false
+  }
 
   Item {
     width: parent.width
@@ -34,7 +64,7 @@ Column {
       anchors.right: wifiSwitch.left
       anchors.rightMargin: 10
       anchors.verticalCenter: parent.verticalCenter
-      visible: Network.wifiEnabled && (Network.wifiDevice?.scannerEnabled ?? false) && Network.networks.length === 0
+      visible: Network.wifiEnabled && (root.scanning || Network.networks.length === 0)
     }
 
     Switch {
