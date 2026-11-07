@@ -1,0 +1,31 @@
+import QtQuick
+import qs.theme
+import qs.components
+import qs.services
+
+Island {
+  id: root
+
+  spacing: 0
+
+  Text {
+    height: Theme.pillHeight
+    verticalAlignment: Text.AlignVCenter
+    text: Qt.formatDateTime(Clock.date, "HH:mm")
+    color: Theme.text
+    font.family: Theme.labelFont
+    font.pixelSize: Theme.labelSize
+  }
+
+  Reveal {
+    shown: root.hovered
+    leading: Theme.pillSegmentGap
+
+    Text {
+      text: Qt.formatDateTime(Clock.date, "ddd dd MMM")
+      color: Theme.clock
+      font.family: Theme.labelFont
+      font.pixelSize: Theme.labelSize
+    }
+  }
+}

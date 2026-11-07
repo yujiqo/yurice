@@ -1,6 +1,5 @@
 import Quickshell
 import QtQuick
-import QtQuick.Layouts
 import qs.theme
 import qs.modules.bar
 import qs.modules.wallpaper
@@ -32,32 +31,33 @@ ShellRoot {
       margins.top: Theme.barMarginTop
       color: "transparent"
 
-      RowLayout {
-        anchors.left: parent.left
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.leftMargin: Theme.barMargin
-        spacing: Theme.barGap
-
-        ClockPill {}
-        MediaPill {}
-      }
-
       Workspaces {
-        anchors.centerIn: parent
+        id: workspaces
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: parent.top
         output: bar.modelData.name
       }
 
-      RowLayout {
-        anchors.right: parent.right
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.rightMargin: Theme.barMargin
+      Row {
+        anchors.right: workspaces.left
+        anchors.rightMargin: Theme.barGap
+        anchors.top: parent.top
+        spacing: Theme.barGap
+        layoutDirection: Qt.RightToLeft
+
+        MediaIsland {}
+      }
+
+      Row {
+        anchors.left: workspaces.right
+        anchors.leftMargin: Theme.barGap
+        anchors.top: parent.top
         spacing: Theme.barGap
 
-        NetworkPill {}
-        BluetoothPill {}
-        BrightnessPill {}
-        VolumePill {}
-        BatteryPill {}
+        TimeIsland {}
+        ConnectivityIsland {}
+        LevelsIsland {}
+        BatteryIsland {}
       }
     }
   }

@@ -3,7 +3,7 @@ import Quickshell.Services.UPower
 import qs.theme
 import qs.components
 
-Pill {
+Island {
   id: root
 
   readonly property var battery: UPower.displayDevice
@@ -11,26 +11,16 @@ Pill {
   readonly property bool plugged: battery.state === UPowerDeviceState.Charging || battery.state === UPowerDeviceState.FullyCharged || battery.state === UPowerDeviceState.PendingCharge
 
   readonly property string batteryIcon: {
-    const p = percent;
     if (plugged)
-      return Utility.pick(p, [[95, "battery_charging_full"], [90, "battery_charging_90"], [80, "battery_charging_80"], [60, "battery_charging_60"], [50, "battery_charging_50"], [30, "battery_charging_30"]], "battery_charging_20");
-    if (p >= 95)
-      return "battery_full";
-    if (p < 10)
-      return "battery_alert";
-    return `battery_${Math.min(6, Math.floor(p / 100 * 7))}_bar`;
+      return Utility.pick(percent, [[95, "battery_charging_full_2"], [80, "battery_charging_80_2"], [50, "battery_charging_50_2"], [30, "battery_charging_30_2"]], "battery_charging_20_2");
+    return Utility.pick(percent, [[95, "battery_android_full"], [85, "battery_android_5"], [70, "battery_android_4"], [50, "battery_android_3"], [30, "battery_android_2"], [10, "battery_android_1"]], "battery_android_alert");
   }
 
   readonly property color batteryColor: plugged ? Theme.charging : Utility.pick(percent, [[20, Theme.good], [10, Theme.warn]], Theme.bad)
 
   readonly property var profiles: PowerProfiles.hasPerformanceProfile ? [PowerProfile.PowerSaver, PowerProfile.Balanced, PowerProfile.Performance] : [PowerProfile.PowerSaver, PowerProfile.Balanced]
 
-  function cycleProfile(step) {
-    const i = profiles.indexOf(PowerProfiles.profile);
-    PowerProfiles.profile = profiles[(i + step + profiles.length) % profiles.length];
-  }
-
-  readonly property var profileSegment: {
+  readonly property var profile: {
     switch (PowerProfiles.profile) {
     case PowerProfile.PowerSaver:
       return Utility.seg("eco", "power-saver", Theme.good);
@@ -41,7 +31,31 @@ Pill {
     }
   }
 
-  segments: [Utility.seg(batteryIcon, percent + "%", batteryColor), profileSegment]
+  function cycleProfile(step) {
+    const i = profiles.indexOf(PowerProfiles.profile);
+    PowerProfiles.profile = profiles[(i + step + profiles.length) % profiles.length];
+  }
+
+  spacing: 0
   clickable: true
-  onClicked: mouse => root.cycleProfile(mouse.button === Qt.RightButton ? -1 : 1)
+  onClicked: mouse => cycleProfile(mouse.button === Qt.RightButton ? -1 : 1)
+
+  Segment {
+    icon: root.batteryIcon
+    label: root.percent + "%"
+    color: root.batteryColor
+    showLabel: true
+  }
+
+  Reveal {
+    shown: root.hovered
+    leading: Theme.pillSegmentGap
+
+    Segment {
+      icon: root.profile.icon
+      label: root.profile.label
+      color: root.profile.color
+      showLabel: true
+    }
+  }
 }
