@@ -2,6 +2,7 @@ import Quickshell
 import Quickshell.Wayland
 import QtQuick
 import qs.theme
+import qs.services
 import qs.modules.bar
 import qs.modules.wallpaper
 
@@ -24,8 +25,36 @@ ShellRoot {
       screen: modelData
       property string dropdown: ""
 
+      readonly property bool launcherHere: Launcher.isOpen && Launcher.output === modelData.name
+      readonly property bool launcherShown: dropdown === "launcher" || dropdown === "clipboard"
+
       function request(name) {
         dropdown = dropdown === name ? "" : name;
+      }
+
+      function isLauncher(name) {
+        return name === "launcher" || name === "clipboard";
+      }
+
+      function syncLauncher() {
+        if (Launcher.isOpen && Launcher.output === modelData.name)
+          dropdown = Launcher.mode;
+        else if (isLauncher(dropdown))
+          dropdown = "";
+      }
+
+      onLauncherHereChanged: syncLauncher()
+
+      onDropdownChanged: {
+        if (Launcher.isOpen && Launcher.output === modelData.name && !isLauncher(dropdown))
+          Launcher.close();
+      }
+
+      Connections {
+        target: Launcher
+        function onModeChanged() {
+          bar.syncLauncher();
+        }
       }
 
       anchors {
@@ -36,7 +65,7 @@ ShellRoot {
       implicitHeight: Theme.barHeight + Theme.dropdownMaxHeight
       exclusionMode: ExclusionMode.Normal
       exclusiveZone: Theme.barHeight
-      WlrLayershell.keyboardFocus: dropdown !== "" ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+      WlrLayershell.keyboardFocus: launcherShown ? WlrKeyboardFocus.Exclusive : dropdown !== "" ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
       margins.top: Theme.barMarginTop
       color: "transparent"
 
@@ -56,6 +85,8 @@ ShellRoot {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         output: bar.modelData.name
+        current: bar.dropdown
+        onDismissed: bar.dropdown = ""
       }
 
       Row {

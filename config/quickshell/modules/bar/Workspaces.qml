@@ -3,53 +3,29 @@ import qs.theme
 import qs.components
 import qs.services
 
-Rectangle {
+Island {
   id: root
 
   property string output: ""
-  property Item hovered: null
+  property Item hoveredDot: null
   property real wheelDelta: 0
 
-  implicitWidth: view.contentWidth + Theme.pillPadding * 2
-  implicitHeight: Theme.pillHeight
-  radius: height / 2
-  color: Theme.surface
+  open: current === "launcher" || current === "clipboard"
+  panel: current === "clipboard" ? clipboardPanel : current === "launcher" ? launcherPanel : null
+  panelIndex: current === "clipboard" ? 1 : 0
+  panelWidth: Theme.launcherWidth
+  hold: true
 
-  HoverHighlight {
-    id: highlight
-    y: 3
-    active: root.hovered !== null
+  Component {
+    id: launcherPanel
 
-    Behavior on x {
-      enabled: highlight.opacity > 0
-      NumberAnimation {
-        duration: Theme.animMove
-        easing.type: Theme.easeOut
-      }
-    }
-    Behavior on width {
-      enabled: highlight.opacity > 0
-      NumberAnimation {
-        duration: Theme.animMove
-        easing.type: Theme.easeOut
-      }
-    }
+    LauncherPanel {}
   }
 
-  Binding {
-    target: highlight
-    property: "x"
-    value: view.x + (root.hovered?.x ?? 0) - 7
-    when: root.hovered !== null
-    restoreMode: Binding.RestoreNone
-  }
+  Component {
+    id: clipboardPanel
 
-  Binding {
-    target: highlight
-    property: "width"
-    value: (root.hovered?.width ?? 0) + 14
-    when: root.hovered !== null
-    restoreMode: Binding.RestoreNone
+    ClipboardPanel {}
   }
 
   function indexOfWs(wsId) {
@@ -103,96 +79,140 @@ Rectangle {
     id: wsModel
   }
 
-  ListView {
-    id: view
-    anchors.centerIn: parent
-    width: contentWidth
-    height: Theme.wsDot
-    orientation: ListView.Horizontal
-    interactive: false
-    spacing: Theme.wsGap
-    model: wsModel
+  Item {
+    id: dots
+    width: view.contentWidth
+    height: Theme.pillHeight
 
-    add: Transition {
-      NumberAnimation {
-        properties: "opacity,scale"
-        from: 0
-        to: 1
-        duration: Theme.animMove
-        easing.type: Easing.OutBack
-      }
-    }
-    remove: Transition {
-      NumberAnimation {
-        properties: "opacity,scale"
-        to: 0
-        duration: Theme.animRemove
-        easing.type: Easing.InCubic
-      }
-    }
-    displaced: Transition {
-      NumberAnimation {
-        properties: "x"
-        duration: Theme.animMove
-        easing.type: Theme.easeOut
-      }
-    }
-    move: Transition {
-      NumberAnimation {
-        properties: "x"
-        duration: Theme.animMove
-        easing.type: Theme.easeOut
-      }
-    }
+    HoverHighlight {
+      id: highlight
+      y: 3
+      active: root.hoveredDot !== null
 
-    delegate: Rectangle {
-      id: dot
-      required property int idx
-      required property bool active
-      required property bool urgent
-      required property bool occupied
-
-      width: active ? Theme.wsDotActive : Theme.wsDot
-      height: Theme.wsDot
-      radius: height / 2
-      color: urgent ? Theme.wsUrgent : active ? Theme.wsActive : occupied ? Theme.wsOccupied : Theme.wsEmpty
-
-      Behavior on width {
+      Behavior on x {
+        enabled: highlight.opacity > 0
         NumberAnimation {
           duration: Theme.animMove
           easing.type: Theme.easeOut
         }
       }
-      Behavior on color {
-        ColorAnimation {
-          duration: Theme.animColor
+      Behavior on width {
+        enabled: highlight.opacity > 0
+        NumberAnimation {
+          duration: Theme.animMove
+          easing.type: Theme.easeOut
+        }
+      }
+    }
+
+    Binding {
+      target: highlight
+      property: "x"
+      value: view.x + (root.hoveredDot?.x ?? 0) - 7
+      when: root.hoveredDot !== null
+      restoreMode: Binding.RestoreNone
+    }
+
+    Binding {
+      target: highlight
+      property: "width"
+      value: (root.hoveredDot?.width ?? 0) + 14
+      when: root.hoveredDot !== null
+      restoreMode: Binding.RestoreNone
+    }
+
+    ListView {
+      id: view
+      anchors.verticalCenter: parent.verticalCenter
+      width: contentWidth
+      height: Theme.wsDot
+      orientation: ListView.Horizontal
+      interactive: false
+      spacing: Theme.wsGap
+      model: wsModel
+
+      add: Transition {
+        NumberAnimation {
+          properties: "opacity,scale"
+          from: 0
+          to: 1
+          duration: Theme.animMove
+          easing.type: Easing.OutBack
+        }
+      }
+      remove: Transition {
+        NumberAnimation {
+          properties: "opacity,scale"
+          to: 0
+          duration: Theme.animRemove
+          easing.type: Easing.InCubic
+        }
+      }
+      displaced: Transition {
+        NumberAnimation {
+          properties: "x"
+          duration: Theme.animMove
+          easing.type: Theme.easeOut
+        }
+      }
+      move: Transition {
+        NumberAnimation {
+          properties: "x"
+          duration: Theme.animMove
+          easing.type: Theme.easeOut
         }
       }
 
-      Component.onDestruction: {
-        if (root.hovered === dot)
-          root.hovered = null;
-      }
+      delegate: Rectangle {
+        id: dot
+        required property int idx
+        required property bool active
+        required property bool urgent
+        required property bool occupied
 
-      MouseArea {
-        x: -Theme.wsGap / 2
-        y: (parent.height - Theme.pillHeight) / 2
-        width: parent.width + Theme.wsGap
-        height: Theme.pillHeight
-        hoverEnabled: true
-        cursorShape: Qt.PointingHandCursor
-        onContainsMouseChanged: {
-          if (containsMouse)
-            root.hovered = dot;
-          else if (root.hovered === dot)
-            root.hovered = null;
+        width: active ? Theme.wsDotActive : Theme.wsDot
+        height: Theme.wsDot
+        radius: height / 2
+        color: urgent ? Theme.wsUrgent : active ? Theme.wsActive : occupied ? Theme.wsOccupied : Theme.wsEmpty
+
+        Behavior on width {
+          NumberAnimation {
+            duration: Theme.animMove
+            easing.type: Theme.easeOut
+          }
         }
-        onClicked: Niri.focusWorkspace(root.output, dot.idx)
+        Behavior on color {
+          ColorAnimation {
+            duration: Theme.animColor
+          }
+        }
+
+        Component.onDestruction: {
+          if (root.hoveredDot === dot)
+            root.hoveredDot = null;
+        }
+
+        MouseArea {
+          x: -Theme.wsGap / 2
+          y: (parent.height - Theme.pillHeight) / 2
+          width: parent.width + Theme.wsGap
+          height: Theme.pillHeight
+          hoverEnabled: true
+          cursorShape: Qt.PointingHandCursor
+          onContainsMouseChanged: {
+            if (containsMouse)
+              root.hoveredDot = dot;
+            else if (root.hoveredDot === dot)
+              root.hoveredDot = null;
+          }
+          onClicked: Niri.focusWorkspace(root.output, dot.idx)
+        }
       }
     }
   }
 
   WheelHandler {
+    enabled: !root.open
     acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
     onWheel: event => {
       root.wheelDelta += event.angleDelta.y;
