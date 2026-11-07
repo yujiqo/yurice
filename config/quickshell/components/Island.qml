@@ -145,7 +145,7 @@ Rectangle {
   }
 
   HoverHighlight {
-    x: 3
+    x: row.x - root.padding + 3
     y: 3
     width: root.compactWidth - 6
     active: root.clickable && mouse.containsMouse
@@ -153,7 +153,7 @@ Rectangle {
 
   Row {
     id: row
-    x: root.padding
+    x: (root.width - row.implicitWidth) / 2
     height: Theme.pillHeight
     spacing: root.spacing
   }
