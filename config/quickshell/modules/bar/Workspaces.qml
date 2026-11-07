@@ -1,16 +1,56 @@
 import QtQuick
 import qs.theme
+import qs.components
 import qs.services
 
 Rectangle {
   id: root
 
   property string output: ""
+  property Item hovered: null
+  property real wheelDelta: 0
 
   implicitWidth: view.contentWidth + Theme.pillPadding * 2
   implicitHeight: Theme.pillHeight
   radius: height / 2
   color: Theme.surface
+
+  HoverHighlight {
+    id: highlight
+    y: 3
+    active: root.hovered !== null
+
+    Behavior on x {
+      enabled: highlight.opacity > 0
+      NumberAnimation {
+        duration: Theme.animMove
+        easing.type: Theme.easeOut
+      }
+    }
+    Behavior on width {
+      enabled: highlight.opacity > 0
+      NumberAnimation {
+        duration: Theme.animMove
+        easing.type: Theme.easeOut
+      }
+    }
+  }
+
+  Binding {
+    target: highlight
+    property: "x"
+    value: view.x + (root.hovered?.x ?? 0) - 7
+    when: root.hovered !== null
+    restoreMode: Binding.RestoreNone
+  }
+
+  Binding {
+    target: highlight
+    property: "width"
+    value: (root.hovered?.width ?? 0) + 14
+    when: root.hovered !== null
+    restoreMode: Binding.RestoreNone
+  }
 
   function indexOfWs(wsId) {
     for (let k = 0; k < wsModel.count; k++) {
@@ -129,15 +169,41 @@ Rectangle {
         }
       }
 
+      Component.onDestruction: {
+        if (root.hovered === dot)
+          root.hovered = null;
+      }
+
       MouseArea {
-        anchors.fill: parent
+        x: -Theme.wsGap / 2
+        y: (parent.height - Theme.pillHeight) / 2
+        width: parent.width + Theme.wsGap
+        height: Theme.pillHeight
+        hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
+        onContainsMouseChanged: {
+          if (containsMouse)
+            root.hovered = dot;
+          else if (root.hovered === dot)
+            root.hovered = null;
+        }
         onClicked: Niri.focusWorkspace(root.output, dot.idx)
       }
     }
   }
 
   WheelHandler {
-    onWheel: event => Niri.focusWorkspaceRelative(root.output, event.angleDelta.y > 0)
+    acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+    onWheel: event => {
+      root.wheelDelta += event.angleDelta.y;
+      while (root.wheelDelta >= 120) {
+        root.wheelDelta -= 120;
+        Niri.focusWorkspaceRelative(root.output, true);
+      }
+      while (root.wheelDelta <= -120) {
+        root.wheelDelta += 120;
+        Niri.focusWorkspaceRelative(root.output, false);
+      }
+    }
   }
 }
