@@ -49,6 +49,51 @@ Column {
       values: Wallpapers.wallpapers
     }
 
+    remove: Transition {
+      NumberAnimation {
+        property: "opacity"
+        to: 0
+        duration: Theme.animMove
+        easing.type: Theme.easeOut
+      }
+      NumberAnimation {
+        property: "scale"
+        to: 0.6
+        duration: Theme.animMove
+        easing.type: Theme.easeOut
+      }
+    }
+
+    add: Transition {
+      NumberAnimation {
+        property: "opacity"
+        from: 0
+        to: 1
+        duration: Theme.animMove
+        easing.type: Theme.easeOut
+      }
+      NumberAnimation {
+        property: "scale"
+        from: 0.6
+        to: 1
+        duration: Theme.animMove
+        easing.type: Easing.OutBack
+      }
+    }
+
+    displaced: Transition {
+      NumberAnimation {
+        properties: "x,y"
+        duration: Theme.animSlide
+        easing.type: Easing.OutCubic
+      }
+      NumberAnimation {
+        properties: "opacity,scale"
+        to: 1
+        duration: Theme.animMove
+      }
+    }
+
     delegate: ImageTile {
       id: tile
 
@@ -97,7 +142,10 @@ Column {
             width: tile.frame.width - 24
             icon: "delete"
             text: "Delete"
-            onClicked: root.selected = ""
+            onClicked: {
+              root.selected = "";
+              WallpaperTools.trash(tile.modelData);
+            }
           }
         }
       }
