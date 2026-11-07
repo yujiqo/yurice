@@ -51,14 +51,8 @@ Column {
   Component {
     id: libraryTab
 
-    Text {
-      height: 56
-      horizontalAlignment: Text.AlignHCenter
-      verticalAlignment: Text.AlignVCenter
-      text: "Library comes in the next step"
-      color: Theme.textVariant
-      font.family: Theme.labelFont
-      font.pixelSize: Theme.menuTitleSize
+    WallpaperLibrary {
+      maxHeight: root.contentMaxHeight
     }
   }
 }

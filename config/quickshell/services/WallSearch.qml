@@ -21,15 +21,7 @@ Singleton {
   readonly property bool busy: searching || Object.keys(downloads).length > 0
   readonly property string apiKey: keyFile.text().trim()
   readonly property bool hasApiKey: apiKey !== ""
-  readonly property string resolution: {
-    let w = 0;
-    let h = 0;
-    for (const s of Quickshell.screens) {
-      w = Math.max(w, s.width * s.devicePixelRatio);
-      h = Math.max(h, s.height * s.devicePixelRatio);
-    }
-    return `${Math.round(w)}x${Math.round(h)}`;
-  }
+  readonly property string resolution: Wallpapers.screenResolution
 
   readonly property string categories: filters.categories
   readonly property string purity: hasApiKey ? filters.purity : "100"

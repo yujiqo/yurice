@@ -6,6 +6,7 @@ Item {
 
   property url source
   property string resolution: ""
+  property color resolutionColor: Theme.text
   property bool checked: false
   property bool busy: false
   property bool dimmed: busy
@@ -66,7 +67,7 @@ Item {
         id: resLabel
         anchors.centerIn: parent
         text: root.resolution
-        color: Theme.text
+        color: root.resolutionColor
         font.family: Theme.labelFont
         font.pixelSize: 12
       }

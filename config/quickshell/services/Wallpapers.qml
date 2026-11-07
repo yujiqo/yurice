@@ -15,6 +15,70 @@ Singleton {
 
   property list<string> wallpapers: []
   readonly property string current: state.path || (wallpapers.length > 0 ? wallpapers[0] : "")
+  property var resolutions: ({})
+
+  readonly property size screenSize: {
+    let w = 0;
+    let h = 0;
+    for (const s of Quickshell.screens) {
+      w = Math.max(w, s.width * s.devicePixelRatio);
+      h = Math.max(h, s.height * s.devicePixelRatio);
+    }
+    return Qt.size(Math.round(w), Math.round(h));
+  }
+  readonly property string screenResolution: `${screenSize.width}x${screenSize.height}`
+
+  function resolutionOf(path) {
+    const r = resolutions[path];
+    return r && r.w > 0 ? `${r.w}x${r.h}` : "";
+  }
+
+  function isLowRes(path) {
+    const r = resolutions[path];
+    return !!r && r.w > 0 && (r.w < screenSize.width || r.h < screenSize.height);
+  }
+
+  function _measure() {
+    const missing = wallpapers.filter(p => !resolutions[p]);
+    if (missing.length === 0 || identify.running)
+      return;
+    identify.batch = missing;
+    identify.command = ["magick", "identify", "-ping", "-format", "%w %h %i\\n"].concat(missing.map(p => p + "[0]"));
+    identify.running = true;
+  }
+
+  function forgetResolution(path) {
+    const next = Object.assign({}, resolutions);
+    delete next[path];
+    resolutions = next;
+  }
+
+  onWallpapersChanged: _measure()
+
+  Process {
+    id: identify
+    property var batch: []
+    stdout: StdioCollector {
+      onStreamFinished: {
+        const next = Object.assign({}, root.resolutions);
+        for (const p of identify.batch)
+          next[p] = {
+            w: 0,
+            h: 0
+          };
+        for (const line of text.split("\n")) {
+          const m = line.match(/^(\d+) (\d+) (.+)$/);
+          if (m)
+            next[m[3]] = {
+              w: parseInt(m[1]),
+              h: parseInt(m[2])
+            };
+        }
+        root.resolutions = next;
+        Qt.callLater(root._measure);
+      }
+    }
+  }
 
   property bool pickerOpen: false
   property string coveredOutput: ""
