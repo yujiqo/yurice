@@ -15,7 +15,7 @@ Rectangle {
     input.forceActiveFocus();
   }
 
-  implicitHeight: 42
+  implicitHeight: 46
   radius: Theme.menuItemRadius
   color: Theme.surfaceContainerHigh
   border.width: 2

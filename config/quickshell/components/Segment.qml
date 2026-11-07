@@ -21,13 +21,11 @@ Item {
     id: row
     height: parent.height
 
-    Text {
+    Icon {
       anchors.verticalCenter: parent.verticalCenter
       text: root.icon
       visible: text !== ""
       color: root.color
-      font.family: Theme.iconFont
-      font.pixelSize: Theme.iconSize
       Behavior on color {
         ColorAnimation {
           duration: Theme.animColor

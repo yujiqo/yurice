@@ -19,12 +19,11 @@ Rectangle {
     }
   }
 
-  Text {
+  Icon {
     anchors.centerIn: parent
     text: root.icon
     color: root.iconColor
-    font.family: Theme.iconFont
-    font.pixelSize: Theme.menuIconSize
+    size: Theme.menuIconSize
   }
 
   MouseArea {

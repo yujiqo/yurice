@@ -27,7 +27,7 @@ Column {
       text: "Wi-Fi"
       color: Theme.text
       font.family: Theme.labelFont
-      font.pixelSize: Theme.labelSize
+      font.pixelSize: Theme.menuHeaderSize
     }
 
     Spinner {
@@ -179,13 +179,11 @@ Column {
           tint: entry.modelData.connected ? Theme.surface : Theme.primary
         }
 
-        Text {
+        Icon {
           anchors.verticalCenter: parent.verticalCenter
           visible: entry.secured && !entry.modelData.known && !entry.modelData.stateChanging
           text: "lock"
           color: Theme.textVariant
-          font.family: Theme.iconFont
-          font.pixelSize: Theme.iconSize
         }
 
         IconButton {

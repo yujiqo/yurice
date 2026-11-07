@@ -1,15 +1,14 @@
 import QtQuick
 import qs.theme
 
-Text {
+Icon {
   id: root
 
   property color tint: Theme.primary
 
   text: "progress_activity"
   color: tint
-  font.family: Theme.iconFont
-  font.pixelSize: Theme.menuIconSize
+  size: Theme.menuIconSize
 
   RotationAnimator on rotation {
     running: root.visible

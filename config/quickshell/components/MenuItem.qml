@@ -33,15 +33,14 @@ Rectangle {
     onClicked: root.clicked()
   }
 
-  Text {
+  Icon {
     id: iconText
     anchors.left: parent.left
     anchors.leftMargin: 12
     anchors.verticalCenter: parent.verticalCenter
     text: root.icon
     color: root.active ? root.onActive : root.iconColor
-    font.family: Theme.iconFont
-    font.pixelSize: Theme.menuIconSize
+    size: Theme.menuIconSize
   }
 
   Column {
