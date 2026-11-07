@@ -99,15 +99,75 @@ Column {
 
       required property string modelData
       readonly property bool active: root.selected === modelData
+      readonly property bool upscaling: WallpaperTools.active === modelData
+      readonly property bool canUpscale: Wallpapers.canUpscale(modelData)
 
       width: grid.cellWidth
       height: grid.cellHeight
       source: "file://" + modelData
       resolution: Wallpapers.resolutionOf(modelData)
-      resolutionColor: Wallpapers.isLowRes(modelData) ? Theme.warn : Theme.text
-      showResolution: hovered && !active
+      resolutionColor: canUpscale ? Theme.warn : Theme.text
+      readonly property bool working: WallpaperTools.isBusy(modelData)
+
+      showResolution: hovered && !active && !working
       checked: Wallpapers.current === modelData
+      dimmed: working
       onClicked: root.selected = active ? "" : modelData
+
+      Text {
+        anchors.centerIn: parent
+        visible: tile.upscaling && !tile.active
+        text: Math.floor(WallpaperTools.progress * 100) + "%"
+        color: Theme.text
+        font.family: Theme.labelFont
+        font.pixelSize: Theme.menuTitleSize + 2
+        font.bold: true
+      }
+
+      Column {
+        anchors.centerIn: parent
+        visible: tile.working && !tile.upscaling && !tile.active
+        spacing: 2
+
+        Icon {
+          anchors.horizontalCenter: parent.horizontalCenter
+          text: "schedule"
+          color: Theme.text
+        }
+
+        Text {
+          anchors.horizontalCenter: parent.horizontalCenter
+          text: "Queued"
+          color: Theme.text
+          font.family: Theme.labelFont
+          font.pixelSize: 12
+        }
+      }
+
+      Rectangle {
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        anchors.margins: 8
+        height: 4
+        radius: 2
+        color: Qt.alpha(Theme.surface, 0.7)
+        visible: tile.upscaling
+
+        Rectangle {
+          width: parent.width * WallpaperTools.progress
+          height: parent.height
+          radius: parent.radius
+          color: Theme.primary
+
+          Behavior on width {
+            NumberAnimation {
+              duration: Theme.animMove
+              easing.type: Theme.easeOut
+            }
+          }
+        }
+      }
 
       Rectangle {
         anchors.fill: parent
@@ -134,14 +194,19 @@ Column {
           Chip {
             width: tile.frame.width - 24
             icon: "auto_awesome"
-            text: "Upscale"
-            onClicked: root.selected = ""
+            text: tile.upscaling ? "Upscaling…" : tile.working ? "Queued" : tile.canUpscale ? "Upscale" : "Already sharp"
+            available: tile.canUpscale && !tile.working
+            onClicked: {
+              root.selected = "";
+              WallpaperTools.upscale(tile.modelData);
+            }
           }
 
           Chip {
             width: tile.frame.width - 24
             icon: "delete"
             text: "Delete"
+            available: !tile.working
             onClicked: {
               root.selected = "";
               WallpaperTools.trash(tile.modelData);

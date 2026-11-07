@@ -7,6 +7,7 @@ Island {
   id: root
 
   property string tab: "library"
+  readonly property bool working: WallSearch.searching || WallpaperTools.upscaling
 
   open: current === "wallpapers"
   panel: current === "wallpapers" ? managerPanel : null
@@ -33,8 +34,8 @@ Island {
       anchors.centerIn: parent
       text: "wallpaper_slideshow"
       color: Theme.wallpaper
-      opacity: WallSearch.searching ? 0 : 1
-      scale: WallSearch.searching ? 0.6 : 1
+      opacity: root.working ? 0 : 1
+      scale: root.working ? 0.6 : 1
 
       Behavior on opacity {
         NumberAnimation {
@@ -56,7 +57,7 @@ Island {
       size: Theme.iconSize
       tint: Theme.wallpaper
       visible: opacity > 0
-      opacity: WallSearch.searching ? 1 : 0
+      opacity: root.working ? 1 : 0
 
       Behavior on opacity {
         NumberAnimation {
@@ -67,12 +68,12 @@ Island {
   }
 
   Reveal {
-    shown: root.expanded || WallSearch.searching
+    shown: root.expanded || root.working
     leading: Theme.pillIconGap + 2
 
     Row {
       Label {
-        text: WallSearch.searching ? "Searching wallpapers…" : "Manage wallpapers"
+        text: WallSearch.searching ? "Searching wallpapers…" : WallpaperTools.upscaling ? WallpaperTools.status : "Manage wallpapers"
       }
 
       Item {

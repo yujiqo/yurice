@@ -33,9 +33,11 @@ Singleton {
     return r && r.w > 0 ? `${r.w}x${r.h}` : "";
   }
 
-  function isLowRes(path) {
+  readonly property size upscaleTarget: Qt.size(3840, 2160)
+
+  function canUpscale(path) {
     const r = resolutions[path];
-    return !!r && r.w > 0 && (r.w < screenSize.width || r.h < screenSize.height);
+    return !!r && r.w > 0 && (r.w < upscaleTarget.width || r.h < upscaleTarget.height);
   }
 
   function _measure() {
