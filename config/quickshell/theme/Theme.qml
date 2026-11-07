@@ -13,19 +13,19 @@ Singleton {
   }
 
   // --- Accent palette ---
-  readonly property color clock: palette.clock || "#f5c26b"
-  readonly property color music: palette.music || "#f78fb3"
-  readonly property color wifi: palette.wifi || "#6bb8ff"
-  readonly property color ethernet: palette.ethernet || "#a0a8a8"
-  readonly property color bluetooth: palette.bluetooth || "#4d8eff"
-  readonly property color off: palette.outline || "#5c6664"
-  readonly property color volume: palette.volume || "#c792ea"
-  readonly property color brightness: palette.brightness || "#ffcb6b"
-  readonly property color good: palette.good || "#7bd88f"
-  readonly property color charging: palette.charging || "#f9e26b"
-  readonly property color warn: palette.warn || "#ff9e64"
-  readonly property color bad: palette.bad || "#ff6b6b"
-  readonly property color balanced: palette.balanced || "#7fd1c7"
+  readonly property color clock: tertiary
+  readonly property color music: tertiary
+  readonly property color wifi: primary
+  readonly property color ethernet: primary
+  readonly property color bluetooth: primary
+  readonly property color off: outline
+  readonly property color volume: secondary
+  readonly property color brightness: secondary
+  readonly property color good: primary
+  readonly property color charging: tertiary
+  readonly property color warn: error
+  readonly property color bad: error
+  readonly property color balanced: secondary
 
   // --- Surfaces / text ---
   readonly property color surface: palette.surface || "#040e0d"
@@ -43,15 +43,17 @@ Singleton {
   readonly property color onPrimary: palette.onPrimary || "#003733"
   readonly property color primaryContainer: palette.primaryContainer || "#00504a"
   readonly property color onPrimaryContainer: palette.onPrimaryContainer || "#9cf2e7"
+  readonly property color secondary: palette.secondary || "#b1ccc7"
   readonly property color secondaryContainer: palette.secondaryContainer || "#324b48"
   readonly property color onSecondaryContainer: palette.onSecondaryContainer || "#cce8e3"
+  readonly property color tertiary: palette.tertiary || "#adcae6"
   readonly property color error: palette.error || "#ffb4ab"
 
   // --- Workspace dots ---
-  readonly property color wsActive: bad
-  readonly property color wsUrgent: warn
-  readonly property color wsOccupied: palette.outline || "#8a7d6b"
-  readonly property color wsEmpty: palette.surfaceContainerHighest || "#2a3634"
+  readonly property color wsActive: primary
+  readonly property color wsUrgent: error
+  readonly property color wsOccupied: outline
+  readonly property color wsEmpty: surfaceContainerHighest
 
   FileView {
     id: paletteView
@@ -62,18 +64,6 @@ Singleton {
 
     JsonAdapter {
       id: palette
-      property string clock
-      property string music
-      property string wifi
-      property string ethernet
-      property string bluetooth
-      property string volume
-      property string brightness
-      property string good
-      property string charging
-      property string warn
-      property string bad
-      property string balanced
       property string surface
       property string surfaceContainer
       property string surfaceContainerHigh
@@ -85,8 +75,10 @@ Singleton {
       property string onPrimary
       property string primaryContainer
       property string onPrimaryContainer
+      property string secondary
       property string secondaryContainer
       property string onSecondaryContainer
+      property string tertiary
       property string onSurfaceVariant
       property string error
     }
