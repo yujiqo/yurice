@@ -20,7 +20,7 @@ Island {
     icon: Utility.pick(Brightness.percent, [[66, "brightness_high"], [33, "brightness_medium"]], "brightness_low")
     label: Brightness.percent + "%"
     color: Theme.brightness
-    showLabel: root.hovered
+    showLabel: root.expanded
     onWheel: event => Brightness.step(event.angleDelta.y > 0)
   }
 
@@ -28,7 +28,7 @@ Island {
     icon: root.volumeSegment.icon
     label: root.volumeSegment.label
     color: root.volumeSegment.color
-    showLabel: root.hovered
+    showLabel: root.expanded
     clickable: true
     onClicked: Audio.toggleMute()
     onWheel: event => Audio.changeVolume(event.angleDelta.y > 0 ? 0.05 : -0.05)

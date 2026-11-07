@@ -7,12 +7,15 @@ import qs.services
 Island {
   id: root
 
+  open: current === "wifi"
+  panel: current === "wifi" ? wifiPanel : null
+
   readonly property var networkSegments: {
     const result = [];
     if (Network.ethernet)
       result.push(Utility.seg("settings_ethernet", "Wired", Theme.ethernet));
     if (Network.wifi)
-      result.push(Utility.seg(Utility.pick(Network.wifiSignal, [[80, "network_wifi"], [60, "network_wifi_3_bar"], [40, "network_wifi_2_bar"], [20, "network_wifi_1_bar"]], "signal_wifi_0_bar"), Network.wifiSsid, Theme.wifi));
+      result.push(Utility.seg(Network.signalIcon(Network.wifiSignal), Network.wifiSsid, Theme.wifi));
     if (result.length === 0)
       result.push(Utility.seg("wifi_off", "Offline", Theme.off));
     return result;
@@ -38,14 +41,22 @@ Island {
       icon: modelData.icon
       label: modelData.label
       color: modelData.color
-      showLabel: root.hovered
+      showLabel: root.expanded
+      clickable: true
+      onClicked: root.request("wifi")
     }
+  }
+
+  Component {
+    id: wifiPanel
+
+    WifiPanel {}
   }
 
   Segment {
     icon: root.bluetoothSegment.icon
     label: root.bluetoothSegment.label
     color: root.bluetoothSegment.color
-    showLabel: root.hovered
+    showLabel: root.expanded
   }
 }

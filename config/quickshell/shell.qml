@@ -1,4 +1,5 @@
 import Quickshell
+import Quickshell.Wayland
 import QtQuick
 import qs.theme
 import qs.modules.bar
@@ -21,15 +22,34 @@ ShellRoot {
 
       required property ShellScreen modelData
       screen: modelData
+      property string dropdown: ""
+
+      function request(name) {
+        dropdown = dropdown === name ? "" : name;
+      }
 
       anchors {
         top: true
         left: true
         right: true
       }
-      implicitHeight: Theme.barHeight
+      implicitHeight: Theme.barHeight + Theme.dropdownMaxHeight
+      exclusionMode: ExclusionMode.Normal
+      exclusiveZone: Theme.barHeight
+      WlrLayershell.keyboardFocus: dropdown !== "" ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
       margins.top: Theme.barMarginTop
       color: "transparent"
+
+      mask: Region {
+        item: workspaces
+
+        Region {
+          item: leftRow
+        }
+        Region {
+          item: rightRow
+        }
+      }
 
       Workspaces {
         id: workspaces
@@ -39,6 +59,7 @@ ShellRoot {
       }
 
       Row {
+        id: leftRow
         anchors.right: workspaces.left
         anchors.rightMargin: Theme.barGap
         anchors.top: parent.top
@@ -49,13 +70,18 @@ ShellRoot {
       }
 
       Row {
+        id: rightRow
         anchors.left: workspaces.right
         anchors.leftMargin: Theme.barGap
         anchors.top: parent.top
         spacing: Theme.barGap
 
         TimeIsland {}
-        ConnectivityIsland {}
+        ConnectivityIsland {
+          current: bar.dropdown
+          onRequest: name => bar.request(name)
+          onDismissed: bar.dropdown = ""
+        }
         LevelsIsland {}
         BatteryIsland {}
       }

@@ -32,6 +32,20 @@ Singleton {
   readonly property color surfaceHover: palette.surfaceContainerHigh || "#0d1f1d"
   readonly property color divider: palette.outlineVariant || "#3a4a48"
   readonly property color text: palette.onSurface || "#f5e2c5"
+  readonly property color textVariant: palette.onSurfaceVariant || "#bec9c6"
+  readonly property color surfaceContainer: palette.surfaceContainer || "#0a1a18"
+  readonly property color surfaceContainerHigh: palette.surfaceContainerHigh || "#0d1f1d"
+  readonly property color surfaceContainerHighest: palette.surfaceContainerHighest || "#2a3634"
+  readonly property color outline: palette.outline || "#5c6664"
+
+  // --- Material roles ---
+  readonly property color primary: palette.primary || "#80d5cb"
+  readonly property color onPrimary: palette.onPrimary || "#003733"
+  readonly property color primaryContainer: palette.primaryContainer || "#00504a"
+  readonly property color onPrimaryContainer: palette.onPrimaryContainer || "#9cf2e7"
+  readonly property color secondaryContainer: palette.secondaryContainer || "#324b48"
+  readonly property color onSecondaryContainer: palette.onSecondaryContainer || "#cce8e3"
+  readonly property color error: palette.error || "#ffb4ab"
 
   // --- Workspace dots ---
   readonly property color wsActive: bad
@@ -67,6 +81,14 @@ Singleton {
       property string onSurface
       property string outline
       property string outlineVariant
+      property string primary
+      property string onPrimary
+      property string primaryContainer
+      property string onPrimaryContainer
+      property string secondaryContainer
+      property string onSecondaryContainer
+      property string onSurfaceVariant
+      property string error
     }
   }
 
@@ -86,6 +108,18 @@ Singleton {
   readonly property int pickerGap: 24
   readonly property int pickerRadius: 14
   readonly property int pickerBorder: 3
+  readonly property int panelWidth: 340
+  readonly property int panelRadius: 22
+  readonly property int panelPadding: 10
+  readonly property int dropdownMaxHeight: 520
+  readonly property int menuListMaxHeight: 336
+  readonly property int menuItemHeight: 48
+  readonly property int menuItemRadius: 14
+  readonly property int menuGap: 4
+  readonly property int menuIconSize: 20
+  readonly property int menuTitleSize: 15
+  readonly property int menuSubtitleSize: 12
+  readonly property int closeGrace: 400
 
   // --- Fonts ---
   readonly property string iconFont: "Material Symbols Sharp"

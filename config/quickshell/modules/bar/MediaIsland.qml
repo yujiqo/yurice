@@ -65,7 +65,7 @@ Island {
   }
 
   Reveal {
-    shown: root.hovered && root.playing
+    shown: root.expanded && root.playing
     leading: Theme.pillSegmentGap
 
     Text {
