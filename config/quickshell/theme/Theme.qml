@@ -103,6 +103,7 @@ Singleton {
   readonly property int pickerRadius: 14
   readonly property int pickerBorder: 3
   readonly property int panelWidth: 360
+  readonly property int toastWidth: 380
   readonly property int panelRadius: 22
   readonly property int panelPadding: 10
   readonly property int dropdownMaxHeight: 520

@@ -78,6 +78,12 @@ ShellRoot {
         Region {
           item: rightRow
         }
+        Region {
+          x: toasts.x
+          y: toasts.y
+          width: toasts.visible ? toasts.width : 0
+          height: toasts.contentHeight
+        }
       }
 
       TimeIsland {
@@ -87,6 +93,14 @@ ShellRoot {
         current: bar.dropdown
         onRequest: name => bar.request(name)
         onDismissed: bar.dropdown = ""
+      }
+
+      Toasts {
+        id: toasts
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.top: clock.bottom
+        anchors.topMargin: Theme.barGap * 2
+        visible: bar.modelData.name === (Niri.focusedOutput || Quickshell.screens[0]?.name)
       }
 
       Row {
