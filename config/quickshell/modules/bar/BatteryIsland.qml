@@ -2,21 +2,10 @@ import QtQuick
 import Quickshell.Services.UPower
 import qs.theme
 import qs.components
+import qs.services
 
 Island {
   id: root
-
-  readonly property var battery: UPower.displayDevice
-  readonly property int percent: Math.round(battery.percentage * 100)
-  readonly property bool plugged: battery.state === UPowerDeviceState.Charging || battery.state === UPowerDeviceState.FullyCharged || battery.state === UPowerDeviceState.PendingCharge
-
-  readonly property string batteryIcon: {
-    if (plugged)
-      return Utility.pick(percent, [[95, "battery_charging_full_2"], [80, "battery_charging_80_2"], [50, "battery_charging_50_2"], [30, "battery_charging_30_2"]], "battery_charging_20_2");
-    return Utility.pick(percent, [[95, "battery_android_full"], [85, "battery_android_5"], [70, "battery_android_4"], [50, "battery_android_3"], [30, "battery_android_2"], [10, "battery_android_1"]], "battery_android_alert");
-  }
-
-  readonly property color batteryColor: plugged ? Theme.charging : Utility.pick(percent, [[20, Theme.good], [10, Theme.warn]], Theme.bad)
 
   readonly property var profiles: PowerProfiles.hasPerformanceProfile ? [PowerProfile.PowerSaver, PowerProfile.Balanced, PowerProfile.Performance] : [PowerProfile.PowerSaver, PowerProfile.Balanced]
 
@@ -36,14 +25,23 @@ Island {
     PowerProfiles.profile = profiles[(i + step + profiles.length) % profiles.length];
   }
 
+  open: current === "battery"
+  panel: current === "battery" ? batteryPanel : null
+  panelWidth: 340
   spacing: 0
   clickable: true
-  onClicked: mouse => cycleProfile(mouse.button === Qt.RightButton ? -1 : 1)
+  onClicked: mouse => mouse.button === Qt.RightButton ? cycleProfile(1) : request("battery")
+
+  Component {
+    id: batteryPanel
+
+    BatteryPanel {}
+  }
 
   Segment {
-    icon: root.batteryIcon
-    label: root.percent + "%"
-    color: root.batteryColor
+    icon: Battery.icon
+    label: Battery.percent + "%"
+    color: Battery.color
     showLabel: true
   }
 
