@@ -66,6 +66,11 @@ ShellRoot {
         spacing: Theme.barGap
         layoutDirection: Qt.RightToLeft
 
+        WeatherIsland {
+          current: bar.dropdown
+          onRequest: name => bar.request(name)
+          onDismissed: bar.dropdown = ""
+        }
         MediaIsland {}
       }
 
