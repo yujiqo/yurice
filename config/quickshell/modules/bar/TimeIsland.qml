@@ -6,8 +6,9 @@ import qs.services
 Island {
   id: root
 
-  open: current === "calendar"
-  panel: current === "calendar" ? calendarPanel : null
+  open: current === "calendar" || current === "power"
+  panel: current === "power" ? powerPanel : current === "calendar" ? calendarPanel : null
+  panelIndex: current === "power" ? 1 : 0
   panelWidth: 320
   spacing: 0
   clickable: true
@@ -17,6 +18,12 @@ Island {
     id: calendarPanel
 
     CalendarPanel {}
+  }
+
+  Component {
+    id: powerPanel
+
+    PowerPanel {}
   }
 
   Text {

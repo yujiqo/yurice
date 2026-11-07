@@ -29,6 +29,14 @@ ShellRoot {
 
       readonly property bool launcherHere: Launcher.isOpen && Launcher.output === modelData.name
       readonly property bool launcherShown: dropdown === "launcher" || dropdown === "clipboard"
+      readonly property bool powerHere: Session.isOpen && Session.output === modelData.name
+
+      onPowerHereChanged: {
+        if (powerHere)
+          dropdown = "power";
+        else if (dropdown === "power")
+          dropdown = "";
+      }
 
       function request(name) {
         dropdown = dropdown === name ? "" : name;
@@ -50,6 +58,8 @@ ShellRoot {
       onDropdownChanged: {
         if (Launcher.isOpen && Launcher.output === modelData.name && !isLauncher(dropdown))
           Launcher.close();
+        if (powerHere && dropdown !== "power")
+          Session.close();
       }
 
       Connections {
@@ -67,7 +77,7 @@ ShellRoot {
       implicitHeight: Theme.barHeight + Theme.dropdownMaxHeight
       exclusionMode: ExclusionMode.Normal
       exclusiveZone: Theme.barHeight
-      WlrLayershell.keyboardFocus: launcherShown ? WlrKeyboardFocus.Exclusive : dropdown !== "" ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+      WlrLayershell.keyboardFocus: launcherShown || dropdown === "power" ? WlrKeyboardFocus.Exclusive : dropdown !== "" ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
       margins.top: Theme.barMarginTop
       color: "transparent"
 
