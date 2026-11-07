@@ -45,9 +45,15 @@ Column {
     }
   }
 
+  property bool discoveryRequested: false
+
   function setDiscovering(on) {
-    if (adapter && adapter.enabled && adapter.discovering !== on)
-      adapter.discovering = on;
+    const want = on && powered;
+    if (want === discoveryRequested)
+      return;
+    discoveryRequested = want;
+    if (adapter && adapter.enabled)
+      adapter.discovering = want;
   }
 
   spacing: Theme.menuGap
