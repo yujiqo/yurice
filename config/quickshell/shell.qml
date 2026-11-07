@@ -70,7 +70,7 @@ ShellRoot {
       color: "transparent"
 
       mask: Region {
-        item: workspaces
+        item: clock
 
         Region {
           item: leftRow
@@ -80,29 +80,29 @@ ShellRoot {
         }
       }
 
-      Workspaces {
-        id: workspaces
+      TimeIsland {
+        id: clock
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
-        output: bar.modelData.name
         current: bar.dropdown
+        onRequest: name => bar.request(name)
         onDismissed: bar.dropdown = ""
       }
 
       Row {
         id: leftRow
-        anchors.right: workspaces.left
-        anchors.rightMargin: Theme.barGap
+        anchors.left: parent.left
+        anchors.leftMargin: Theme.barMargin
         anchors.top: parent.top
         spacing: Theme.barGap
-        layoutDirection: Qt.RightToLeft
 
-        WeatherIsland {
+        Workspaces {
+          id: workspaces
+          output: bar.modelData.name
           current: bar.dropdown
-          onRequest: name => bar.request(name)
           onDismissed: bar.dropdown = ""
         }
-        DanbooruIsland {
+        MediaIsland {
           current: bar.dropdown
           onRequest: name => bar.request(name)
           onDismissed: bar.dropdown = ""
@@ -112,7 +112,7 @@ ShellRoot {
           onRequest: name => bar.request(name)
           onDismissed: bar.dropdown = ""
         }
-        MediaIsland {
+        DanbooruIsland {
           current: bar.dropdown
           onRequest: name => bar.request(name)
           onDismissed: bar.dropdown = ""
@@ -121,12 +121,12 @@ ShellRoot {
 
       Row {
         id: rightRow
-        anchors.left: workspaces.right
-        anchors.leftMargin: Theme.barGap
+        anchors.right: parent.right
+        anchors.rightMargin: Theme.barMargin
         anchors.top: parent.top
         spacing: Theme.barGap
 
-        TimeIsland {
+        WeatherIsland {
           current: bar.dropdown
           onRequest: name => bar.request(name)
           onDismissed: bar.dropdown = ""
