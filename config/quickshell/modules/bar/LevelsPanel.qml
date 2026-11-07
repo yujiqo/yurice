@@ -32,6 +32,7 @@ Item {
     anchors.rightMargin: 10
     anchors.verticalCenter: parent.verticalCenter
     accent: root.accent
+    glide: true
     value: root.value
     onMoved: v => root.isVolume ? Audio.setVolume(v) : Brightness.set(v)
   }

@@ -11,7 +11,15 @@ Item {
   property real trackHeight: 14
   readonly property bool pressed: mouse.pressed
   property real dragValue: 0
-  readonly property real shown: Math.max(0, Math.min(1, pressed ? dragValue : value))
+  property bool glide: false
+  readonly property real shown: Math.max(0, Math.min(1, pressed ? dragValue : glide ? spring.value : value))
+
+  onValueChanged: pressed ? spring.jump(value) : spring.target = value
+
+  Spring {
+    id: spring
+    Component.onCompleted: jump(root.value)
+  }
 
   signal moved(real value)
 
@@ -72,11 +80,16 @@ Item {
     cursorShape: Qt.PointingHandCursor
     preventStealing: true
     onPressed: event => root.emitAt(event.x)
+    onReleased: spring.jump(root.dragValue)
     onPositionChanged: event => root.emitAt(event.x)
-  }
-
-  WheelHandler {
-    enabled: root.interactive
-    onWheel: event => root.moved(Math.max(0, Math.min(1, root.value + (event.angleDelta.y > 0 ? root.step : -root.step))))
+    property real wheelAccum: 0
+    onWheel: event => {
+      wheelAccum += event.angleDelta.y || -event.angleDelta.x;
+      const notches = Math.trunc(wheelAccum / 120);
+      if (notches === 0)
+        return;
+      wheelAccum -= notches * 120;
+      root.moved(Math.max(0, Math.min(1, root.value + notches * root.step)));
+    }
   }
 }
