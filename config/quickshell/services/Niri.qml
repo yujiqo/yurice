@@ -9,20 +9,49 @@ Singleton {
   property var workspaces: []
   readonly property string focusedOutput: workspaces.find(w => w.is_focused)?.output ?? ""
 
-  function _onOutput(output, action) {
-    if (output === "") {
-      Quickshell.execDetached(["niri", "msg", "action", ...action]);
-      return;
-    }
-    Quickshell.execDetached(["sh", "-c", 'niri msg action focus-monitor "$1" && shift && niri msg action "$@"', "sh", output, ...action]);
+  function action(body) {
+    if (!ipc.connected)
+      ipc.connected = true;
+    ipc.write(JSON.stringify({
+      Action: body
+    }) + "\n");
+    ipc.flush();
+  }
+
+  function outputWorkspaces(output) {
+    const target = output || focusedOutput;
+    return workspaces.filter(w => w.output === target).sort((a, b) => a.idx - b.idx);
+  }
+
+  function focusWorkspaceId(id) {
+    action({
+      FocusWorkspace: {
+        reference: {
+          Id: id
+        }
+      }
+    });
   }
 
   function focusWorkspace(output, idx) {
-    _onOutput(output, ["focus-workspace", String(idx)]);
+    const ws = outputWorkspaces(output).find(w => w.idx === idx);
+    if (ws)
+      focusWorkspaceId(ws.id);
   }
 
   function focusWorkspaceRelative(output, up) {
-    _onOutput(output, [up ? "focus-workspace-up" : "focus-workspace-down"]);
+    const list = outputWorkspaces(output);
+    const i = list.findIndex(w => w.is_active);
+    const next = list[i + (up ? -1 : 1)];
+    if (i !== -1 && next)
+      focusWorkspaceId(next.id);
+  }
+
+  Socket {
+    id: ipc
+    path: Quickshell.env("NIRI_SOCKET")
+    connected: true
+    parser: SplitParser {}
   }
 
   function patchWs(wsId, fields) {
