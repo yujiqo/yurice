@@ -3,6 +3,7 @@ import Quickshell
 import Quickshell.Bluetooth
 import qs.theme
 import qs.components
+import qs.services
 
 Column {
   id: root
@@ -58,8 +59,20 @@ Column {
 
   spacing: Theme.menuGap
 
-  Component.onCompleted: setDiscovering(true)
-  Component.onDestruction: setDiscovering(false)
+  Component.onCompleted: {
+    BluetoothAgent.acquire();
+    setDiscovering(true);
+  }
+  Component.onDestruction: {
+    setDiscovering(false);
+    BluetoothAgent.release();
+  }
+
+  Binding {
+    target: BluetoothAgent
+    property: "accept"
+    value: root.devices.some(d => d.pairing)
+  }
   onPoweredChanged: setDiscovering(powered)
 
   component SectionLabel: Text {
