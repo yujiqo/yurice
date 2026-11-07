@@ -76,7 +76,11 @@ ShellRoot {
         anchors.top: parent.top
         spacing: Theme.barGap
 
-        TimeIsland {}
+        TimeIsland {
+          current: bar.dropdown
+          onRequest: name => bar.request(name)
+          onDismissed: bar.dropdown = ""
+        }
         ConnectivityIsland {
           current: bar.dropdown
           onRequest: name => bar.request(name)

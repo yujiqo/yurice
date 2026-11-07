@@ -6,7 +6,18 @@ import qs.services
 Island {
   id: root
 
+  open: current === "calendar"
+  panel: current === "calendar" ? calendarPanel : null
+  panelWidth: 320
   spacing: 0
+  clickable: true
+  onClicked: request("calendar")
+
+  Component {
+    id: calendarPanel
+
+    CalendarPanel {}
+  }
 
   Text {
     height: Theme.pillHeight
