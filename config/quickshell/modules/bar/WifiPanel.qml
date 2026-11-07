@@ -14,10 +14,10 @@ Column {
   spacing: Theme.menuGap
 
   property bool scanning: true
-  property int baseline: 0
+  property int scanBaseline: 0
 
   function startScan() {
-    baseline = Network.networks.length;
+    scanBaseline = Network.networks.length;
     scanning = true;
     scanTimeout.restart();
   }
@@ -31,7 +31,7 @@ Column {
   Connections {
     target: Network
     function onNetworksChanged() {
-      if (root.scanning && Network.networks.length > root.baseline)
+      if (root.scanning && Network.networks.length > root.scanBaseline)
         root.scanning = false;
     }
     function onWifiEnabledChanged() {
