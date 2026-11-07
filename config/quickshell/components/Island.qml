@@ -13,17 +13,19 @@ Rectangle {
 
   property string current: ""
   property bool open: false
+  property bool hold: false
+  property real panelWidth: Theme.panelWidth
   property Component panel: null
   property Component shownPanel: null
   readonly property real progress: Math.max(0, Math.min(1, openSpring.value))
-  readonly property bool holding: panelLoader.item?.keepOpen ?? false
+  readonly property bool holding: hold || (panelLoader.item?.keepOpen ?? false)
 
   signal clicked(var mouse)
   signal request(string name)
   signal dismissed
 
   readonly property real compactWidth: row.implicitWidth + padding * 2
-  readonly property real openWidth: Math.max(compactWidth, Theme.panelWidth)
+  readonly property real openWidth: Math.max(compactWidth, panelWidth)
 
   implicitWidth: compactWidth + (openWidth - compactWidth) * openSpring.value
   implicitHeight: Theme.pillHeight + panelHeight.value * openSpring.value

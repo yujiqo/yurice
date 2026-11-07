@@ -46,7 +46,7 @@ Column {
   }
 
   function setDiscovering(on) {
-    if (adapter && adapter.enabled)
+    if (adapter && adapter.enabled && adapter.discovering !== on)
       adapter.discovering = on;
   }
 

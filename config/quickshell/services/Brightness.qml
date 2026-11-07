@@ -10,11 +10,23 @@ Singleton {
   readonly property bool available: maxFile.loaded && curFile.loaded
   readonly property int percent: Math.round(parseInt(curFile.text()) / parseInt(maxFile.text()) * 100) || 0
 
-  function step(up) {
-    if (writer.running)
+  property string pending: ""
+
+  function run(arg) {
+    if (writer.running) {
+      pending = arg;
       return;
-    writer.command = ["brightnessctl", "-c", "backlight", "-n", "1%", "-q", "s", up ? "5%+" : "5%-"];
+    }
+    writer.command = ["brightnessctl", "-c", "backlight", "--min-value=1%", "-q", "s", arg];
     writer.running = true;
+  }
+
+  function step(up) {
+    run(up ? "5%+" : "5%-");
+  }
+
+  function set(value) {
+    run(Math.round(Math.max(0.01, Math.min(1, value)) * 100) + "%");
   }
 
   FileView {
@@ -31,5 +43,12 @@ Singleton {
 
   Process {
     id: writer
+    onExited: {
+      if (root.pending !== "") {
+        const arg = root.pending;
+        root.pending = "";
+        root.run(arg);
+      }
+    }
   }
 }

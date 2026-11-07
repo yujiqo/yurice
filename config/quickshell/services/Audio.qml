@@ -9,6 +9,7 @@ Singleton {
   readonly property var sink: Pipewire.defaultAudioSink
   readonly property bool ready: !!sink?.audio
   readonly property bool muted: sink?.audio?.muted ?? false
+  readonly property real volume: sink?.audio?.volume ?? 0
   readonly property int percent: Math.round((sink?.audio?.volume ?? 0) * 100)
 
   readonly property bool wiredHeadphones: {
@@ -23,6 +24,14 @@ Singleton {
   function toggleMute() {
     if (ready)
       sink.audio.muted = !sink.audio.muted;
+  }
+
+  function setVolume(value) {
+    if (ready) {
+      const v = Math.max(0, Math.min(1, value));
+      sink.audio.muted = v < 0.005;
+      sink.audio.volume = v;
+    }
   }
 
   function changeVolume(delta) {
