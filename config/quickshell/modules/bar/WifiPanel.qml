@@ -51,8 +51,6 @@ Column {
     width: parent.width
     visible: Network.wiredDevice !== null
     icon: "settings_ethernet"
-    iconColor: Theme.ethernet
-    accent: Theme.ethernet
     title: "Ethernet"
     subtitle: {
       const device = Network.wiredDevice;
@@ -144,8 +142,6 @@ Column {
       MenuItem {
         width: parent.width
         icon: Network.signalIcon(Network.percentOf(entry.modelData.signalStrength))
-        iconColor: Theme.wifi
-        accent: Theme.wifi
         title: entry.modelData.name
         active: entry.modelData.connected
         subtitle: {
@@ -176,7 +172,7 @@ Column {
         Spinner {
           anchors.verticalCenter: parent.verticalCenter
           visible: entry.modelData.stateChanging
-          tint: entry.modelData.connected ? Theme.surface : Theme.primary
+          tint: entry.modelData.connected ? Theme.onPrimary : Theme.primary
         }
 
         Icon {
@@ -189,7 +185,7 @@ Column {
         IconButton {
           visible: entry.modelData.known && !entry.modelData.stateChanging
           icon: "delete"
-          iconColor: entry.modelData.connected ? Theme.surface : Theme.textVariant
+          iconColor: entry.modelData.connected ? Theme.onPrimary : Theme.textVariant
           onClicked: entry.modelData.forget()
         }
       }

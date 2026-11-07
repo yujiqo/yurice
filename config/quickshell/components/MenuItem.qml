@@ -5,9 +5,9 @@ Rectangle {
   id: root
 
   property string icon: ""
-  property color iconColor: Theme.textVariant
+  property color iconColor: Theme.primary
   property color accent: Theme.primary
-  readonly property color onActive: Theme.surface
+  readonly property color onActive: Theme.onPrimary
   property string title: ""
   property string subtitle: ""
   property bool active: false

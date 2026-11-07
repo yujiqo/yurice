@@ -75,8 +75,6 @@ Column {
 
     width: parent ? parent.width : 0
     icon: root.iconFor(device)
-    iconColor: Theme.bluetooth
-    accent: Theme.bluetooth
     title: device.name || device.deviceName || device.address
     active: device.connected
     subtitle: {
@@ -122,13 +120,13 @@ Column {
     Spinner {
       anchors.verticalCenter: parent.verticalCenter
       visible: item.busy
-      tint: item.device.connected ? Theme.surface : Theme.primary
+      tint: item.device.connected ? Theme.onPrimary : Theme.primary
     }
 
     IconButton {
       visible: (item.device.paired || item.device.bonded) && !item.busy
       icon: "delete"
-      iconColor: item.device.connected ? Theme.surface : Theme.textVariant
+      iconColor: item.device.connected ? Theme.onPrimary : Theme.textVariant
       onClicked: item.device.forget()
     }
   }
