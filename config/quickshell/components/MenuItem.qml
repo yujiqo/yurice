@@ -50,24 +50,20 @@ Rectangle {
     anchors.rightMargin: 8
     anchors.verticalCenter: parent.verticalCenter
 
-    Text {
+    Label {
       width: parent.width
       text: root.title
-      elide: Text.ElideRight
       color: root.active ? root.onActive : Theme.text
-      font.family: Theme.labelFont
-      font.pixelSize: Theme.menuTitleSize
+      pixelSize: Theme.menuTitleSize
     }
 
-    Text {
+    Label {
       width: parent.width
       text: root.subtitle
       visible: text !== ""
-      elide: Text.ElideRight
       color: root.active ? root.onActive : Theme.textVariant
       opacity: root.active ? 0.8 : 1
-      font.family: Theme.labelFont
-      font.pixelSize: Theme.menuSubtitleSize
+      pixelSize: Theme.menuSubtitleSize
     }
   }
 

@@ -29,9 +29,9 @@ Column {
     changeAnim.stop();
     if (Math.abs(delta) >= 12) {
       slideX = 0;
-      slideY = Math.sign(delta) * 28;
+      slideY = Math.sign(delta) * Theme.slideDistance * 0.7;
     } else {
-      slideX = Math.sign(delta) * 48;
+      slideX = Math.sign(delta) * Theme.slideDistance;
       slideY = 0;
     }
     fade = 0;
@@ -54,14 +54,14 @@ Column {
       target: root
       property: "slideX"
       to: 0
-      duration: Theme.animMove + 50
+      duration: Theme.animSlide
       easing.type: Easing.OutCubic
     }
     NumberAnimation {
       target: root
       property: "slideY"
       to: 0
-      duration: Theme.animMove + 50
+      duration: Theme.animSlide
       easing.type: Easing.OutCubic
     }
     NumberAnimation {

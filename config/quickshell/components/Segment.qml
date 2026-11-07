@@ -10,6 +10,7 @@ Item {
   property bool showLabel: false
   property int maxLabelWidth: 300
   property bool clickable: false
+  readonly property bool pressed: mouse.pressed
 
   signal clicked(var mouse)
   signal wheel(var event)
@@ -37,18 +38,15 @@ Item {
       shown: root.showLabel && root.label !== ""
       leading: root.icon !== "" ? Theme.pillIconGap : 0
 
-      Text {
+      Label {
         text: root.label
-        width: Math.min(implicitWidth, root.maxLabelWidth)
-        elide: Text.ElideRight
-        color: Theme.text
-        font.family: Theme.labelFont
-        font.pixelSize: Theme.labelSize
+        maxWidth: root.maxLabelWidth
       }
     }
   }
 
   MouseArea {
+    id: mouse
     anchors.fill: parent
     enabled: root.clickable
     acceptedButtons: Qt.LeftButton | Qt.RightButton

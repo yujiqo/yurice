@@ -30,6 +30,7 @@ Island {
   hold: osd !== ""
   panelWidth: 280
   panel: shown === "brightness" ? brightnessPanel : shown === "volume" ? volumePanel : null
+  panelIndex: shown === "volume" ? 1 : 0
 
   onHoveredChanged: {
     if (hovered && osd !== "") {
@@ -99,6 +100,7 @@ Island {
     showLabel: root.expanded
     clickable: true
     onClicked: root.request("brightness")
+    onPressedChanged: root.held = pressed
     onWheel: event => Brightness.step(event.angleDelta.y > 0)
   }
 
@@ -109,6 +111,7 @@ Island {
     showLabel: root.expanded
     clickable: true
     onClicked: mouse => mouse.button === Qt.RightButton ? Audio.toggleMute() : root.request("volume")
+    onPressedChanged: root.held = pressed
     onWheel: event => Audio.changeVolume(event.angleDelta.y > 0 ? 0.05 : -0.05)
   }
 }

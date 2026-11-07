@@ -9,6 +9,10 @@ Icon {
   text: "progress_activity"
   color: tint
   size: Theme.menuIconSize
+  width: 32
+  height: 32
+  horizontalAlignment: Text.AlignHCenter
+  verticalAlignment: Text.AlignVCenter
 
   RotationAnimator on rotation {
     running: root.visible

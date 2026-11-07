@@ -56,7 +56,7 @@ Rectangle {
 
   IconButton {
     anchors.right: parent.right
-    anchors.rightMargin: 5
+    anchors.rightMargin: 8
     anchors.verticalCenter: parent.verticalCenter
     icon: root.reveal ? "visibility_off" : "visibility"
     onClicked: root.reveal = !root.reveal

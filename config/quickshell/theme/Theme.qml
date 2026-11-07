@@ -113,6 +113,8 @@ Singleton {
   readonly property int menuTitleSize: 17
   readonly property int menuSubtitleSize: 14
   readonly property int closeGrace: 400
+  readonly property int animSlide: 300
+  readonly property int slideDistance: 40
 
   // --- Fonts ---
   readonly property string iconFont: "Material Symbols Sharp"

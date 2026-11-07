@@ -179,6 +179,10 @@ Column {
           anchors.verticalCenter: parent.verticalCenter
           visible: entry.secured && !entry.modelData.known && !entry.modelData.stateChanging
           text: "lock"
+          width: 32
+          height: 32
+          horizontalAlignment: Text.AlignHCenter
+          verticalAlignment: Text.AlignVCenter
           color: Theme.textVariant
         }
 
@@ -190,21 +194,26 @@ Column {
         }
       }
 
-      PasswordField {
+      Collapse {
         width: parent.width
-        visible: entry.asking
-        onVisibleChanged: {
-          if (visible) {
-            text = "";
-            focusInput();
+        shown: entry.asking
+        onShownChanged: {
+          if (shown) {
+            password.text = "";
+            password.focusInput();
           }
         }
-        onAccepted: psk => {
-          entry.error = "";
-          entry.modelData.connectWithPsk(psk);
-          root.askingFor = "";
+
+        PasswordField {
+          id: password
+          width: parent.width
+          onAccepted: psk => {
+            entry.error = "";
+            entry.modelData.connectWithPsk(psk);
+            root.askingFor = "";
+          }
+          onCanceled: root.askingFor = ""
         }
-        onCanceled: root.askingFor = ""
       }
     }
   }

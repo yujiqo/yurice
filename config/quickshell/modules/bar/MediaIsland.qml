@@ -68,15 +68,11 @@ Island {
     shown: root.expanded && root.playing
     leading: Theme.pillSegmentGap
 
-    Text {
+    Label {
       readonly property string artist: root.player?.trackArtist || "Unknown"
       readonly property string title: root.player?.trackTitle || ""
       text: title ? `${artist} — ${title}` : artist
-      width: Math.min(implicitWidth, 300)
-      elide: Text.ElideRight
-      color: Theme.text
-      font.family: Theme.labelFont
-      font.pixelSize: Theme.labelSize
+      maxWidth: 300
     }
   }
 }

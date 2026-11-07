@@ -9,6 +9,7 @@ Island {
 
   open: current === "wifi" || current === "bluetooth"
   panel: current === "wifi" ? wifiPanel : current === "bluetooth" ? bluetoothPanel : null
+  panelIndex: current === "bluetooth" ? 1 : 0
 
   readonly property var networkSegments: {
     const result = [];
@@ -44,6 +45,7 @@ Island {
       showLabel: root.expanded
       clickable: true
       onClicked: root.request("wifi")
+      onPressedChanged: root.held = pressed
     }
   }
 
@@ -66,5 +68,6 @@ Island {
     showLabel: root.expanded
     clickable: true
     onClicked: root.request("bluetooth")
+    onPressedChanged: root.held = pressed
   }
 }
