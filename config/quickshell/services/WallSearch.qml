@@ -6,25 +6,6 @@ import QtQuick
 Singleton {
   id: root
 
-  readonly property var providers: [
-    {
-      id: "wallhaven",
-      name: "Wallhaven",
-      enabled: true
-    },
-    {
-      id: "danbooru",
-      name: "Danbooru",
-      enabled: false
-    },
-    {
-      id: "safebooru",
-      name: "Safebooru",
-      enabled: false
-    }
-  ]
-  property string provider: "wallhaven"
-
   property string query: ""
   property string phase: "idle"
   property string error: ""
@@ -79,36 +60,27 @@ Singleton {
   }
 
   function buildUrl(q, p) {
-    if (provider === "wallhaven") {
-      let url = "https://wallhaven.cc/api/v1/search" + `?q=${encodeURIComponent(q)}` + `&categories=${categories}` + `&purity=${purity}` + `&sorting=${sorting}` + `&page=${p}`;
-      if (sorting === "toplist")
-        url += "&topRange=1y";
-      if (atleast)
-        url += `&atleast=${resolution}`;
-      if (hasApiKey)
-        url += `&apikey=${apiKey}`;
-      return url;
-    }
-    return "";
+    let url = "https://wallhaven.cc/api/v1/search" + `?q=${encodeURIComponent(q)}` + `&categories=${categories}` + `&purity=${purity}` + `&sorting=${sorting}` + `&page=${p}`;
+    if (sorting === "toplist")
+      url += "&topRange=1y";
+    if (atleast)
+      url += `&atleast=${resolution}`;
+    if (hasApiKey)
+      url += `&apikey=${apiKey}`;
+    return url;
   }
 
   function parse(data) {
-    if (provider === "wallhaven") {
-      return {
-        items: (data.data ?? []).map(w => ({
-              id: w.id,
-              thumb: w.thumbs.large,
-              full: w.path,
-              resolution: w.resolution,
-              ext: w.path.split(".").pop(),
-              purity: w.purity
-            })),
-        more: (data.meta?.current_page ?? 1) < (data.meta?.last_page ?? 1)
-      };
-    }
     return {
-      items: [],
-      more: false
+      items: (data.data ?? []).map(w => ({
+            id: w.id,
+            thumb: w.thumbs.large,
+            full: w.path,
+            resolution: w.resolution,
+            ext: w.path.split(".").pop(),
+            purity: w.purity
+          })),
+      more: (data.meta?.current_page ?? 1) < (data.meta?.last_page ?? 1)
     };
   }
 
@@ -178,7 +150,7 @@ Singleton {
   }
 
   function pathFor(item) {
-    return `${Wallpapers.directory}/${provider}-${item.id}.${item.ext}`;
+    return `${Wallpapers.directory}/wallhaven-${item.id}.${item.ext}`;
   }
 
   function setDownloading(id, on) {

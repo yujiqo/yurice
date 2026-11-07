@@ -6,18 +6,23 @@ import qs.services
 Island {
   id: root
 
-  open: current === "wallsearch"
-  panel: current === "wallsearch" ? searchPanel : null
+  property string tab: "library"
+
+  open: current === "wallpapers"
+  panel: current === "wallpapers" ? managerPanel : null
   panelWidth: Theme.searchPanelWidth
   padding: (Theme.pillHeight - Theme.iconSize) / 2
   spacing: 0
   clickable: true
-  onClicked: request("wallsearch")
+  onClicked: request("wallpapers")
 
   Component {
-    id: searchPanel
+    id: managerPanel
 
-    WallpaperSearchPanel {}
+    WallpaperPanel {
+      tab: root.tab
+      onTabSelected: id => root.tab = id
+    }
   }
 
   Item {
@@ -67,7 +72,7 @@ Island {
 
     Row {
       Label {
-        text: WallSearch.searching ? "Searching wallpapers…" : "Find wallpapers"
+        text: WallSearch.searching ? "Searching wallpapers…" : "Manage wallpapers"
       }
 
       Item {
