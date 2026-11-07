@@ -124,7 +124,6 @@ Column {
       property string error: ""
 
       width: list.width
-      spacing: Theme.menuGap
 
       Connections {
         target: entry.modelData
@@ -196,6 +195,7 @@ Column {
 
       Collapse {
         width: parent.width
+        leading: Theme.menuGap
         shown: entry.asking
         onShownChanged: {
           if (shown) {
