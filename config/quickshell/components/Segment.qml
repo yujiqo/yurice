@@ -18,6 +18,13 @@ Item {
   implicitWidth: row.implicitWidth
   implicitHeight: Theme.pillHeight
 
+  HoverHighlight {
+    anchors.verticalCenter: parent.verticalCenter
+    x: -6
+    width: root.width + 12
+    active: root.clickable && mouse.containsMouse
+  }
+
   Row {
     id: row
     height: parent.height
@@ -49,6 +56,7 @@ Item {
     id: mouse
     anchors.fill: parent
     enabled: root.clickable
+    hoverEnabled: root.clickable
     acceptedButtons: Qt.LeftButton | Qt.RightButton
     cursorShape: Qt.PointingHandCursor
     onClicked: mouse => root.clicked(mouse)

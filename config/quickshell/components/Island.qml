@@ -138,9 +138,17 @@ Rectangle {
     width: parent.width
     height: Theme.pillHeight
     enabled: root.clickable
+    hoverEnabled: root.clickable
     acceptedButtons: Qt.LeftButton | Qt.RightButton
     cursorShape: Qt.PointingHandCursor
     onClicked: event => root.clicked(event)
+  }
+
+  HoverHighlight {
+    x: 3
+    y: 3
+    width: root.compactWidth - 6
+    active: root.clickable && mouse.containsMouse
   }
 
   Row {

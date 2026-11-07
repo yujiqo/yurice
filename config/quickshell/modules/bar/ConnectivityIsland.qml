@@ -10,6 +10,7 @@ Island {
   open: current === "wifi" || current === "bluetooth"
   panel: current === "wifi" ? wifiPanel : current === "bluetooth" ? bluetoothPanel : null
   panelIndex: current === "bluetooth" ? 1 : 0
+  spacing: 0
 
   readonly property var networkSegments: {
     const result = [];
@@ -37,15 +38,26 @@ Island {
   Repeater {
     model: root.networkSegments
 
-    Segment {
+    Row {
+      id: network
+
       required property var modelData
-      icon: modelData.icon
-      label: modelData.label
-      color: modelData.color
-      showLabel: root.expanded
-      clickable: true
-      onClicked: root.request("wifi")
-      onPressedChanged: root.held = pressed
+      required property int index
+
+      Item {
+        width: network.index > 0 ? Theme.pillSegmentGap : 0
+        height: 1
+      }
+
+      Segment {
+        icon: network.modelData.icon
+        label: network.modelData.label
+        color: network.modelData.color
+        showLabel: root.expanded
+        clickable: true
+        onClicked: root.request("wifi")
+        onPressedChanged: root.held = pressed
+      }
     }
   }
 
@@ -59,6 +71,10 @@ Island {
     id: bluetoothPanel
 
     BluetoothPanel {}
+  }
+
+  Divider {
+    shown: root.expanded
   }
 
   Segment {

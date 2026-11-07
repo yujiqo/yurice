@@ -31,6 +31,7 @@ Island {
   panelWidth: 280
   panel: shown === "brightness" ? brightnessPanel : shown === "volume" ? volumePanel : null
   panelIndex: shown === "volume" ? 1 : 0
+  spacing: 0
 
   onHoveredChanged: {
     if (hovered && osd !== "") {
@@ -102,6 +103,11 @@ Island {
     onClicked: root.request("brightness")
     onPressedChanged: root.held = pressed
     onWheel: event => Brightness.step(event.angleDelta.y > 0)
+  }
+
+  Divider {
+    visible: Brightness.available
+    shown: root.expanded
   }
 
   Segment {
