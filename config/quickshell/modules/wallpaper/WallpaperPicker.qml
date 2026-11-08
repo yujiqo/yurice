@@ -267,16 +267,26 @@ PanelWindow {
     onFinished: root.finishClose()
   }
 
+  Timer {
+    id: preloadDelay
+    interval: 6000
+    running: true
+    onTriggered: {
+      if (root.phase === "closed")
+        root.syncItems();
+    }
+  }
+
   Connections {
     target: Wallpapers
 
     function onWallpapersChanged() {
-      if (root.phase === "closed")
+      if (root.phase === "closed" && !preloadDelay.running)
         root.syncItems();
     }
 
     function onCurrentChanged() {
-      if (root.phase === "closed")
+      if (root.phase === "closed" && !preloadDelay.running)
         root.syncItems();
     }
 
