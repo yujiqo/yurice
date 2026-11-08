@@ -20,6 +20,7 @@ Singleton {
   property bool firmwareAvailable: false
   property string pendingPassword: ""
   property bool suspendPending: false
+  property bool preparingForSleep: false
 
   readonly property bool sessionLocked: phase === "locking" || phase === "locked" || phase === "unlocking"
   readonly property string userName: Quickshell.env("USER")
@@ -63,6 +64,17 @@ Singleton {
   onPhaseChanged: trySuspend()
   onSecuredChanged: trySuspend()
 
+  function handleSleepSignal(line) {
+    if (line === "b true") {
+      preparingForSleep = true;
+      lock();
+      if (revealAnim.running)
+        startReveal();
+    } else if (line === "b false") {
+      preparingForSleep = false;
+    }
+  }
+
   function snapshotReady(output, url) {
     if (phase !== "capturing")
       return;
@@ -102,10 +114,18 @@ Singleton {
   }
 
   function startReveal() {
-    if (phase !== "locking" || revealAnim.running)
+    if (phase !== "locking")
+      return;
+    if (preparingForSleep) {
+      readyTimeout.stop();
+      revealAnim.stop();
+      reveal = 1;
+      phase = "locked";
+      return;
+    }
+    if (revealAnim.running)
       return;
     readyTimeout.stop();
-    revealAnim.stop();
     revealAnim.to = 1;
     revealAnim.start();
   }
@@ -159,6 +179,8 @@ Singleton {
     suspendPending = false;
     phase = "idle";
     snapshots = {};
+    if (preparingForSleep)
+      lock();
   }
 
   function power(action) {
@@ -237,6 +259,32 @@ Singleton {
     running: true
     command: ["test", "-d", "/sys/firmware/efi"]
     onExited: code => root.firmwareAvailable = code === 0
+  }
+
+  Process {
+    running: !(root.preparingForSleep && root.secured && root.phase === "locked")
+    command: ["systemd-inhibit", "--what=sleep", "--mode=delay", "--who=yurice", "--why=Lock the screen before sleep", "sleep", "infinity"]
+  }
+
+  Process {
+    id: sleepWatch
+    running: true
+    command: ["busctl", "--system", "--timeout=1d", "wait", "org.freedesktop.login1", "/org/freedesktop/login1", "org.freedesktop.login1.Manager", "PrepareForSleep"]
+    stdout: SplitParser {
+      onRead: line => root.handleSleepSignal(line.trim())
+    }
+    onExited: code => {
+      if (code === 0)
+        running = true;
+      else
+        sleepWatchRetry.restart();
+    }
+  }
+
+  Timer {
+    id: sleepWatchRetry
+    interval: 1000
+    onTriggered: sleepWatch.running = true
   }
 
   Timer {
