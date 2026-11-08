@@ -7,6 +7,11 @@ Item {
   property bool checked: false
   signal toggled
 
+  function keyActivate() {
+    toggled();
+  }
+
+  activeFocusOnTab: true
   implicitWidth: 44
   implicitHeight: 26
 
@@ -49,6 +54,8 @@ Item {
       }
     }
   }
+
+  FocusRing {}
 
   MouseArea {
     anchors.fill: parent

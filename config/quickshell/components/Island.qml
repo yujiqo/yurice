@@ -1,8 +1,169 @@
 import QtQuick
 import qs.theme
+import qs.services
 
 Rectangle {
   id: root
+
+  function navTargets(node, found) {
+    for (const child of node.children) {
+      if (!child.visible || !child.enabled || child.opacity <= 0)
+        continue;
+      if (child.activeFocusOnTab)
+        found.push(child);
+      navTargets(child, found);
+    }
+    return found;
+  }
+
+  function focusedItem() {
+    const item = panelArea.Window.activeFocusItem;
+    for (let p = item; p; p = p.parent) {
+      if (p === panelLoader)
+        return item;
+    }
+    return null;
+  }
+
+  function centerOf(item) {
+    return item.mapToItem(panelArea, item.width / 2, item.height / 2);
+  }
+
+  function scrollerOf(item) {
+    for (let p = item.parent; p && p !== panelArea; p = p.parent) {
+      if (p.contentItem !== undefined && p.contentY !== undefined)
+        return p;
+    }
+    return null;
+  }
+
+  function reveal(item) {
+    const scroller = scrollerOf(item);
+    if (!scroller)
+      return;
+    const top = item.mapToItem(scroller.contentItem, 0, 0).y;
+    if (top < scroller.contentY)
+      scroller.contentY = top;
+    else if (top + item.height > scroller.contentY + scroller.height)
+      scroller.contentY = top + item.height - scroller.height;
+  }
+
+  function focusOn(item) {
+    item.forceActiveFocus();
+    reveal(item);
+  }
+
+  function moveFocus(dx, dy, canScroll) {
+    const targets = navTargets(panelLoader, []);
+    const from = focusedItem();
+    if (!from || !from.activeFocusOnTab && !(from instanceof TextInput)) {
+      if (targets.length > 0)
+        focusOn(targets[0]);
+      return targets.length > 0;
+    }
+    const origin = centerOf(from);
+    let best = null;
+    let bestScore = Infinity;
+    for (const target of targets) {
+      if (target === from)
+        continue;
+      const center = centerOf(target);
+      const along = (center.x - origin.x) * dx + (center.y - origin.y) * dy;
+      if (along < 2)
+        continue;
+      const across = Math.abs((center.x - origin.x) * dy) + Math.abs((center.y - origin.y) * dx);
+      const score = along + across * 3;
+      if (score < bestScore) {
+        best = target;
+        bestScore = score;
+      }
+    }
+    if (best) {
+      focusOn(best);
+      return true;
+    }
+    const scroller = scrollerOf(from);
+    if (scroller && dy !== 0 && canScroll) {
+      scroller.contentY = Math.max(0, Math.min(scroller.contentHeight - scroller.height, scroller.contentY + dy * from.height));
+      Qt.callLater(moveFocus, dx, dy, false);
+    }
+    return false;
+  }
+
+  function cycleFocus(delta) {
+    const targets = navTargets(panelLoader, []);
+    if (targets.length === 0)
+      return false;
+    const index = targets.indexOf(focusedItem());
+    focusOn(targets[index < 0 ? 0 : (index + delta + targets.length) % targets.length]);
+    return true;
+  }
+
+  function activateFocused() {
+    const item = focusedItem();
+    if (!item || !item.activeFocusOnTab)
+      return false;
+    if (item.keyActivate)
+      item.keyActivate();
+    else if (item.clicked)
+      item.clicked();
+    else
+      return false;
+    return true;
+  }
+
+  function handleNavKey(event) {
+    if (event.modifiers & (Qt.ControlModifier | Qt.AltModifier | Qt.MetaModifier))
+      return false;
+    let dx = 0;
+    let dy = 0;
+    switch (event.key) {
+    case Qt.Key_H:
+    case Qt.Key_Left:
+      dx = -1;
+      break;
+    case Qt.Key_L:
+    case Qt.Key_Right:
+      dx = 1;
+      break;
+    case Qt.Key_K:
+    case Qt.Key_Up:
+      dy = -1;
+      break;
+    case Qt.Key_J:
+    case Qt.Key_Down:
+      dy = 1;
+      break;
+    case Qt.Key_Tab:
+      return cycleFocus(1);
+    case Qt.Key_Backtab:
+      return cycleFocus(-1);
+    case Qt.Key_Return:
+    case Qt.Key_Enter:
+    case Qt.Key_Space:
+      return activateFocused();
+    default:
+      return false;
+    }
+    const item = focusedItem();
+    if (dx !== 0 && item?.keyAdjust) {
+      item.keyAdjust(dx);
+      return true;
+    }
+    moveFocus(dx, dy, true);
+    return true;
+  }
+
+  function focusFirstForKeyboard() {
+    if (!Panels.keyboard || !open)
+      return;
+    const item = focusedItem();
+    if (item && (item.activeFocusOnTab || item instanceof TextInput))
+      return;
+    const targets = navTargets(panelLoader, []);
+    if (targets.length > 0)
+      focusOn(targets[0]);
+  }
 
   default property alias content: row.data
   readonly property bool hovered: hover.hovered
@@ -25,7 +186,7 @@ Rectangle {
   property real switchSlide: 0
   property int switchDir: 1
   readonly property real progress: Math.max(0, Math.min(1, openSpring.value))
-  readonly property bool holding: hold || (panelLoader.item?.keepOpen ?? false)
+  readonly property bool holding: hold || (panelLoader.item?.keepOpen ?? false) || (open && Panels.keyboard)
 
   signal clicked(var mouse)
   signal request(string name)
@@ -169,6 +330,7 @@ Rectangle {
     transform: Translate {
       x: root.switchSlide
     }
+    Keys.onPressed: event => event.accepted = root.handleNavKey(event)
     Keys.onEscapePressed: root.dismissed()
 
     Loader {
@@ -177,6 +339,7 @@ Rectangle {
       active: root.open || openSpring.value > 0.01
       sourceComponent: root.shownPanel
       focus: true
+      onLoaded: Qt.callLater(root.focusFirstForKeyboard)
     }
   }
 

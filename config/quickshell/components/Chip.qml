@@ -12,6 +12,7 @@ Rectangle {
 
   signal clicked
 
+  activeFocusOnTab: available
   implicitWidth: row.implicitWidth + 24
   implicitHeight: 32
   radius: height / 2
@@ -54,6 +55,8 @@ Rectangle {
       font.pixelSize: Theme.menuSubtitleSize
     }
   }
+
+  FocusRing {}
 
   MouseArea {
     id: mouse

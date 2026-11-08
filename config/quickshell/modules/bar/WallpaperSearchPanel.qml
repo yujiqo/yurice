@@ -49,6 +49,7 @@ Column {
           leadingIcon: "search"
           clearable: true
           placeholder: "Search Wallhaven…"
+          escapeLeaves: true
           hint: WallSearch.hasApiKey && !WeebMode.hidesAdultFilters ? "" : "SFW"
           onAccepted: text => WallSearch.search(text)
         }
@@ -172,6 +173,7 @@ Column {
                 id: keyField
                 width: parent.width
                 placeholder: "Wallhaven API key"
+                navigable: true
                 onAccepted: key => {
                   WallSearch.setApiKey(key);
                   root.editingKey = false;

@@ -54,6 +54,8 @@ Item {
   signal powerRequested(string action)
   signal userSwitchRequested(int delta)
 
+  Keys.onTabPressed: event => event.accepted = true
+  Keys.onBacktabPressed: event => event.accepted = true
   Keys.onLeftPressed: {
     if (root.interactive && root.canSwitchUser)
       root.userSwitchRequested(-1);
@@ -208,6 +210,7 @@ Item {
         IconButton {
           anchors.verticalCenter: parent.verticalCenter
           visible: root.canSwitchUser
+          activeFocusOnTab: false
           color: Theme.surface
           icon: "chevron_left"
           onClicked: root.userSwitchRequested(-1)
@@ -230,6 +233,7 @@ Item {
         IconButton {
           anchors.verticalCenter: parent.verticalCenter
           visible: root.canSwitchUser
+          activeFocusOnTab: false
           color: Theme.surface
           icon: "chevron_right"
           onClicked: root.userSwitchRequested(1)

@@ -36,6 +36,7 @@ Column {
         leadingIcon: "sell"
         clearable: true
         placeholder: "Tags, up to 2 (e.g. scenery sky)"
+        escapeLeaves: true
         hint: Danbooru.safeOnly ? "SFW" : ""
         onAccepted: text => Danbooru.search(text)
 
@@ -88,6 +89,7 @@ Column {
             id: keyField
             width: parent.width
             placeholder: "Danbooru API key"
+            navigable: true
             onAccepted: key => {
               Danbooru.setCredentials(loginField.text, key);
               root.editingKey = false;

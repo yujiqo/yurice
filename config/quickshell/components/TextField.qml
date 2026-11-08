@@ -10,6 +10,7 @@ Rectangle {
   property string leadingIcon: ""
   property string hint: ""
   property bool clearable: false
+  property bool escapeLeaves: false
   default property alias trailing: trailingRow.data
 
   signal accepted(string text)
@@ -21,11 +22,16 @@ Rectangle {
     input.forceActiveFocus();
   }
 
+  function keyActivate() {
+    focusInput();
+  }
+
+  activeFocusOnTab: escapeLeaves
   implicitHeight: 46
   radius: Theme.menuItemRadius
   color: Theme.surfaceContainerHigh
   border.width: 2
-  border.color: input.activeFocus ? Theme.primary : "transparent"
+  border.color: input.activeFocus ? Theme.primary : root.activeFocus ? Theme.text : "transparent"
 
   Behavior on border.color {
     ColorAnimation {
@@ -70,11 +76,21 @@ Rectangle {
     font.family: Theme.labelFont
     font.pixelSize: Theme.menuTitleSize
     clip: true
+    activeFocusOnTab: false
     onAccepted: root.accepted(text)
     Keys.onPressed: event => {
       root.keyPressed(event);
       if (event.accepted)
         return;
+      if (root.escapeLeaves) {
+        if (event.key === Qt.Key_Escape) {
+          root.forceActiveFocus();
+          event.accepted = true;
+        } else if (event.key === Qt.Key_Up || event.key === Qt.Key_Down || event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab) {
+          root.forceActiveFocus();
+        }
+        return;
+      }
       if (event.key === Qt.Key_Escape) {
         root.canceled();
       } else if (event.key === Qt.Key_Down || (event.key === Qt.Key_Tab && !(event.modifiers & Qt.ShiftModifier))) {

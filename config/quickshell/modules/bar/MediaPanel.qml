@@ -409,6 +409,13 @@ Column {
       radius: playMouse.pressed ? 16 : 26
       color: Theme.music
       scale: playMouse.pressed ? 0.92 : 1
+      activeFocusOnTab: true
+
+      function keyActivate() {
+        root.player?.togglePlaying();
+      }
+
+      FocusRing {}
 
       Behavior on radius {
         NumberAnimation {

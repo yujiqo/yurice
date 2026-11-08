@@ -29,6 +29,7 @@ Singleton {
       return;
     marker.setText("locked");
     Wallpapers.pickerOpen = false;
+    Panels.close();
     snapshots = {};
     phase = "capturing";
     captureTimeout.restart();

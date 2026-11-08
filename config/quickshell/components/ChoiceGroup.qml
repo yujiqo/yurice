@@ -31,6 +31,16 @@ Item {
         readonly property real outer: height / 2
         property real inner: active ? height / 2 : 8
 
+        function keyActivate() {
+          root.selected(modelData.value);
+        }
+
+        activeFocusOnTab: true
+
+        FocusRing {
+          radius: 8
+        }
+
         width: active ? root.selectedWidth : root.compactWidth
         height: root.height
         topLeftRadius: first ? outer : inner

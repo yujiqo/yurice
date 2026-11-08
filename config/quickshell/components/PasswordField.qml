@@ -7,6 +7,7 @@ Rectangle {
   property alias text: input.text
   property string placeholder: "Password"
   property bool reveal: false
+  property bool navigable: false
 
   signal accepted(string text)
   signal canceled
@@ -15,11 +16,16 @@ Rectangle {
     input.forceActiveFocus();
   }
 
+  function keyActivate() {
+    focusInput();
+  }
+
+  activeFocusOnTab: navigable
   implicitHeight: 46
   radius: Theme.menuItemRadius
   color: Theme.surfaceContainerHigh
   border.width: 2
-  border.color: input.activeFocus ? Theme.primary : "transparent"
+  border.color: input.activeFocus ? Theme.primary : root.activeFocus ? Theme.text : "transparent"
 
   Behavior on border.color {
     ColorAnimation {
@@ -50,14 +56,20 @@ Rectangle {
     font.family: Theme.labelFont
     font.pixelSize: Theme.menuTitleSize
     clip: true
+    activeFocusOnTab: false
     onAccepted: root.accepted(text)
     Keys.onEscapePressed: root.canceled()
+    Keys.onPressed: event => {
+      if (!root.navigable && (event.key === Qt.Key_Tab || event.key === Qt.Key_Backtab))
+        event.accepted = true;
+    }
   }
 
   IconButton {
     anchors.right: parent.right
     anchors.rightMargin: 8
     anchors.verticalCenter: parent.verticalCenter
+    activeFocusOnTab: root.navigable
     icon: root.reveal ? "visibility_off" : "visibility"
     onClicked: root.reveal = !root.reveal
   }

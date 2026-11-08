@@ -237,6 +237,7 @@ Column {
         PasswordField {
           id: password
           width: parent.width
+          navigable: true
           onAccepted: psk => {
             entry.error = "";
             entry.modelData.connectWithPsk(psk);

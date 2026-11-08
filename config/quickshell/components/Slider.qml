@@ -23,6 +23,16 @@ Item {
 
   signal moved(real value)
 
+  function keyAdjust(direction) {
+    moved(Math.max(0, Math.min(1, value + direction * step)));
+  }
+
+  activeFocusOnTab: interactive
+
+  FocusRing {
+    anchors.margins: -2
+  }
+
   readonly property real handleWidth: 4
   readonly property real handleGap: 4
   readonly property real handleX: shown * (width - handleWidth)

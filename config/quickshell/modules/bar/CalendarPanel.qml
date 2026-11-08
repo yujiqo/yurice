@@ -117,6 +117,13 @@ Column {
       height: 34
       radius: height / 2
       color: active ? Theme.surfaceContainerHigh : "transparent"
+      activeFocusOnTab: !root.showingToday
+
+      function keyActivate() {
+        root.today();
+      }
+
+      FocusRing {}
 
       Behavior on width {
         NumberAnimation {

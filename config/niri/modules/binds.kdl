@@ -7,6 +7,22 @@ binds {
   Mod+Q repeat=false hotkey-overlay-title="Power menu" { spawn "qs" "ipc" "call" "power" "toggle"; }
   Mod+Alt+L repeat=false hotkey-overlay-title="Lock screen" { spawn "qs" "ipc" "call" "lock" "lock"; }
 
+  Mod+P repeat=false hotkey-overlay-title="Media" { spawn "qs" "ipc" "call" "panel" "toggle" "media"; }
+  Mod+G repeat=false hotkey-overlay-title="Wallpapers" { spawn "qs" "ipc" "call" "panel" "toggle" "wallpapers"; }
+  Mod+Shift+G repeat=false hotkey-overlay-title="Danbooru" { spawn "qs" "ipc" "call" "panel" "toggle" "danbooru"; }
+  Mod+Y repeat=false hotkey-overlay-title="Clipboard" { spawn "qs" "ipc" "call" "launcher" "toggleClipboard"; }
+  Mod+E repeat=false hotkey-overlay-title="Weather" { spawn "qs" "ipc" "call" "panel" "toggle" "weather"; }
+  Mod+Comma repeat=false hotkey-overlay-title="Calendar" { spawn "qs" "ipc" "call" "panel" "toggle" "calendar"; }
+  Mod+A repeat=false hotkey-overlay-title="Volume" { spawn "qs" "ipc" "call" "panel" "toggle" "volume"; }
+  Mod+Shift+A repeat=false hotkey-overlay-title="Brightness" { spawn "qs" "ipc" "call" "panel" "toggle" "brightness"; }
+  Mod+N repeat=false hotkey-overlay-title="Wi-Fi" { spawn "qs" "ipc" "call" "panel" "toggle" "wifi"; }
+  Mod+Shift+N repeat=false hotkey-overlay-title="Bluetooth" { spawn "qs" "ipc" "call" "panel" "toggle" "bluetooth"; }
+  Mod+B repeat=false hotkey-overlay-title="Battery" { spawn "qs" "ipc" "call" "panel" "toggle" "battery"; }
+  Mod+Z repeat=false hotkey-overlay-title="Theme panel" { spawn "qs" "ipc" "call" "panel" "toggle" "theme"; }
+  Mod+Shift+Z repeat=false hotkey-overlay-title="Switch theme" { spawn "qs" "ipc" "call" "theme" "toggle"; }
+  Mod+S repeat=false hotkey-overlay-title="Weeb panel" { spawn "qs" "ipc" "call" "panel" "toggle" "weeb"; }
+  Mod+Shift+S repeat=false hotkey-overlay-title="Switch weeb/normie" { spawn "qs" "ipc" "call" "weeb" "toggle"; }
+
   XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+ -l 1.0"; }
   XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-"; }
   XF86AudioMute        allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }

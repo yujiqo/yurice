@@ -16,6 +16,7 @@ Rectangle {
 
   signal clicked
 
+  activeFocusOnTab: true
   implicitHeight: Theme.menuItemHeight
   radius: Theme.menuItemRadius
   color: active ? accent : mouse.containsMouse ? Theme.surfaceContainerHigh : "transparent"
@@ -25,6 +26,8 @@ Rectangle {
       duration: Theme.animHover
     }
   }
+
+  FocusRing {}
 
   MouseArea {
     id: mouse

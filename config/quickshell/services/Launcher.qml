@@ -305,6 +305,12 @@ Singleton {
     function toggle(): void {
       root.toggle();
     }
+    function toggleClipboard(): void {
+      if (root.mode === "clipboard")
+        root.close();
+      else
+        root.open("clipboard");
+    }
     function close(): void {
       root.close();
     }

@@ -19,12 +19,19 @@ Item {
   signal clicked
   signal rightClicked
 
+  activeFocusOnTab: true
+
   Rectangle {
     id: frame
     anchors.fill: parent
     anchors.margins: 3
     radius: Theme.menuItemRadius - 2
     color: Theme.surfaceContainerHigh
+
+    FocusRing {
+      target: root
+    }
+
     scale: mouse.pressed ? 0.96 : mouse.containsMouse ? 1.03 : 1
     z: mouse.containsMouse ? 1 : 0
 

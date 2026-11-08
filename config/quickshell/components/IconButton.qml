@@ -8,6 +8,7 @@ Rectangle {
   property color iconColor: Theme.textVariant
   signal clicked
 
+  activeFocusOnTab: true
   implicitWidth: 32
   implicitHeight: 32
   radius: width / 2
@@ -25,6 +26,8 @@ Rectangle {
     color: root.iconColor
     size: Theme.menuIconSize
   }
+
+  FocusRing {}
 
   MouseArea {
     id: mouse
