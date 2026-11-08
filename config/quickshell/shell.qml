@@ -5,8 +5,11 @@ import qs.theme
 import qs.services
 import qs.modules.bar
 import qs.modules.wallpaper
+import qs.modules.lock
 
 ShellRoot {
+  settings.watchFiles: !SessionLock.sessionLocked
+
   Component.onCompleted: Keyboard.watch()
 
   Variants {
@@ -16,6 +19,8 @@ ShellRoot {
   }
 
   WallpaperPicker {}
+
+  LockScreen {}
 
   Variants {
     model: Quickshell.screens

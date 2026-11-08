@@ -25,9 +25,9 @@ Singleton {
       open();
   }
 
-  function run(action) {
+  function run(action, args) {
     close();
-    runner.command = ["systemctl", action];
+    runner.command = ["systemctl", action].concat(args ?? []);
     runner.running = true;
   }
 

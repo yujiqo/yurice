@@ -5,6 +5,7 @@ binds {
   Mod+T hotkey-overlay-title="Open a Terminal: kitty" { spawn "kitty"; }
   Alt+Space repeat=false { spawn "qs" "ipc" "call" "launcher" "toggle"; }
   Mod+Q repeat=false hotkey-overlay-title="Power menu" { spawn "qs" "ipc" "call" "power" "toggle"; }
+  Mod+Alt+L repeat=false hotkey-overlay-title="Lock screen" { spawn "qs" "ipc" "call" "lock" "lock"; }
 
   XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+ -l 1.0"; }
   XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-"; }
