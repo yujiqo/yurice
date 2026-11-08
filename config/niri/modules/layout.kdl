@@ -32,7 +32,7 @@ layout {
   }
 
   border {
-    // off
+    off
     width 3
 
     // active-color "#ff6363"
