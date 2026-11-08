@@ -154,16 +154,6 @@ Rectangle {
     return true;
   }
 
-  function focusFirstForKeyboard() {
-    if (!Panels.keyboard || !open)
-      return;
-    const item = focusedItem();
-    if (item && (item.activeFocusOnTab || item instanceof TextInput))
-      return;
-    const targets = navTargets(panelLoader, []);
-    if (targets.length > 0)
-      focusOn(targets[0]);
-  }
 
   default property alias content: row.data
   readonly property bool hovered: hover.hovered
@@ -339,7 +329,6 @@ Rectangle {
       active: root.open || openSpring.value > 0.01
       sourceComponent: root.shownPanel
       focus: true
-      onLoaded: Qt.callLater(root.focusFirstForKeyboard)
     }
   }
 
