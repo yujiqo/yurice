@@ -151,7 +151,8 @@ Singleton {
       root.failAuth("Wrong password");
     }
     function onError(message) {
-      root.failAuth("Can't log in right now");
+      console.warn("GreeterSession: greetd error:", message);
+      root.failAuth(root.passwordSent ? "Wrong password" : "Can't log in right now");
     }
     function onReadyToLaunch() {
       lastUser.setText(root.userName);
