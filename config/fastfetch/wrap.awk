@@ -23,6 +23,7 @@ function emit(s) {
   gsub(/\{/, "{{", s)
   gsub(/\033/, "\\u001b", s)
   printf "%s{\"type\":\"custom\",\"format\":\"%s\"}", (count++ ? "," : ""), s
+  rows = count
 }
 
 function value_row(line, col, prefix, rest, room, cur, used, gap, word, width) {
@@ -80,5 +81,5 @@ $0 == "" {
 }
 
 END {
-  printf "\n%d\n", count
+  printf "\n%d\n", rows
 }
