@@ -67,7 +67,7 @@ Item {
         anchors.centerIn: parent
         visible: root.shown.status !== Image.Ready
         text: "music_note"
-        color: Theme.onPrimaryContainer
+        color: Theme.textOnPrimaryContainer
         size: parent.width * 0.4
         fill: 1
       }

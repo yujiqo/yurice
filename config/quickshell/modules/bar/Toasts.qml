@@ -152,7 +152,7 @@ ListView {
             Icon {
               anchors.centerIn: parent
               text: toast.symbol !== "" ? toast.symbol : "notifications"
-              color: Theme.onSecondaryContainer
+              color: Theme.textOnSecondaryContainer
             }
           }
 

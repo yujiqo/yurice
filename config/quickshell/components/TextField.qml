@@ -66,7 +66,7 @@ Rectangle {
     verticalAlignment: TextInput.AlignVCenter
     color: Theme.text
     selectionColor: Theme.primary
-    selectedTextColor: Theme.onPrimary
+    selectedTextColor: Theme.textOnPrimary
     font.family: Theme.labelFont
     font.pixelSize: Theme.menuTitleSize
     clip: true

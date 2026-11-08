@@ -10,19 +10,19 @@ Column {
   readonly property var profiles: {
     const list = [
       {
-        profile: PowerProfile.PowerSaver,
+        value: PowerProfile.PowerSaver,
         icon: "eco",
         label: "Saver"
       },
       {
-        profile: PowerProfile.Balanced,
+        value: PowerProfile.Balanced,
         icon: "balance",
         label: "Balanced"
       }
     ];
     if (PowerProfiles.hasPerformanceProfile)
       list.push({
-        profile: PowerProfile.Performance,
+        value: PowerProfile.Performance,
         icon: "speed",
         label: "Performance"
       });
@@ -165,98 +165,10 @@ Column {
     }
   }
 
-  Item {
-    id: profileGroup
-
-    readonly property real gap: 4
-    readonly property real compactWidth: 52
-    readonly property real selectedWidth: width - (root.profiles.length - 1) * (compactWidth + gap)
-
+  ChoiceGroup {
     width: parent.width
-    height: 44
-
-    Row {
-      spacing: profileGroup.gap
-
-      Repeater {
-        model: root.profiles
-
-        Rectangle {
-          id: button
-
-          required property var modelData
-          required property int index
-          readonly property bool selected: PowerProfiles.profile === modelData.profile
-          readonly property bool first: index === 0
-          readonly property bool last: index === root.profiles.length - 1
-          readonly property real outer: height / 2
-          property real inner: selected ? height / 2 : 8
-
-          width: selected ? profileGroup.selectedWidth : profileGroup.compactWidth
-          height: profileGroup.height
-          topLeftRadius: first ? outer : inner
-          bottomLeftRadius: first ? outer : inner
-          topRightRadius: last ? outer : inner
-          bottomRightRadius: last ? outer : inner
-          color: selected ? Theme.primary : buttonMouse.containsMouse ? Theme.surfaceContainerHighest : Theme.surfaceContainerHigh
-          scale: buttonMouse.pressed ? 0.95 : 1
-
-          Behavior on width {
-            NumberAnimation {
-              duration: Theme.animSlide
-              easing.type: Easing.OutCubic
-            }
-          }
-          Behavior on inner {
-            NumberAnimation {
-              duration: Theme.animSlide
-              easing.type: Easing.OutCubic
-            }
-          }
-          Behavior on color {
-            ColorAnimation {
-              duration: Theme.animColor
-            }
-          }
-          Behavior on scale {
-            NumberAnimation {
-              duration: Theme.animPress
-            }
-          }
-
-          Row {
-            anchors.centerIn: parent
-            height: parent.height
-
-            Icon {
-              anchors.verticalCenter: parent.verticalCenter
-              text: button.modelData.icon
-              color: button.selected ? Theme.onPrimary : Theme.textVariant
-              size: Theme.menuIconSize
-            }
-
-            Reveal {
-              anchors.verticalCenter: parent.verticalCenter
-              shown: button.selected
-              leading: 8
-
-              Label {
-                text: button.modelData.label
-                color: Theme.onPrimary
-                pixelSize: Theme.menuSubtitleSize + 1
-              }
-            }
-          }
-
-          MouseArea {
-            id: buttonMouse
-            anchors.fill: parent
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
-            onClicked: PowerProfiles.profile = button.modelData.profile
-          }
-        }
-      }
-    }
+    options: root.profiles
+    current: PowerProfiles.profile
+    onSelected: value => PowerProfiles.profile = value
   }
 }

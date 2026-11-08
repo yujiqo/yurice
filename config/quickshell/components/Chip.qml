@@ -41,7 +41,7 @@ Rectangle {
       anchors.verticalCenter: parent.verticalCenter
       visible: root.icon !== ""
       text: root.icon
-      color: root.selected ? Theme.onPrimary : Theme.textVariant
+      color: root.selected ? Theme.textOnPrimary : Theme.textVariant
       size: Theme.iconSize + 2
     }
 
@@ -49,7 +49,7 @@ Rectangle {
       anchors.verticalCenter: parent.verticalCenter
       visible: root.text !== ""
       text: root.text
-      color: root.selected ? Theme.onPrimary : Theme.text
+      color: root.selected ? Theme.textOnPrimary : Theme.text
       font.family: Theme.labelFont
       font.pixelSize: Theme.menuSubtitleSize
     }

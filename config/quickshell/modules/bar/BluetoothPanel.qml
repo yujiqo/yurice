@@ -139,13 +139,13 @@ Column {
     Spinner {
       anchors.verticalCenter: parent.verticalCenter
       visible: item.busy
-      tint: item.device.connected ? Theme.onPrimary : Theme.primary
+      tint: item.device.connected ? Theme.textOnPrimary : Theme.primary
     }
 
     IconButton {
       visible: (item.device.paired || item.device.bonded) && !item.busy
       icon: "delete"
-      iconColor: item.device.connected ? Theme.onPrimary : Theme.textVariant
+      iconColor: item.device.connected ? Theme.textOnPrimary : Theme.textVariant
       onClicked: item.device.forget()
     }
   }

@@ -108,13 +108,13 @@ Item {
             anchors.horizontalCenter: parent.horizontalCenter
             text: button.modelData.icon
             size: 30
-            color: button.isArmed ? Theme.surface : button.isSelected ? Theme.onPrimary : Theme.text
+            color: button.isArmed ? Theme.surface : button.isSelected ? Theme.textOnPrimary : Theme.text
           }
 
           Text {
             anchors.horizontalCenter: parent.horizontalCenter
             text: button.isArmed ? "Press again" : button.modelData.name
-            color: button.isArmed ? Theme.surface : button.isSelected ? Theme.onPrimary : Theme.text
+            color: button.isArmed ? Theme.surface : button.isSelected ? Theme.textOnPrimary : Theme.text
             font.family: Theme.labelFont
             font.pixelSize: Theme.menuSubtitleSize
           }

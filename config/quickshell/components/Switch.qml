@@ -30,7 +30,7 @@ Item {
     width: size
     height: size
     radius: size / 2
-    color: root.checked ? Theme.onPrimary : Theme.outline
+    color: root.checked ? Theme.textOnPrimary : Theme.outline
     Behavior on x {
       NumberAnimation {
         duration: Theme.animMove

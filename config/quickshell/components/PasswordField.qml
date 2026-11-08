@@ -46,7 +46,7 @@ Rectangle {
     echoMode: root.reveal ? TextInput.Normal : TextInput.Password
     color: Theme.text
     selectionColor: Theme.primary
-    selectedTextColor: Theme.onPrimary
+    selectedTextColor: Theme.textOnPrimary
     font.family: Theme.labelFont
     font.pixelSize: Theme.menuTitleSize
     clip: true

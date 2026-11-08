@@ -42,12 +42,12 @@ Singleton {
 
   // --- Material roles ---
   readonly property color primary: palette.primary || "#80d5cb"
-  readonly property color onPrimary: palette.onPrimary || "#003733"
+  readonly property color textOnPrimary: palette.onPrimary || "#003733"
   readonly property color primaryContainer: palette.primaryContainer || "#00504a"
-  readonly property color onPrimaryContainer: palette.onPrimaryContainer || "#9cf2e7"
+  readonly property color textOnPrimaryContainer: palette.onPrimaryContainer || "#9cf2e7"
   readonly property color secondary: palette.secondary || "#b1ccc7"
   readonly property color secondaryContainer: palette.secondaryContainer || "#324b48"
-  readonly property color onSecondaryContainer: palette.onSecondaryContainer || "#cce8e3"
+  readonly property color textOnSecondaryContainer: palette.onSecondaryContainer || "#cce8e3"
   readonly property color tertiary: palette.tertiary || "#adcae6"
   readonly property color error: palette.error || "#ffb4ab"
 

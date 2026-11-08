@@ -120,7 +120,7 @@ Column {
             anchors.centerIn: parent
             visible: !parent.hasIcon
             text: (appRow.modelData.entry?.name ?? "?").charAt(0).toUpperCase()
-            color: Theme.onPrimaryContainer
+            color: Theme.textOnPrimaryContainer
             font.family: Theme.labelFont
             font.pixelSize: 18
             font.bold: true
@@ -133,7 +133,7 @@ Column {
         visible: appRow.active
         rightPadding: 6
         text: "↵"
-        color: Theme.onPrimary
+        color: Theme.textOnPrimary
         font.family: Theme.labelFont
         font.pixelSize: Theme.menuTitleSize
       }

@@ -13,6 +13,7 @@ Singleton {
   readonly property string stateDir: home + "/.local/state/yurice"
   readonly property string matugenConfig: Quickshell.shellDir + "/../matugen/config.toml"
 
+  property bool stateLoaded: false
   property list<string> wallpapers: []
   readonly property string current: state.path || (wallpapers.length > 0 ? wallpapers[0] : "")
   property var resolutions: ({})
@@ -108,7 +109,8 @@ Singleton {
       _pendingPalette = path;
       return;
     }
-    matugen.command = ["matugen", "image", path, "-c", matugenConfig, "--source-color-index", "0", "-q"];
+    matugen.mode = ThemeMode.mode;
+    matugen.command = ["matugen", "image", path, "-c", matugenConfig, "-m", matugen.mode, "--source-color-index", "0", "-q"];
     matugen.running = true;
   }
 
@@ -138,12 +140,15 @@ Singleton {
 
   Process {
     id: matugen
+    property string mode: ""
     stderr: StdioCollector {
       id: matugenErr
     }
     onExited: exitCode => {
       if (exitCode !== 0)
         console.warn("Wallpapers: matugen failed:", matugenErr.text);
+      else
+        ThemeMode.markApplied(mode);
       Theme.reloadPalette();
       if (root._pendingPalette !== "") {
         const next = root._pendingPalette;
@@ -178,6 +183,8 @@ Singleton {
     watchChanges: true
     printErrors: false
     onFileChanged: reload()
+    onLoaded: root.stateLoaded = true
+    onLoadFailed: root.stateLoaded = true
 
     JsonAdapter {
       id: state

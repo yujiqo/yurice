@@ -94,7 +94,7 @@ Item {
       Icon {
         anchors.centerIn: parent
         text: "check"
-        color: Theme.onPrimary
+        color: Theme.textOnPrimary
         size: 16
       }
     }

@@ -201,7 +201,7 @@ Column {
         Spinner {
           anchors.verticalCenter: parent.verticalCenter
           visible: entry.modelData.stateChanging
-          tint: entry.modelData.connected ? Theme.onPrimary : Theme.primary
+          tint: entry.modelData.connected ? Theme.textOnPrimary : Theme.primary
         }
 
         Icon {
@@ -218,7 +218,7 @@ Column {
         IconButton {
           visible: entry.modelData.known && !entry.modelData.stateChanging
           icon: "delete"
-          iconColor: entry.modelData.connected ? Theme.onPrimary : Theme.textVariant
+          iconColor: entry.modelData.connected ? Theme.textOnPrimary : Theme.textVariant
           onClicked: entry.modelData.forget()
         }
       }

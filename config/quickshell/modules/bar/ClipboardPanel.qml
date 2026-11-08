@@ -122,7 +122,7 @@ Column {
 
       IconButton {
         icon: "close"
-        iconColor: clipRow.active ? Theme.onPrimary : Theme.textVariant
+        iconColor: clipRow.active ? Theme.textOnPrimary : Theme.textVariant
         onClicked: Launcher.remove(clipRow.modelData)
       }
     }

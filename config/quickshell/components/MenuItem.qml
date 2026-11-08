@@ -7,7 +7,7 @@ Rectangle {
   property string icon: ""
   property color iconColor: Theme.primary
   property color accent: Theme.primary
-  readonly property color onActive: Theme.onPrimary
+  readonly property color activeContent: Theme.textOnPrimary
   property string title: ""
   property string subtitle: ""
   property bool active: false
@@ -46,7 +46,7 @@ Rectangle {
       id: iconText
       visible: !root.leading
       text: root.icon
-      color: root.active ? root.onActive : root.iconColor
+      color: root.active ? root.activeContent : root.iconColor
       size: Theme.menuIconSize
     }
 
@@ -66,7 +66,7 @@ Rectangle {
     Label {
       width: parent.width
       text: root.title
-      color: root.active ? root.onActive : Theme.text
+      color: root.active ? root.activeContent : Theme.text
       pixelSize: Theme.menuTitleSize
     }
 
@@ -74,7 +74,7 @@ Rectangle {
       width: parent.width
       text: root.subtitle
       visible: text !== ""
-      color: root.active ? root.onActive : Theme.textVariant
+      color: root.active ? root.activeContent : Theme.textVariant
       opacity: root.active ? 0.8 : 1
       pixelSize: Theme.menuSubtitleSize
     }

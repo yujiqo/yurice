@@ -133,6 +133,11 @@ ShellRoot {
           onRequest: name => bar.request(name)
           onDismissed: bar.dropdown = ""
         }
+        ThemeIsland {
+          current: bar.dropdown
+          onRequest: name => bar.request(name)
+          onDismissed: bar.dropdown = ""
+        }
         WallpaperIsland {
           current: bar.dropdown
           onRequest: name => bar.request(name)

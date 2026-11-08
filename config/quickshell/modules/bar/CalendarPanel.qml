@@ -263,7 +263,7 @@ Column {
         Text {
           anchors.centerIn: parent
           text: cell.day.getDate()
-          color: cell.isToday ? Theme.onPrimary : !cell.inMonth ? Theme.outline : cell.weekend ? Theme.textVariant : Theme.text
+          color: cell.isToday ? Theme.textOnPrimary : !cell.inMonth ? Theme.outline : cell.weekend ? Theme.textVariant : Theme.text
           opacity: cell.inMonth || cell.isToday ? 1 : 0.6
           font.family: Theme.labelFont
           font.pixelSize: Theme.menuTitleSize
