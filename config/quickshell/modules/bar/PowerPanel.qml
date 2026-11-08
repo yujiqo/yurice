@@ -44,7 +44,10 @@ Item {
       return;
     }
     armed = "";
-    Session.run(action.id);
+    if (action.id === "suspend")
+      SessionLock.lockAndSuspend();
+    else
+      Session.run(action.id);
   }
 
   function move(delta) {
@@ -53,6 +56,17 @@ Item {
       armed = "";
   }
 
+  Keys.onPressed: event => {
+    if (event.modifiers & (Qt.ControlModifier | Qt.AltModifier | Qt.MetaModifier))
+      return;
+    if (event.key === Qt.Key_H)
+      move(-1);
+    else if (event.key === Qt.Key_L)
+      move(1);
+    else
+      return;
+    event.accepted = true;
+  }
   Keys.onLeftPressed: move(-1)
   Keys.onRightPressed: move(1)
   Keys.onTabPressed: move(1)

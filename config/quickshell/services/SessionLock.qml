@@ -19,6 +19,7 @@ Singleton {
   property var readySurfaces: ({})
   property bool firmwareAvailable: false
   property string pendingPassword: ""
+  property bool suspendPending: false
 
   readonly property bool sessionLocked: phase === "locking" || phase === "locked" || phase === "unlocking"
   readonly property string userName: Quickshell.env("USER")
@@ -28,12 +29,39 @@ Singleton {
     if (phase !== "idle")
       return;
     marker.setText("locked");
+    const overlayOpen = Wallpapers.pickerOpen || Panels.keyboard || Session.isOpen || Launcher.isOpen;
     Wallpapers.pickerOpen = false;
     Panels.close();
+    Session.close();
+    Launcher.close();
+    if (overlayOpen) {
+      phase = "settling";
+      settleDelay.restart();
+    } else {
+      startCapture();
+    }
+  }
+
+  function startCapture() {
     snapshots = {};
     phase = "capturing";
     captureTimeout.restart();
   }
+
+  function lockAndSuspend() {
+    suspendPending = true;
+    lock();
+  }
+
+  function trySuspend() {
+    if (!suspendPending || phase !== "locked" || !secured)
+      return;
+    suspendPending = false;
+    Session.run("suspend");
+  }
+
+  onPhaseChanged: trySuspend()
+  onSecuredChanged: trySuspend()
 
   function snapshotReady(output, url) {
     if (phase !== "capturing")
@@ -128,6 +156,7 @@ Singleton {
 
   function finishUnlock() {
     marker.setText("");
+    suspendPending = false;
     phase = "idle";
     snapshots = {};
   }
@@ -151,6 +180,12 @@ Singleton {
       else if (root.phase === "unlocking")
         root.finishUnlock();
     }
+  }
+
+  Timer {
+    id: settleDelay
+    interval: Theme.animLockSettle
+    onTriggered: root.startCapture()
   }
 
   Timer {

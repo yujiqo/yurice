@@ -140,6 +140,7 @@ Singleton {
   readonly property int animMove: 250
   readonly property int animWallpaper: 800
   readonly property int animLock: 550
+  readonly property int animLockSettle: 450
   readonly property real lockZoom: 0.25
   readonly property int animPickerFade: 200
   readonly property real animSlowdown: 1.7
