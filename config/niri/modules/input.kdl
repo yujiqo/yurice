@@ -1,0 +1,43 @@
+input {
+  keyboard {
+    repeat-delay 300
+    repeat-rate 30
+  }
+
+  touchpad {
+    tap
+    dwt
+    natural-scroll
+    accel-profile "adaptive"
+    scroll-factor 0.5
+  }
+
+  mouse {
+    // off
+    // natural-scroll
+    // accel-speed 0.2
+    // accel-profile "flat"
+    // scroll-factor 0.5
+    // scroll-method "no-scroll"
+  }
+
+  trackpoint {
+    // off
+    accel-speed -0.6
+    accel-profile "adaptive"
+  }
+
+  focus-follows-mouse max-scroll-amount="0%"
+
+  mod-key "Super"
+}
+
+cursor {
+  xcursor-size 15
+}
+
+gestures {
+  hot-corners {
+    off
+  }
+}
