@@ -26,7 +26,7 @@ Column {
     visible: Wallpapers.wallpapers.length === 0
     horizontalAlignment: Text.AlignHCenter
     verticalAlignment: Text.AlignVCenter
-    text: "No wallpapers in ~/Pictures/Wallpapers"
+    text: "No wallpapers in " + Settings.displayPath(Wallpapers.directory)
     color: Theme.textVariant
     font.family: Theme.labelFont
     font.pixelSize: Theme.menuTitleSize

@@ -8,7 +8,7 @@ Singleton {
   id: root
 
   readonly property bool safeOnly: settings.safeOnly
-  readonly property string directory: Quickshell.env("HOME") + "/Pictures/Danbooru"
+  readonly property string directory: Settings.danbooruDirectory
   readonly property string userAgent: "yurice/1.0 (quickshell danbooru widget)"
   readonly property string apiBase: "https://danbooru.donmai.us"
   readonly property int pageSize: 30
@@ -290,7 +290,7 @@ Singleton {
       onExited: code => {
         root.setDownloading(dl.name, false);
         if (code === 0) {
-          root.showNotice("Saved to ~/Pictures/Danbooru");
+          root.showNotice("Saved to " + Settings.displayPath(root.directory));
         } else {
           root.showNotice("Couldn't save image");
           console.warn("Danbooru: download failed", dl.url);

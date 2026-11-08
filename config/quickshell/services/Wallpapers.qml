@@ -9,7 +9,7 @@ Singleton {
   id: root
 
   readonly property string home: Quickshell.env("HOME")
-  property string directory: home + "/Pictures/Wallpapers"
+  readonly property string directory: Settings.wallpaperDirectory
   readonly property string stateDir: home + "/.local/state/yurice"
   readonly property string matugenConfig: Quickshell.shellDir + "/../matugen/config.toml"
 

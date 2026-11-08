@@ -37,3 +37,11 @@ require("efm")
 -- completion --
 ----------------
 require("cmp")
+
+---------------------
+-- custom settings --
+---------------------
+local custom = vim.fn.expand("~/.config/yurice/custom/nvim/init.lua")
+if vim.fn.filereadable(custom) == 1 then
+	dofile(custom)
+end

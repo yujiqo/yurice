@@ -46,3 +46,6 @@ function fish_greeting; end
 
 # path for uv tools
 fish_add_path "~/.local/bin"
+
+set -l custom ~/.config/yurice/custom/fish/config.fish
+test -f $custom; and source $custom
