@@ -26,7 +26,7 @@ Column {
     visible: Wallpapers.wallpapers.length === 0
     horizontalAlignment: Text.AlignHCenter
     verticalAlignment: Text.AlignVCenter
-    text: "No wallpapers in " + Settings.displayPath(Wallpapers.directory)
+    text: Wallpapers.hideUnsafe ? "No safe wallpapers yet, mark some in weeb mode" : "No wallpapers in " + Settings.displayPath(Wallpapers.directory)
     color: Theme.textVariant
     font.family: Theme.labelFont
     font.pixelSize: Theme.menuTitleSize
@@ -35,14 +35,14 @@ Column {
   GridView {
     id: grid
 
-    readonly property int columns: 3
+    readonly property int columns: 2
 
     width: parent.width
     height: Math.min(contentHeight, root.maxHeight)
     visible: Wallpapers.wallpapers.length > 0
     clip: true
     cellWidth: width / columns
-    cellHeight: Theme.thumbHeight + 6
+    cellHeight: Theme.libraryThumbHeight
     boundsBehavior: Flickable.StopAtBounds
     interactive: contentHeight > height
     model: ScriptModel {
@@ -111,8 +111,10 @@ Column {
 
       showResolution: hovered && !active && !working
       checked: Wallpapers.current === modelData
+      badged: Wallpapers.isSafe(modelData)
       dimmed: working
       onClicked: root.selected = active ? "" : modelData
+      onRightClicked: Wallpapers.toggleSafe(modelData)
 
       Text {
         anchors.centerIn: parent
@@ -199,6 +201,16 @@ Column {
             onClicked: {
               root.selected = "";
               WallpaperTools.upscale(tile.modelData);
+            }
+          }
+
+          Chip {
+            width: tile.frame.width - 24
+            icon: "verified_user"
+            text: tile.badged ? "Unmark safe" : "Mark safe"
+            onClicked: {
+              root.selected = "";
+              Wallpapers.toggleSafe(tile.modelData);
             }
           }
 

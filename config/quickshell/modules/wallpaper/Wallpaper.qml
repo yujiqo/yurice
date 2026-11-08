@@ -63,6 +63,16 @@ PanelWindow {
     old.path = "";
   }
 
+  function clearImages() {
+    if (path !== "" || blank.opacity < 1)
+      return;
+    fade.stop();
+    for (const image of [a, b]) {
+      image.opacity = 0;
+      image.path = "";
+    }
+  }
+
   NumberAnimation {
     id: fade
     property: "opacity"
@@ -91,5 +101,21 @@ PanelWindow {
   }
   WallpaperImage {
     id: b
+  }
+
+  Rectangle {
+    id: blank
+    anchors.fill: parent
+    z: 2
+    color: Theme.surfaceContainerHigh
+    opacity: Wallpapers.ready && root.path === "" ? 1 : 0
+    onOpacityChanged: root.clearImages()
+
+    Behavior on opacity {
+      NumberAnimation {
+        duration: Theme.animWallpaper
+        easing.type: Theme.easeOut
+      }
+    }
   }
 }

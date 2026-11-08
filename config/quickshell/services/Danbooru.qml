@@ -123,7 +123,26 @@ Singleton {
     proc.running = true;
   }
 
+  function clearResults() {
+    requestId++;
+    phase = "idle";
+    results = [];
+    hasMore = false;
+    loadingMore = false;
+    error = "";
+  }
+
+  Connections {
+    target: WeebMode
+    function onHidesDanbooruChanged() {
+      if (WeebMode.hidesDanbooru)
+        root.clearResults();
+    }
+  }
+
   function search(q) {
+    if (WeebMode.hidesDanbooru)
+      return;
     query = q.trim();
     settings.query = query;
     settingsFile.writeAdapter();
@@ -146,7 +165,7 @@ Singleton {
   }
 
   function loadMore() {
-    if (phase !== "results" || !hasMore || loadingMore)
+    if (WeebMode.hidesDanbooru || phase !== "results" || !hasMore || loadingMore)
       return;
     loadingMore = true;
     fetch(page + 1, (res, err) => {
@@ -183,7 +202,7 @@ Singleton {
 
   function save(item) {
     const name = fileName(item);
-    if (downloads[name] || saved[name])
+    if (WeebMode.hidesDanbooru || downloads[name] || saved[name])
       return;
     setDownloading(name, true);
     const proc = downloader.createObject(root, {

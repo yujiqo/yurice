@@ -23,8 +23,13 @@ Singleton {
   readonly property bool hasApiKey: apiKey !== ""
   readonly property string resolution: Wallpapers.screenResolution
 
-  readonly property string categories: filters.categories
-  readonly property string purity: hasApiKey ? filters.purity : "100"
+  readonly property string categories: {
+    if (!WeebMode.hidesAnimeFilter)
+      return filters.categories;
+    const bits = filters.categories[0] + "0" + filters.categories[2];
+    return bits === "000" ? "100" : bits;
+  }
+  readonly property string purity: hasApiKey && !WeebMode.hidesAdultFilters ? filters.purity : "100"
   readonly property string sorting: filters.sorting
   readonly property bool atleast: filters.atleast
 
@@ -44,11 +49,26 @@ Singleton {
   }
 
   function toggleBit(name, index) {
+    const hidesAnime = name === "categories" && WeebMode.hidesAnimeFilter;
+    if (name === "purity" && WeebMode.hidesAdultFilters || hidesAnime && index === 1)
+      return;
     const bits = filters[name].split("");
     bits[index] = bits[index] === "1" ? "0" : "1";
-    if (!bits.includes("1"))
+    if (!bits.some((bit, i) => bit === "1" && !(hidesAnime && i === 1)))
       return;
     setFilter(name, bits.join(""));
+  }
+
+  Connections {
+    target: WeebMode
+    function onHidesAnimeFilterChanged() {
+      if (WeebMode.hidesAnimeFilter)
+        root.reset();
+    }
+    function onHidesAdultFiltersChanged() {
+      if (WeebMode.hidesAdultFilters)
+        root.reset();
+    }
   }
 
   function buildUrl(q, p) {
@@ -70,7 +90,8 @@ Singleton {
             full: w.path,
             resolution: w.resolution,
             ext: w.path.split(".").pop(),
-            purity: w.purity
+            purity: w.purity,
+            category: w.category
           })),
       more: (data.meta?.current_page ?? 1) < (data.meta?.last_page ?? 1)
     };
@@ -158,7 +179,7 @@ Singleton {
     if (downloads[item.id])
       return;
     const path = pathFor(item);
-    if (Wallpapers.wallpapers.includes(path)) {
+    if (Wallpapers.allWallpapers.includes(path)) {
       finish(item, path);
       return;
     }
@@ -174,6 +195,8 @@ Singleton {
     const next = Object.assign({}, applied);
     next[item.id] = true;
     applied = next;
+    if (item.purity === "sfw" && item.category !== "anime")
+      Wallpapers.setSafe(path, true);
     Wallpapers.set(path);
   }
 

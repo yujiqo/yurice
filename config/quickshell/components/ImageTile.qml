@@ -8,6 +8,7 @@ Item {
   property string resolution: ""
   property color resolutionColor: Theme.text
   property bool checked: false
+  property bool badged: false
   property bool busy: false
   property bool dimmed: busy
   property bool showResolution: hovered && !busy
@@ -16,6 +17,7 @@ Item {
   default property alias overlay: frame.data
 
   signal clicked
+  signal rightClicked
 
   Rectangle {
     id: frame
@@ -99,6 +101,32 @@ Item {
       }
     }
 
+    Rectangle {
+      anchors.left: parent.left
+      anchors.top: parent.top
+      anchors.margins: 6
+      width: 24
+      height: 24
+      radius: 12
+      color: Qt.alpha(Theme.surface, 0.8)
+      scale: root.badged ? 1 : 0
+      visible: scale > 0
+
+      Behavior on scale {
+        NumberAnimation {
+          duration: Theme.animMove
+          easing.type: Easing.OutBack
+        }
+      }
+
+      Icon {
+        anchors.centerIn: parent
+        text: "verified_user"
+        color: Theme.primary
+        size: 16
+      }
+    }
+
     Spinner {
       anchors.centerIn: parent
       visible: root.busy
@@ -110,7 +138,8 @@ Item {
       anchors.fill: parent
       hoverEnabled: true
       cursorShape: Qt.PointingHandCursor
-      onClicked: root.clicked()
+      acceptedButtons: Qt.LeftButton | Qt.RightButton
+      onClicked: event => event.button === Qt.RightButton ? root.rightClicked() : root.clicked()
     }
   }
 }

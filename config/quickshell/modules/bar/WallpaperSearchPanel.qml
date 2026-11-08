@@ -49,7 +49,7 @@ Column {
           leadingIcon: "search"
           clearable: true
           placeholder: "Search Wallhaven…"
-          hint: WallSearch.hasApiKey ? "" : "SFW"
+          hint: WallSearch.hasApiKey && !WeebMode.hidesAdultFilters ? "" : "SFW"
           onAccepted: text => WallSearch.search(text)
         }
 
@@ -87,6 +87,7 @@ Column {
               }
               Chip {
                 text: "Anime"
+                visible: !WeebMode.hidesAnimeFilter
                 selected: WallSearch.categories[1] === "1"
                 onClicked: WallSearch.toggleBit("categories", 1)
               }
@@ -99,6 +100,7 @@ Column {
 
             FilterRow {
               title: "Purity"
+              visible: !WeebMode.hidesAdultFilters
               Chip {
                 text: "SFW"
                 selected: WallSearch.purity[0] === "1"

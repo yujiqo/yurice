@@ -69,6 +69,14 @@ ShellRoot {
         }
       }
 
+      Connections {
+        target: WeebMode
+        function onHidesDanbooruChanged() {
+          if (WeebMode.hidesDanbooru && bar.dropdown === "danbooru")
+            bar.dropdown = "";
+        }
+      }
+
       anchors {
         top: true
         left: true
@@ -144,6 +152,12 @@ ShellRoot {
           onDismissed: bar.dropdown = ""
         }
         DanbooruIsland {
+          visible: !WeebMode.hidesDanbooru
+          current: bar.dropdown
+          onRequest: name => bar.request(name)
+          onDismissed: bar.dropdown = ""
+        }
+        WeebIsland {
           current: bar.dropdown
           onRequest: name => bar.request(name)
           onDismissed: bar.dropdown = ""

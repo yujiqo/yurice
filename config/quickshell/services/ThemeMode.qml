@@ -89,7 +89,7 @@ Singleton {
   }
 
   function sync() {
-    if (!loaded || !Wallpapers.stateLoaded || Wallpapers.current === "")
+    if (!loaded || !Wallpapers.ready || Wallpapers.current === "")
       return;
     if (state.applied !== mode)
       Wallpapers.generatePalette(Wallpapers.current);
@@ -114,7 +114,7 @@ Singleton {
 
   Connections {
     target: Wallpapers
-    function onStateLoadedChanged() {
+    function onReadyChanged() {
       root.sync();
     }
     function onCurrentChanged() {

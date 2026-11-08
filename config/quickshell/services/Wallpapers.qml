@@ -14,9 +14,73 @@ Singleton {
   readonly property string matugenConfig: Quickshell.shellDir + "/../matugen/config.toml"
 
   property bool stateLoaded: false
-  property list<string> wallpapers: []
-  readonly property string current: state.path || (wallpapers.length > 0 ? wallpapers[0] : "")
+  property bool safeLoaded: false
+  property var safeFiles: ({})
+  readonly property bool ready: stateLoaded && safeLoaded && WeebMode.loaded
+  readonly property bool hideUnsafe: WeebMode.hidesWallpapers
+  readonly property int safeCount: allWallpapers.filter(path => isSafe(path)).length
+
+  property list<string> allWallpapers: []
+  readonly property list<string> wallpapers: !ready ? [] : hideUnsafe ? allWallpapers.filter(path => isSafe(path)) : allWallpapers
+  readonly property string current: {
+    if (!ready)
+      return "";
+    if (!hideUnsafe)
+      return state.path || (allWallpapers.length > 0 ? allWallpapers[0] : "");
+    if (state.normiePath !== "" && isSafe(state.normiePath))
+      return state.normiePath;
+    return wallpapers.length > 0 ? wallpapers[0] : "";
+  }
   property var resolutions: ({})
+
+  function fileName(path) {
+    return path.slice(path.lastIndexOf("/") + 1);
+  }
+
+  function isSafe(path) {
+    return safeFiles[fileName(path)] === true;
+  }
+
+  function setSafe(path, on) {
+    const next = Object.assign({}, safeFiles);
+    if (on)
+      next[fileName(path)] = true;
+    else
+      delete next[fileName(path)];
+    safeFiles = next;
+    safeFile.setText(JSON.stringify(next, null, 2));
+  }
+
+  function _readSafe() {
+    try {
+      safeFiles = JSON.parse(safeFile.text());
+    } catch (e) {
+      safeFiles = {};
+    }
+    safeLoaded = true;
+  }
+
+  function toggleSafe(path) {
+    setSafe(path, !isSafe(path));
+  }
+
+  function moveSafe(from, to) {
+    const wasSafe = isSafe(from);
+    setSafe(from, false);
+    if (wasSafe)
+      setSafe(to, true);
+  }
+
+  function syncPalette() {
+    if (ready && current !== "" && current !== state.palette)
+      generatePalette(current);
+  }
+
+  onHideUnsafeChanged: pickerOpen = false
+  onReadyChanged: {
+    _checkPalette();
+    syncPalette();
+  }
 
   readonly property size screenSize: {
     let w = 0;
@@ -42,7 +106,7 @@ Singleton {
   }
 
   function _measure() {
-    const missing = wallpapers.filter(p => !resolutions[p]);
+    const missing = allWallpapers.filter(p => !resolutions[p]);
     if (missing.length === 0 || identify.running)
       return;
     identify.batch = missing;
@@ -56,7 +120,7 @@ Singleton {
     resolutions = next;
   }
 
-  onWallpapersChanged: _measure()
+  onAllWallpapersChanged: _measure()
 
   Process {
     id: identify
@@ -97,9 +161,13 @@ Singleton {
     path = expand(path);
     if (path === "" || path === current)
       return;
-    state.path = path;
+    if (hideUnsafe && !isSafe(path))
+      return;
+    if (hideUnsafe)
+      state.normiePath = path;
+    else
+      state.path = path;
     stateFile.writeAdapter();
-    generatePalette(path);
   }
 
   function generatePalette(path) {
@@ -109,6 +177,7 @@ Singleton {
       _pendingPalette = path;
       return;
     }
+    matugen.path = path;
     matugen.mode = ThemeMode.mode;
     matugen.command = ["matugen", "image", path, "-c", matugenConfig, "-m", matugen.mode, "--source-color-index", "0", "-q"];
     matugen.running = true;
@@ -118,7 +187,7 @@ Singleton {
     const list = [];
     for (let i = 0; i < folder.count; i++)
       list.push(folder.get(i, "filePath"));
-    wallpapers = list;
+    allWallpapers = list;
   }
 
   FolderListModel {
@@ -141,14 +210,18 @@ Singleton {
   Process {
     id: matugen
     property string mode: ""
+    property string path: ""
     stderr: StdioCollector {
       id: matugenErr
     }
     onExited: exitCode => {
-      if (exitCode !== 0)
+      if (exitCode !== 0) {
         console.warn("Wallpapers: matugen failed:", matugenErr.text);
-      else
+      } else {
+        state.palette = path;
+        stateFile.writeAdapter();
         ThemeMode.markApplied(mode);
+      }
       Theme.reloadPalette();
       if (root._pendingPalette !== "") {
         const next = root._pendingPalette;
@@ -174,7 +247,10 @@ Singleton {
     paletteCheck.running = true;
   }
 
-  onCurrentChanged: _checkPalette()
+  onCurrentChanged: {
+    _checkPalette();
+    syncPalette();
+  }
   Component.onCompleted: _checkPalette()
 
   FileView {
@@ -189,7 +265,20 @@ Singleton {
     JsonAdapter {
       id: state
       property string path: ""
+      property string normiePath: ""
+      property string palette: ""
     }
+  }
+
+  FileView {
+    id: safeFile
+    path: root.stateDir + "/wallpaper-safe.json"
+    blockWrites: true
+    watchChanges: true
+    printErrors: false
+    onFileChanged: reload()
+    onLoaded: root._readSafe()
+    onLoadFailed: root.safeLoaded = true
   }
 
   IpcHandler {

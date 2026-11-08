@@ -121,7 +121,9 @@ Singleton {
       onExited: code => {
         if (code === 0) {
           Wallpapers.forgetResolution(job.src);
-          if (Wallpapers.current === job.src)
+          const wasCurrent = Wallpapers.current === job.src;
+          Wallpapers.moveSafe(job.src, job.dst);
+          if (wasCurrent)
             Wallpapers.set(job.dst);
         } else {
           console.warn("WallpaperTools: upscale failed", job.src, job.errors.join("\n"));
@@ -157,9 +159,10 @@ Singleton {
 
       command: ["sh", "-c", root.trashScript, "sh", path, encodeURI(path)]
       onExited: code => {
-        if (code === 0)
+        if (code === 0) {
           Wallpapers.forgetResolution(proc.path);
-        else
+          Wallpapers.setSafe(proc.path, false);
+        } else
           console.warn("WallpaperTools: trash failed", proc.path);
         proc.destroy();
       }

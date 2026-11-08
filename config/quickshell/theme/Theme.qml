@@ -118,6 +118,7 @@ Singleton {
   readonly property int launcherWidth: 560
   readonly property int discSize: 220
   readonly property int thumbHeight: 110
+  readonly property int libraryThumbHeight: 150
   readonly property int menuTitleSize: 17
   readonly property int menuSubtitleSize: 14
   readonly property int closeGrace: 400
