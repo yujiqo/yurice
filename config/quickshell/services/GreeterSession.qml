@@ -9,7 +9,7 @@ Singleton {
   id: root
 
   readonly property string stateRoot: Quickshell.env("YURICE_STATE_ROOT") || "/var/lib/yurice"
-  readonly property var sessionCommand: ["sh", "-c", `printf '\\033[2J\\033[H\\033[?25l'; exec ${Quickshell.env("YURICE_SESSION") || "niri-session"} >/dev/null 2>&1`]
+  readonly property var sessionCommand: ["sh", `${Quickshell.shellDir}/scripts/start-session.sh`].concat((Quickshell.env("YURICE_SESSION") || "niri-session").split(" "))
 
   property string phase: "waiting"
   property real reveal: 0
