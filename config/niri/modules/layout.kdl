@@ -1,4 +1,6 @@
 overview {
+  backdrop-color "#000000"
+
   workspace-shadow {
     off
   }

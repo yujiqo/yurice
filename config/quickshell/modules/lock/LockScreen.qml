@@ -23,7 +23,7 @@ Scope {
         anchors.fill: parent
         imageSize: surface.screen ? Qt.size(surface.screen.width * surface.screen.devicePixelRatio, surface.screen.height * surface.screen.devicePixelRatio) : Qt.size(0, 0)
         onReady: SessionLock.surfaceReady(surface.screen?.name)
-        wallpaper: Wallpapers.current
+        wallpaper: WallpaperPublish.displayFile
         snapshot: SessionLock.snapshots[surface.screen?.name] ?? ""
         reveal: SessionLock.reveal
         interactive: SessionLock.phase === "locked"

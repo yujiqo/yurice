@@ -10,7 +10,10 @@ import qs.modules.lock
 ShellRoot {
   settings.watchFiles: !SessionLock.sessionLocked
 
-  Component.onCompleted: Keyboard.watch()
+  Component.onCompleted: {
+    Keyboard.watch();
+    WallpaperPublish.schedule();
+  }
 
   Variants {
     model: Quickshell.screens
@@ -21,6 +24,8 @@ ShellRoot {
   WallpaperPicker {}
 
   LockScreen {}
+
+  SessionIntro {}
 
   Variants {
     model: Quickshell.screens

@@ -38,6 +38,7 @@ PanelWindow {
     }
     if (path === "" || front.path === path)
       return;
+    back.file = path === WallpaperPublish.cachedFor ? WallpaperPublish.cacheFile : path;
     back.path = path;
     startFade(back);
   }
@@ -85,7 +86,8 @@ PanelWindow {
 
   component WallpaperImage: Image {
     property string path: ""
-    source: Utility.fileUrl(path)
+    property string file: ""
+    source: path === "" ? "" : Utility.fileUrl(file)
     anchors.fill: parent
     opacity: 0
     fillMode: Image.PreserveAspectCrop

@@ -19,6 +19,8 @@ Item {
   property string error: ""
   property bool firmwareAvailable: false
   property string armed: ""
+  property string placeholder: "Password"
+  property bool canSwitchUser: false
   readonly property real lockScale: 1 + Theme.lockZoom * (1 - reveal)
 
   readonly property var powerActions: {
@@ -50,6 +52,16 @@ Item {
   signal promptDismissed
   signal submitted(string password)
   signal powerRequested(string action)
+  signal userSwitchRequested(int delta)
+
+  Keys.onLeftPressed: {
+    if (root.interactive && root.canSwitchUser)
+      root.userSwitchRequested(-1);
+  }
+  Keys.onRightPressed: {
+    if (root.interactive && root.canSwitchUser)
+      root.userSwitchRequested(1);
+  }
 
   function reportReady() {
     if (wallpaperReady && imageSize.width > 0)
@@ -189,18 +201,38 @@ Item {
         }
       }
 
-      Rectangle {
+      Row {
         anchors.horizontalCenter: parent.horizontalCenter
-        width: userLabel.implicitWidth + 32
-        height: 40
-        radius: height / 2
-        color: Theme.surface
+        spacing: 6
 
-        Label {
-          id: userLabel
-          anchors.centerIn: parent
-          text: root.userName
-          pixelSize: Theme.menuTitleSize + 3
+        IconButton {
+          anchors.verticalCenter: parent.verticalCenter
+          visible: root.canSwitchUser
+          color: Theme.surface
+          icon: "chevron_left"
+          onClicked: root.userSwitchRequested(-1)
+        }
+
+        Rectangle {
+          width: userLabel.implicitWidth + 32
+          height: 40
+          radius: height / 2
+          color: Theme.surface
+
+          Label {
+            id: userLabel
+            anchors.centerIn: parent
+            text: root.userName
+            pixelSize: Theme.menuTitleSize + 3
+          }
+        }
+
+        IconButton {
+          anchors.verticalCenter: parent.verticalCenter
+          visible: root.canSwitchUser
+          color: Theme.surface
+          icon: "chevron_right"
+          onClicked: root.userSwitchRequested(1)
         }
       }
 
@@ -211,6 +243,7 @@ Item {
         PasswordField {
           id: field
           width: parent.width
+          placeholder: root.placeholder
           onAccepted: text => root.submitted(text)
           onCanceled: root.promptDismissed()
         }

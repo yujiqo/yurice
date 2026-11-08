@@ -6,7 +6,7 @@ import QtQuick
 Singleton {
   id: root
 
-  readonly property string paletteFile: Quickshell.env("HOME") + "/.cache/yurice/colors.json"
+  property string paletteFile: Quickshell.env("HOME") + "/.cache/yurice/colors.json"
 
   function reloadPalette() {
     paletteView.reload();
