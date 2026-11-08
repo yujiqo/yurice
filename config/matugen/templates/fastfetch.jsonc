@@ -1,0 +1,32 @@
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+  "logo": { "type": "none" },
+  "display": {
+    "separator": " ",
+    "key": { "width": 15 },
+    "color": { "keys": "{{colors.primary.default.hex}}", "title": "{{colors.primary.default.hex}}", "output": "{{colors.on_surface.default.hex}}" }
+  },
+  "modules": [
+    "title",
+    "break",
+    { "type": "custom", "format": "── system ──────────────────", "outputColor": "{{colors.tertiary.default.hex}}" },
+    { "type": "os", "key": "    os" },
+    { "type": "kernel", "key": "    kernel" },
+    { "type": "packages", "key": "  󰏖  packages", "format": "{} (nixpkgs)" },
+    { "type": "shell", "key": "    shell" },
+    { "type": "uptime", "key": "    uptime" },
+    { "type": "custom", "format": "── desktop ─────────────────", "outputColor": "{{colors.tertiary.default.hex}}" },
+    { "type": "wm", "key": "    wm" },
+    { "type": "command", "text": "sh ~/.config/fastfetch/terminal-name.sh", "key": "    terminal" },
+    { "type": "command", "text": "sh ~/.config/fastfetch/kitty-font.sh", "key": "    font" },
+    { "type": "custom", "format": "── hardware ────────────────", "outputColor": "{{colors.tertiary.default.hex}}" },
+    { "type": "host", "key": "    host" },
+    { "type": "cpu", "key": "    cpu" },
+    { "type": "gpu", "key": "  󰢮  gpu" },
+    { "type": "memory", "key": "  󰍛  memory", "format": "{used}/{total}" },
+    { "type": "disk", "key": "    disk", "folders": "/" },
+    { "type": "display", "key": "  󰍹  display" },
+    "break",
+    "colors"
+  ]
+}

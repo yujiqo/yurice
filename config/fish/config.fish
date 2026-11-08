@@ -20,6 +20,28 @@ function files
     setsid -f nautilus $argv[1] (or echo .) &>/dev/null
 end
 
+function fastfetch
+    set -l generated ~/.cache/yurice/fastfetch.jsonc
+    if not test -f $generated
+        command fastfetch $argv
+        return
+    end
+    if test (count $argv) -gt 0; or not isatty stdout
+        command fastfetch -c $generated $argv
+        return
+    end
+
+    set -l logo_width 30
+    set -l logo_height 15
+    set -l logo_right 3
+    set -l text_columns (math $COLUMNS - $logo_width - $logo_right)
+
+    set -l rendered (command fastfetch -c $generated --pipe false | awk -v columns=$text_columns -f ~/.config/fastfetch/wrap.awk)
+    set -l logo_top (math -s0 "max(0, $rendered[2] - $logo_height) / 2")
+
+    command fastfetch -c (printf '{"logo":{"source":"~/.config/fastfetch/images/nixos.png","type":"kitty-icat","width":%s,"height":%s,"padding":{"top":%s,"left":0,"right":%s}},"modules":[%s]}' $logo_width $logo_height $logo_top $logo_right $rendered[1] | psub -s .jsonc)
+end
+
 function fish_greeting; end
 
 # path for uv tools

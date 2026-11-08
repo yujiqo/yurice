@@ -37,3 +37,7 @@ post_hook = "pkill -USR1 -x nvim || true"
 input_path = "templates/tmux.conf"
 output_path = "~/.cache/yurice/tmux-colors.conf"
 post_hook = "tmux source-file -q ~/.cache/yurice/tmux-colors.conf 2>/dev/null || true"
+
+[templates.fastfetch]
+input_path = "templates/fastfetch.jsonc"
+output_path = "~/.cache/yurice/fastfetch.jsonc"
