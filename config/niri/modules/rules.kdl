@@ -25,6 +25,11 @@ window-rule {
 }
 
 window-rule {
+    match app-id=r#"^com\.obsproject\.Studio$"#
+    open-maximized true
+}
+
+window-rule {
     match app-id=r#"^steam$"# title=r#"^Steam$"#
     open-fullscreen false
 }
