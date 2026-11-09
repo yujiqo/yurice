@@ -2,6 +2,7 @@ pragma Singleton
 import Quickshell
 import Quickshell.Io
 import Quickshell.Services.Pam
+import Quickshell.Wayland
 import QtQuick
 import qs.theme
 
@@ -306,6 +307,24 @@ Singleton {
     if (marker.text().trim() === "locked") {
       phase = "relocking";
       relockDelay.start();
+    }
+  }
+
+  IdleMonitor {
+    enabled: root.phase === "idle"
+    timeout: 1800
+    onIsIdleChanged: {
+      if (isIdle)
+        root.lockAndSuspend();
+    }
+  }
+
+  IdleMonitor {
+    enabled: root.phase === "locked" && root.secured
+    timeout: 300
+    onIsIdleChanged: {
+      if (isIdle)
+        Session.run("suspend");
     }
   }
 
