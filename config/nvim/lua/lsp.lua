@@ -75,9 +75,9 @@ vim.lsp.config("qmlls", {
 vim.lsp.enable({
 	"efm",
 	"lua_ls",
+	"rust_analyzer",
 	"nil_ls",
 	"pyright",
-	"rust_analyzer",
 	"svelte",
 	"qmlls",
 	"marksman",

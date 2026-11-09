@@ -5,6 +5,7 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 	desc = "format on save",
 	pattern = {
 		"*.lua",
+		"*.rs",
 		"*.nix",
 		"*.md",
 		"*.sql",
