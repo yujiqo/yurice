@@ -21,13 +21,19 @@ Item {
       confirm: true
     },
     {
+      id: "logout",
+      name: "Log out",
+      icon: "logout",
+      confirm: true
+    },
+    {
       id: "suspend",
       name: "Suspend",
       icon: "bedtime",
       confirm: false
     }
   ]
-  property int selected: 2
+  property int selected: 3
   property string armed: ""
 
   implicitHeight: 104
@@ -46,6 +52,8 @@ Item {
     armed = "";
     if (action.id === "suspend")
       SessionLock.lockAndSuspend();
+    else if (action.id === "logout")
+      Session.logout();
     else
       Session.run(action.id);
   }
@@ -97,7 +105,7 @@ Item {
         readonly property bool isArmed: root.armed === modelData.id
         readonly property bool isSelected: root.selected === index
 
-        width: (parent.width - 16) / 3
+        width: (parent.width - 8 * (root.actions.length - 1)) / root.actions.length
         height: parent.height
         radius: Theme.menuItemRadius
         color: isArmed ? Theme.error : isSelected ? Theme.primary : Theme.surfaceContainer

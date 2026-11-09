@@ -9,7 +9,13 @@ Island {
   open: current === "calendar" || current === "power"
   panel: current === "power" ? powerPanel : current === "calendar" ? calendarPanel : null
   panelIndex: current === "power" ? 1 : 0
-  panelWidth: 320
+  panelWidth: shownPanel === powerPanel ? 440 : 320
+  Behavior on panelWidth {
+    NumberAnimation {
+      duration: Theme.animMove
+      easing.type: Easing.OutCubic
+    }
+  }
   spacing: 0
   clickable: true
   onClicked: request("calendar")

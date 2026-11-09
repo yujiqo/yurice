@@ -27,6 +27,8 @@ ShellRoot {
 
   SessionIntro {}
 
+  SessionOutro {}
+
   Variants {
     model: Quickshell.screens
 
