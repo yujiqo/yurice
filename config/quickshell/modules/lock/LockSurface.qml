@@ -64,6 +64,19 @@ Item {
     if (root.interactive && root.canSwitchUser)
       root.userSwitchRequested(1);
   }
+  Keys.onPressed: event => {
+    if (event.modifiers & (Qt.ControlModifier | Qt.AltModifier | Qt.MetaModifier))
+      return;
+    if (event.key !== Qt.Key_H && event.key !== Qt.Key_L)
+      return;
+    event.accepted = true;
+    if (root.interactive && root.canSwitchUser)
+      root.userSwitchRequested(event.key === Qt.Key_H ? -1 : 1);
+  }
+  Keys.onSpacePressed: {
+    if (root.interactive)
+      root.promptRequested();
+  }
 
   function reportReady() {
     if (wallpaperReady && imageSize.width > 0)
@@ -167,6 +180,11 @@ Item {
     enabled: root.interactive
     opacity: root.reveal
     scale: root.lockScale
+
+    MouseArea {
+      anchors.fill: parent
+      onClicked: root.promptRequested()
+    }
 
     Column {
       anchors.centerIn: parent
