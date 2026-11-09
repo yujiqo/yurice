@@ -59,11 +59,21 @@ Column {
 
   spacing: Theme.menuGap
 
-  Component.onCompleted: {
-    BluetoothAgent.acquire();
-    setDiscovering(true);
+  property bool started: false
+
+  Timer {
+    interval: Theme.panelSettle
+    running: true
+    onTriggered: {
+      BluetoothAgent.acquire();
+      root.started = true;
+      root.setDiscovering(true);
+    }
   }
+
   Component.onDestruction: {
+    if (!started)
+      return;
     setDiscovering(false);
     BluetoothAgent.release();
   }
@@ -73,7 +83,10 @@ Column {
     property: "accept"
     value: root.devices.some(d => d.pairing)
   }
-  onPoweredChanged: setDiscovering(powered)
+  onPoweredChanged: {
+    if (started)
+      setDiscovering(powered);
+  }
 
   component SectionLabel: Text {
     leftPadding: 12

@@ -22,11 +22,14 @@ Column {
     scanTimeout.restart();
   }
 
-  Component.onCompleted: {
-    Network.setScanning(true);
-    startScan();
-  }
+  Component.onCompleted: startScan()
   Component.onDestruction: Network.setScanning(false)
+
+  Timer {
+    interval: Theme.panelSettle
+    running: true
+    onTriggered: Network.setScanning(true)
+  }
 
   Connections {
     target: Network
@@ -224,26 +227,32 @@ Column {
       }
 
       Collapse {
+        id: collapse
         width: parent.width
         leading: Theme.menuGap
         shown: entry.asking
         onShownChanged: {
-          if (shown) {
-            password.text = "";
-            password.focusInput();
+          if (shown && password.item) {
+            password.item.text = "";
+            password.item.focusInput();
           }
         }
 
-        PasswordField {
+        Loader {
           id: password
           width: parent.width
-          navigable: true
-          onAccepted: psk => {
-            entry.error = "";
-            entry.modelData.connectWithPsk(psk);
-            root.askingFor = "";
+          active: collapse.visible
+          onLoaded: item.focusInput()
+
+          sourceComponent: PasswordField {
+            navigable: true
+            onAccepted: psk => {
+              entry.error = "";
+              entry.modelData.connectWithPsk(psk);
+              root.askingFor = "";
+            }
+            onCanceled: root.askingFor = ""
           }
-          onCanceled: root.askingFor = ""
         }
       }
     }
