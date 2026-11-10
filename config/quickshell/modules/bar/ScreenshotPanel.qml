@@ -33,10 +33,6 @@ Item {
         {
           keys: ["P"],
           label: Screenshot.showPointer ? "Hide pointer" : "Show pointer"
-        },
-        {
-          keys: ["Esc"],
-          label: "Cancel"
         }
       ]
     }
