@@ -38,6 +38,7 @@ Island {
     anchors.verticalCenter: parent.verticalCenter
     leftPadding: Theme.pillIconGap
     text: Math.round(Weather.temperature) + "°"
+    opacity: Weather.fade
     color: Theme.text
     font.family: Theme.labelFont
     font.pixelSize: Theme.labelSize
@@ -49,6 +50,7 @@ Island {
 
     Label {
       text: Weather.current.text
+      opacity: Weather.fade
       color: Theme.weather
     }
   }

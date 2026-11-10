@@ -22,7 +22,7 @@ Island {
   Text {
     height: Theme.pillHeight
     verticalAlignment: Text.AlignVCenter
-    text: Qt.formatDateTime(Clock.date, "HH:mm")
+    text: Qt.formatDateTime(Clock.date, Settings.timeFormat)
     color: Theme.text
     font.family: Theme.labelFont
     font.pixelSize: Theme.labelSize

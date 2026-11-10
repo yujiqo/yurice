@@ -1,13 +1,33 @@
 pragma Singleton
 import Quickshell
 import QtQuick
+import qs.theme
 
 Singleton {
   id: root
 
-  property real latitude: NaN
-  property real longitude: NaN
+  property real autoLatitude: NaN
+  property real autoLongitude: NaN
+  property string autoCity: ""
+  readonly property var manual: Settings.weatherLocation
+  readonly property real latitude: manual ? manual.latitude : autoLatitude
+  readonly property real longitude: manual ? manual.longitude : autoLongitude
+  readonly property string targetCity: manual ? manual.name : autoCity
   property string city: ""
+  property bool cityIsManual: false
+  property real fade: 1
+  property bool animateNext: false
+  property var pendingData: null
+  readonly property string temperatureUnit: Settings.weatherFahrenheit ? "°F" : "°C"
+  readonly property string windUnit: Settings.weatherFahrenheit ? "mph" : "km/h"
+  property int generation: 0
+
+  property var searchResults: []
+  property bool searching: false
+  property int searchGeneration: 0
+
+  readonly property string settingsKey: JSON.stringify([manual, Settings.weatherFahrenheit])
+  onSettingsKeyChanged: reload()
 
   property bool ready: false
   property bool loading: false
@@ -96,55 +116,133 @@ Singleton {
     retry.restart();
   }
 
+  function reload() {
+    loading = false;
+    retry.stop();
+    animateNext = ready;
+    refresh();
+  }
+
+  function apply(data) {
+    const c = data.current;
+    temperature = c.temperature_2m;
+    feelsLike = c.apparent_temperature;
+    humidity = c.relative_humidity_2m;
+    wind = c.wind_speed_10m;
+    code = c.weather_code;
+    isDay = c.is_day === 1;
+    const d = data.daily;
+    days = d.time.map((t, i) => ({
+          date: new Date(t + "T12:00:00"),
+          code: d.weather_code[i],
+          max: d.temperature_2m_max[i],
+          min: d.temperature_2m_min[i],
+          rain: d.precipitation_probability_max[i] ?? 0,
+          sunrise: new Date(d.sunrise[i]),
+          sunset: new Date(d.sunset[i])
+        }));
+    city = targetCity;
+    cityIsManual = manual !== null;
+    ready = true;
+  }
+
   function refresh() {
     if (loading)
       return;
     loading = true;
+    const token = ++generation;
     if (isNaN(latitude) || isNaN(longitude)) {
       request("https://ipinfo.io/json", data => {
+        if (token !== generation)
+          return;
         const loc = (data?.loc ?? "").split(",").map(Number);
         if (loc.length !== 2 || loc.some(isNaN)) {
           fail("Couldn't find location");
           return;
         }
-        latitude = loc[0];
-        longitude = loc[1];
-        city = data.city ?? "";
-        fetchForecast();
+        autoLatitude = loc[0];
+        autoLongitude = loc[1];
+        autoCity = data.city ?? "";
+        fetchForecast(token);
       });
     } else {
-      fetchForecast();
+      fetchForecast(token);
     }
   }
 
-  function fetchForecast() {
-    const url = "https://api.open-meteo.com/v1/forecast" + `?latitude=${latitude}&longitude=${longitude}` + "&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code,is_day" + "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset" + "&timezone=auto&forecast_days=7";
+  function search(query) {
+    const name = query.trim();
+    const token = ++searchGeneration;
+    if (name.length < 2) {
+      searching = false;
+      searchResults = [];
+      return;
+    }
+    searching = true;
+    request(`https://geocoding-api.open-meteo.com/v1/search?count=6&language=en&format=json&name=${encodeURIComponent(name)}`, data => {
+      if (token !== searchGeneration)
+        return;
+      searching = false;
+      searchResults = (data?.results ?? []).map(r => ({
+            name: r.name,
+            region: [r.admin1, r.country].filter(Boolean).join(", "),
+            latitude: r.latitude,
+            longitude: r.longitude
+          }));
+    });
+  }
+
+  function clearSearch() {
+    searchGeneration++;
+    searching = false;
+    searchResults = [];
+  }
+
+  function fetchForecast(token) {
+    const units = Settings.weatherFahrenheit ? "&temperature_unit=fahrenheit&wind_speed_unit=mph" : "";
+    const url = "https://api.open-meteo.com/v1/forecast" + `?latitude=${latitude}&longitude=${longitude}` + "&current=temperature_2m,apparent_temperature,relative_humidity_2m,wind_speed_10m,weather_code,is_day" + "&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max,sunrise,sunset" + "&timezone=auto&forecast_days=7" + units;
     request(url, data => {
+      if (token !== generation)
+        return;
       if (!data || !data.current || !data.daily) {
         fail("Couldn't load weather");
         return;
       }
-      const c = data.current;
-      temperature = c.temperature_2m;
-      feelsLike = c.apparent_temperature;
-      humidity = c.relative_humidity_2m;
-      wind = c.wind_speed_10m;
-      code = c.weather_code;
-      isDay = c.is_day === 1;
-      const d = data.daily;
-      days = d.time.map((t, i) => ({
-            date: new Date(t + "T12:00:00"),
-            code: d.weather_code[i],
-            max: d.temperature_2m_max[i],
-            min: d.temperature_2m_min[i],
-            rain: d.precipitation_probability_max[i] ?? 0,
-            sunrise: new Date(d.sunrise[i]),
-            sunset: new Date(d.sunset[i])
-          }));
       error = "";
       loading = false;
-      ready = true;
+      if (animateNext) {
+        animateNext = false;
+        pendingData = data;
+        swap.restart();
+      } else {
+        apply(data);
+      }
     });
+  }
+
+  SequentialAnimation {
+    id: swap
+
+    NumberAnimation {
+      target: root
+      property: "fade"
+      to: 0
+      duration: Theme.animMove
+      easing.type: Easing.InQuad
+    }
+    ScriptAction {
+      script: {
+        root.apply(root.pendingData);
+        root.pendingData = null;
+      }
+    }
+    NumberAnimation {
+      target: root
+      property: "fade"
+      to: 1
+      duration: Theme.animMove
+      easing.type: Easing.OutQuad
+    }
   }
 
   Timer {

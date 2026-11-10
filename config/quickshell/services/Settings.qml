@@ -20,6 +20,14 @@ Singleton {
   readonly property int idleLock: values.idleLock ?? 30
   readonly property int idleSuspend: values.idleSuspend ?? 5
 
+  readonly property bool clock24h: values.clock24h ?? true
+  readonly property bool clockSeconds: values.clockSeconds ?? false
+  readonly property string shortTimeFormat: clock24h ? "HH:mm" : "h:mm AP"
+  readonly property string timeFormat: clock24h ? (clockSeconds ? "HH:mm:ss" : "HH:mm") : (clockSeconds ? "h:mm:ss AP" : "h:mm AP")
+
+  readonly property var weatherLocation: values.weatherLocation ?? null
+  readonly property bool weatherFahrenheit: values.weatherFahrenheit ?? false
+
   function parse(text) {
     if (text.trim() === "")
       return {};

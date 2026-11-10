@@ -31,7 +31,7 @@ Column {
 
       Label {
         anchors.verticalCenter: parent.verticalCenter
-        width: 44
+        width: Settings.clock24h ? 44 : 70
         text: ThemeMode.formatMinutes(ThemeMode[row.name])
         pixelSize: Theme.menuSubtitleSize + 1
       }

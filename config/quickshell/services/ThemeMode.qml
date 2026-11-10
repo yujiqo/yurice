@@ -43,12 +43,11 @@ Singleton {
   }
 
   function formatTime(date) {
-    return Qt.formatTime(date, "hh:mm");
+    return Qt.formatTime(date, Settings.shortTimeFormat);
   }
 
   function formatMinutes(minutes) {
-    const pad = value => String(value).padStart(2, "0");
-    return `${pad(Math.floor(minutes / 60))}:${pad(minutes % 60)}`;
+    return Qt.formatTime(new Date(2000, 0, 1, Math.floor(minutes / 60), minutes % 60), Settings.shortTimeFormat);
   }
 
   function toggle() {

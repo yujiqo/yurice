@@ -7,13 +7,14 @@ Column {
   id: root
 
   spacing: Theme.menuGap
+  opacity: Weather.fade
 
   readonly property real weekMin: Math.min(...Weather.days.map(d => d.min))
   readonly property real weekMax: Math.max(...Weather.days.map(d => d.max))
   readonly property var today: Weather.days[0] ?? null
 
   function time(date) {
-    return date ? Qt.formatTime(date, "HH:mm") : "–";
+    return date ? Qt.formatTime(date, Settings.shortTimeFormat) : "–";
   }
 
   Item {
@@ -38,7 +39,7 @@ Column {
       anchors.verticalCenter: parent.verticalCenter
 
       Text {
-        text: Math.round(Weather.temperature) + "°C"
+        text: Math.round(Weather.temperature) + Weather.temperatureUnit
         color: Theme.text
         font.family: Theme.labelFont
         font.pixelSize: 40
@@ -89,7 +90,7 @@ Column {
         width: details.width / 2
         icon: "air"
         label: "Wind"
-        value: Math.round(Weather.wind) + " km/h"
+        value: Math.round(Weather.wind) + " " + Weather.windUnit
       }
       InfoRow {
         width: details.width / 2
