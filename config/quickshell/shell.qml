@@ -132,7 +132,7 @@ ShellRoot {
       color: "transparent"
 
       mask: Region {
-        item: clock
+        item: workspaces
 
         Region {
           item: leftRow
@@ -148,8 +148,8 @@ ShellRoot {
         }
       }
 
-      TimeIsland {
-        id: clock
+      Workspaces {
+        id: workspaces
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         anchors.topMargin: Theme.barMarginTop
@@ -157,15 +157,15 @@ ShellRoot {
         transform: Translate {
           y: bar.hideOffset
         }
+        output: bar.modelData.name
         current: bar.dropdown
-        onRequest: name => bar.request(name)
         onDismissed: bar.dropdown = ""
       }
 
       Toasts {
         id: toasts
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: clock.bottom
+        anchors.top: workspaces.bottom
         anchors.topMargin: Theme.barGap * 2
         visible: bar.modelData.name === (Niri.focusedOutput || Quickshell.screens[0]?.name)
       }
@@ -182,12 +182,6 @@ ShellRoot {
           y: bar.hideOffset
         }
 
-        Workspaces {
-          id: workspaces
-          output: bar.modelData.name
-          current: bar.dropdown
-          onDismissed: bar.dropdown = ""
-        }
         MediaIsland {
           current: bar.dropdown
           onRequest: name => bar.request(name)
@@ -218,6 +212,11 @@ ShellRoot {
           onRequest: name => bar.request(name)
           onDismissed: bar.dropdown = ""
         }
+        WeatherIsland {
+          current: bar.dropdown
+          onRequest: name => bar.request(name)
+          onDismissed: bar.dropdown = ""
+        }
       }
 
       Row {
@@ -232,11 +231,6 @@ ShellRoot {
           y: bar.hideOffset
         }
 
-        WeatherIsland {
-          current: bar.dropdown
-          onRequest: name => bar.request(name)
-          onDismissed: bar.dropdown = ""
-        }
         ConnectivityIsland {
           current: bar.dropdown
           onRequest: name => bar.request(name)
@@ -248,6 +242,11 @@ ShellRoot {
           onDismissed: bar.dropdown = ""
         }
         BatteryIsland {
+          current: bar.dropdown
+          onRequest: name => bar.request(name)
+          onDismissed: bar.dropdown = ""
+        }
+        TimeIsland {
           current: bar.dropdown
           onRequest: name => bar.request(name)
           onDismissed: bar.dropdown = ""

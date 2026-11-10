@@ -327,8 +327,9 @@ PanelWindow {
         acceptedButtons: Qt.LeftButton | Qt.RightButton
       }
 
-      TimeIsland {
+      Workspaces {
         id: hint
+        output: root.name
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
         anchors.topMargin: Theme.barMarginTop
