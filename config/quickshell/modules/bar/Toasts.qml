@@ -7,7 +7,7 @@ ListView {
   id: list
 
   width: Theme.toastWidth
-  height: Theme.dropdownMaxHeight
+  height: Theme.dropdownMaxHeight + Theme.toastAreaHeight
   spacing: Theme.barGap
   interactive: false
   model: Notifications.toasts

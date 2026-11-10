@@ -6,10 +6,10 @@ import qs.services
 Island {
   id: root
 
-  open: current === "calendar" || current === "power"
-  panel: current === "power" ? powerPanel : current === "calendar" ? calendarPanel : null
-  panelIndex: current === "power" ? 1 : 0
-  panelWidth: shownPanel === powerPanel ? 440 : 320
+  open: current === "calendar" || current === "power" || current === "hotkeys"
+  panel: current === "power" ? powerPanel : current === "calendar" ? calendarPanel : current === "hotkeys" ? hotkeysPanel : null
+  panelIndex: current === "hotkeys" ? 2 : current === "power" ? 1 : 0
+  panelWidth: shownPanel === powerPanel || shownPanel === hotkeysPanel ? 440 : 320
   Behavior on panelWidth {
     NumberAnimation {
       duration: Theme.animMove
@@ -30,6 +30,12 @@ Island {
     id: powerPanel
 
     PowerPanel {}
+  }
+
+  Component {
+    id: hotkeysPanel
+
+    HotkeysPanel {}
   }
 
   Text {

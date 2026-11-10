@@ -104,7 +104,7 @@ ShellRoot {
         left: true
         right: true
       }
-      implicitHeight: Theme.barHeight + Theme.dropdownMaxHeight
+      implicitHeight: Math.min(Theme.barHeight + Theme.dropdownMaxHeight + Theme.toastAreaHeight, modelData.height - Theme.barMarginTop)
       exclusionMode: ExclusionMode.Normal
       exclusiveZone: Theme.barHeight
       WlrLayershell.keyboardFocus: launcherShown || dropdown === "power" || keyboardPanel !== "" ? WlrKeyboardFocus.Exclusive : dropdown !== "" ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None

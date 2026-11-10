@@ -6,7 +6,7 @@ import QtQuick
 Singleton {
   id: root
 
-  readonly property var names: ["media", "wallpapers", "danbooru", "theme", "weeb", "weather", "wifi", "bluetooth", "volume", "brightness", "battery", "calendar"]
+  readonly property var names: ["media", "wallpapers", "danbooru", "theme", "weeb", "weather", "wifi", "bluetooth", "volume", "brightness", "battery", "calendar", "hotkeys"]
 
   property string name: ""
   property string output: ""

@@ -1,12 +1,14 @@
 binds {
-  Mod+W { spawn "qs" "ipc" "call" "wallpaper" "toggle"; }
-  Mod+Shift+Slash { show-hotkey-overlay; }
-
+  // section: Shell
+  Mod+Shift+Slash repeat=false hotkey-overlay-title="Keyboard shortcuts" { spawn "qs" "ipc" "call" "panel" "toggle" "hotkeys"; }
   Mod+T hotkey-overlay-title="Open a Terminal: kitty" { spawn "kitty"; }
-  Alt+Space repeat=false { spawn "qs" "ipc" "call" "launcher" "toggle"; }
+  Alt+Space repeat=false hotkey-overlay-title="Launcher" { spawn "qs" "ipc" "call" "launcher" "toggle"; }
+  Mod+W hotkey-overlay-title="Wallpaper picker" { spawn "qs" "ipc" "call" "wallpaper" "toggle"; }
   Mod+Q repeat=false hotkey-overlay-title="Power menu" { spawn "qs" "ipc" "call" "power" "toggle"; }
   Mod+Alt+L repeat=false hotkey-overlay-title="Lock screen" { spawn "qs" "ipc" "call" "lock" "lock"; }
+  Mod+O repeat=false hotkey-overlay-title="Overview" { toggle-overview; }
 
+  // section: Panels
   Mod+P repeat=false hotkey-overlay-title="Media" { spawn "qs" "ipc" "call" "panel" "toggle" "media"; }
   Mod+G repeat=false hotkey-overlay-title="Wallpapers" { spawn "qs" "ipc" "call" "panel" "toggle" "wallpapers"; }
   Mod+Shift+G repeat=false hotkey-overlay-title="Danbooru" { spawn "qs" "ipc" "call" "panel" "toggle" "danbooru"; }
@@ -23,21 +25,21 @@ binds {
   Mod+S repeat=false hotkey-overlay-title="Weeb panel" { spawn "qs" "ipc" "call" "panel" "toggle" "weeb"; }
   Mod+Shift+S repeat=false hotkey-overlay-title="Switch weeb/normie" { spawn "qs" "ipc" "call" "weeb" "toggle"; }
 
-  XF86AudioRaiseVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+ -l 1.0"; }
-  XF86AudioLowerVolume allow-when-locked=true { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-"; }
-  XF86AudioMute        allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
-  XF86AudioMicMute     allow-when-locked=true { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
+  // section: Media
+  XF86AudioRaiseVolume allow-when-locked=true hotkey-overlay-title="Volume up" { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1+ -l 1.0"; }
+  XF86AudioLowerVolume allow-when-locked=true hotkey-overlay-title="Volume down" { spawn-sh "wpctl set-volume @DEFAULT_AUDIO_SINK@ 0.1-"; }
+  XF86AudioMute        allow-when-locked=true hotkey-overlay-title="Mute output" { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"; }
+  XF86AudioMicMute     allow-when-locked=true hotkey-overlay-title="Mute microphone" { spawn-sh "wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"; }
 
-  XF86AudioPlay        allow-when-locked=true { spawn-sh "playerctl play-pause"; }
-  XF86AudioStop        allow-when-locked=true { spawn-sh "playerctl stop"; }
-  XF86AudioPrev        allow-when-locked=true { spawn-sh "playerctl previous"; }
-  XF86AudioNext        allow-when-locked=true { spawn-sh "playerctl next"; }
+  XF86AudioPlay        allow-when-locked=true hotkey-overlay-title="Play / pause" { spawn-sh "playerctl play-pause"; }
+  XF86AudioStop        allow-when-locked=true hotkey-overlay-title="Stop" { spawn-sh "playerctl stop"; }
+  XF86AudioPrev        allow-when-locked=true hotkey-overlay-title="Previous track" { spawn-sh "playerctl previous"; }
+  XF86AudioNext        allow-when-locked=true hotkey-overlay-title="Next track" { spawn-sh "playerctl next"; }
 
-  XF86MonBrightnessUp allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "+10%"; }
-  XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "--class=backlight" "set" "10%-"; }
+  XF86MonBrightnessUp allow-when-locked=true hotkey-overlay-title="Brightness up" { spawn "brightnessctl" "--class=backlight" "set" "+10%"; }
+  XF86MonBrightnessDown allow-when-locked=true hotkey-overlay-title="Brightness down" { spawn "brightnessctl" "--class=backlight" "set" "10%-"; }
 
-  Mod+O repeat=false { toggle-overview; }
-
+  // section: Windows
   Mod+X repeat=false { close-window; }
 
   Mod+H { focus-column-left; }
@@ -60,6 +62,13 @@ binds {
   Mod+Ctrl+Home { move-column-to-first; }
   Mod+Ctrl+End  { move-column-to-last; }
 
+  Mod+BracketLeft  { consume-or-expel-window-left; }
+  Mod+BracketRight { consume-or-expel-window-right; }
+
+  Mod+V       { toggle-window-floating; }
+  Mod+Shift+V { switch-focus-between-floating-and-tiling; }
+
+  // section: Monitors
   Mod+Shift+H { focus-monitor-left; }
   Mod+Shift+J { focus-monitor-down; }
   Mod+Shift+K { focus-monitor-up; }
@@ -70,6 +79,7 @@ binds {
   Mod+Shift+Ctrl+K { move-window-to-monitor-up; }
   Mod+Shift+Ctrl+L { move-window-to-monitor-right; }
 
+  // section: Workspaces
   Mod+U { focus-workspace-down; }
   Mod+I { focus-workspace-up; }
 
@@ -79,9 +89,7 @@ binds {
   Mod+Shift+U { move-workspace-down; }
   Mod+Shift+I { move-workspace-up; }
 
-  Mod+BracketLeft  { consume-or-expel-window-left; }
-  Mod+BracketRight { consume-or-expel-window-right; }
-
+  // section: Sizing
   Mod+R { switch-preset-column-width; }
   Mod+Shift+R { switch-preset-column-width-back; }
 
@@ -100,13 +108,12 @@ binds {
   Mod+Shift+Minus { set-window-height "-10%"; }
   Mod+Shift+Equal { set-window-height "+10%"; }
 
-  Mod+V       { toggle-window-floating; }
-  Mod+Shift+V { switch-focus-between-floating-and-tiling; }
-
+  // section: Screenshots
   Print      { screenshot; }
   Ctrl+Print { screenshot-screen; }
   Alt+Print  { screenshot-window; }
 
+  // section: System
   Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
 
   Ctrl+Alt+Delete { quit; }
