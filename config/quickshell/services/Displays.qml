@@ -138,8 +138,138 @@ Singleton {
     if (confirming || !draft[name])
       return;
     const next = Object.assign({}, draft);
-    next[name] = Object.assign({}, draft[name], changes);
+    const before = draft[name];
+    const after = Object.assign({}, before, changes);
+    next[name] = after;
+    const resized = ["width", "height", "scale", "transform"].some(k => k in changes);
+    if (resized && before.enabled && after.enabled) {
+      const was = sizeOf(before);
+      const now = sizeOf(after);
+      const dw = now.width - was.width;
+      const dh = now.height - was.height;
+      Object.keys(next).forEach(other => {
+        if (other === name || !next[other].enabled)
+          return;
+        const s = next[other];
+        const moved = Object.assign({}, s);
+        if (s.x >= before.x + was.width - 1)
+          moved.x = s.x + dw;
+        if (s.y >= before.y + was.height - 1)
+          moved.y = s.y + dh;
+        next[other] = moved;
+      });
+    }
+    if (changes.enabled === true) {
+      const placed = snapIn(next, name, after.x, after.y);
+      next[name] = Object.assign({}, after, placed);
+    }
     draft = next;
+  }
+
+  function sizeOf(state) {
+    const scale = state.scale > 0 ? state.scale : 1;
+    const w = Math.round(state.width / scale);
+    const h = Math.round(state.height / scale);
+    const rotated = ["90", "270", "flipped-90", "flipped-270"].includes(state.transform);
+    return rotated ? {
+      width: h,
+      height: w
+    } : {
+      width: w,
+      height: h
+    };
+  }
+
+  function rectOf(states, name, x, y) {
+    const size = sizeOf(states[name]);
+    return {
+      x: x ?? states[name].x,
+      y: y ?? states[name].y,
+      width: size.width,
+      height: size.height
+    };
+  }
+
+  function overlaps(a, b) {
+    return a.x < b.x + b.width && b.x < a.x + a.width && a.y < b.y + b.height && b.y < a.y + a.height;
+  }
+
+  function snapIn(states, name, px, py) {
+    const others = Object.keys(states).filter(n => n !== name && states[n].enabled).map(n => rectOf(states, n));
+    const self = rectOf(states, name, px, py);
+    if (others.length === 0)
+      return {
+        x: Math.round(px),
+        y: Math.round(py)
+      };
+    const threshold = Math.max(self.width, self.height) * 0.08;
+    const align = (value, targets) => {
+      let best = value;
+      let distance = threshold;
+      targets.forEach(t => {
+        if (Math.abs(value - t) < distance) {
+          distance = Math.abs(value - t);
+          best = t;
+        }
+      });
+      return best;
+    };
+    const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+    const candidates = [];
+    others.forEach(r => {
+      const ys = [r.y, r.y + r.height - self.height, r.y + (r.height - self.height) / 2];
+      const xs = [r.x, r.x + r.width - self.width, r.x + (r.width - self.width) / 2];
+      const y = align(clamp(py, r.y - self.height + 1, r.y + r.height - 1), ys);
+      const x = align(clamp(px, r.x - self.width + 1, r.x + r.width - 1), xs);
+      candidates.push({
+        x: r.x + r.width,
+        y: y
+      });
+      candidates.push({
+        x: r.x - self.width,
+        y: y
+      });
+      candidates.push({
+        x: x,
+        y: r.y + r.height
+      });
+      candidates.push({
+        x: x,
+        y: r.y - self.height
+      });
+    });
+    let best = null;
+    let bestDistance = Infinity;
+    candidates.forEach(c => {
+      const rect = {
+        x: c.x,
+        y: c.y,
+        width: self.width,
+        height: self.height
+      };
+      if (others.some(r => overlaps(rect, r)))
+        return;
+      const d = Math.hypot(c.x - px, c.y - py);
+      if (d < bestDistance) {
+        bestDistance = d;
+        best = c;
+      }
+    });
+    best = best ?? {
+      x: Math.max(...others.map(r => r.x + r.width)),
+      y: others[0].y
+    };
+    return {
+      x: Math.round(best.x),
+      y: Math.round(best.y)
+    };
+  }
+
+  function move(name, px, py) {
+    if (confirming || !draft[name])
+      return;
+    const placed = snapIn(draft, name, px, py);
+    update(name, placed);
   }
 
   function setResolution(name, width, height) {

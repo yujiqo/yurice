@@ -118,6 +118,11 @@ Column {
     }
   }
 
+  DisplaysCanvas {
+    width: parent.width
+    visible: Displays.outputs.length > 1
+  }
+
   TabBar {
     anchors.horizontalCenter: parent.horizontalCenter
     height: 38
