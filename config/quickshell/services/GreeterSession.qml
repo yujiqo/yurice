@@ -161,7 +161,7 @@ Singleton {
     target: root
     property: "reveal"
     duration: Theme.animLock
-    easing.type: Easing.InOutCubic
+    easing.type: Theme.easeInOut
     onFinished: {
       if (root.phase === "showing") {
         root.phase = "ready";

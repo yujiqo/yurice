@@ -54,13 +54,13 @@ Item {
         Behavior on width {
           NumberAnimation {
             duration: Theme.animSlide
-            easing.type: Easing.OutCubic
+            easing.type: Theme.easeOut
           }
         }
         Behavior on inner {
           NumberAnimation {
             duration: Theme.animSlide
-            easing.type: Easing.OutCubic
+            easing.type: Theme.easeOut
           }
         }
         Behavior on color {

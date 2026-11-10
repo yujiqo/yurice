@@ -73,22 +73,12 @@ Item {
         fill: 1
       }
 
-      RoundedImage {
+      Cover {
         id: coverA
-        anchors.fill: parent
-        radius: width / 2
-        sourceSize: Qt.size(width * 2, height * 2)
-        visible: root.shown === coverA
-        onStatusChanged: root.settle()
       }
 
-      RoundedImage {
+      Cover {
         id: coverB
-        anchors.fill: parent
-        radius: width / 2
-        sourceSize: Qt.size(width * 2, height * 2)
-        visible: root.shown === coverB
-        onStatusChanged: root.settle()
       }
     }
 
@@ -164,5 +154,15 @@ Item {
     color: Theme.surface
     border.width: 2
     border.color: Qt.alpha(Theme.text, 0.15)
+  }
+
+  component Cover: RoundedImage {
+    id: cover
+
+    anchors.fill: parent
+    radius: width / 2
+    sourceSize: Qt.size(width * 2, height * 2)
+    visible: root.shown === cover
+    onStatusChanged: root.settle()
   }
 }

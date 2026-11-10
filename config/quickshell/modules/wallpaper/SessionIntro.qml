@@ -52,7 +52,7 @@ Scope {
       property: "reveal"
       to: 1
       duration: Theme.animLock + 250
-      easing.type: Easing.OutCubic
+      easing.type: Theme.easeOut
     }
     NumberAnimation {
       target: root

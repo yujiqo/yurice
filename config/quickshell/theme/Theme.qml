@@ -162,4 +162,5 @@ Singleton {
   readonly property real pickerBlurScale: 0.25
   readonly property real pickerDim: 0.45
   readonly property int easeOut: Easing.OutCubic
+  readonly property int easeInOut: Easing.InOutCubic
 }

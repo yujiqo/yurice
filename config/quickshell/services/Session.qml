@@ -58,7 +58,7 @@ Singleton {
     property: "outro"
     to: 1
     duration: Theme.animLock
-    easing.type: Easing.InOutCubic
+    easing.type: Theme.easeInOut
     onFinished: Quickshell.execDetached(["niri", "msg", "action", "quit", "--skip-confirmation"])
   }
 

@@ -8,7 +8,7 @@ Item {
   property bool shown: true
   property bool animate: true
   default property alias content: holder.data
-  readonly property real progress: Math.max(0, Math.min(1, spring.value))
+  readonly property real progress: spring.progress
 
   implicitWidth: (holder.width + Theme.barGap) * spring.value - Theme.barGap
   implicitHeight: holder.height

@@ -9,15 +9,15 @@ Item {
   property real leading: Theme.pillIconGap
   default property alias content: holder.data
 
-  implicitWidth: (holder.childrenRect.width + leading) * progress.value
+  implicitWidth: (holder.childrenRect.width + leading) * spring.value
   implicitHeight: Theme.pillHeight
   clip: true
-  visible: progress.value > 0.001
+  visible: spring.value > 0.001
 
   Spring {
-    id: progress
+    id: spring
     target: root.shown ? 1 : 0
-    Component.onCompleted: value = target
+    Component.onCompleted: snap()
   }
 
   Item {
@@ -26,6 +26,6 @@ Item {
     anchors.verticalCenter: parent.verticalCenter
     width: childrenRect.width
     height: childrenRect.height
-    opacity: Math.max(0, Math.min(1, progress.value))
+    opacity: spring.progress
   }
 }

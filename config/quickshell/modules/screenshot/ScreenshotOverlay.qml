@@ -89,7 +89,7 @@ PanelWindow {
       Behavior on opacity {
         NumberAnimation {
           duration: Theme.animMove
-          easing.type: Easing.OutCubic
+          easing.type: Theme.easeOut
         }
       }
 
@@ -129,7 +129,7 @@ PanelWindow {
       Behavior on opacity {
         NumberAnimation {
           duration: Theme.animMove
-          easing.type: Easing.OutCubic
+          easing.type: Theme.easeOut
         }
       }
     }
@@ -141,7 +141,7 @@ PanelWindow {
       Behavior on opacity {
         NumberAnimation {
           duration: Theme.animHover
-          easing.type: Easing.OutCubic
+          easing.type: Theme.easeOut
         }
       }
 

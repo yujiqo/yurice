@@ -121,7 +121,7 @@ Column {
       property: "slide"
       to: 0
       duration: Theme.animSlide
-      easing.type: Easing.OutCubic
+      easing.type: Theme.easeOut
     }
   }
 

@@ -53,13 +53,14 @@ Item {
     }
   }
 
-  RoundedImage {
-    id: imageA
+  component Face: RoundedImage {
+    id: face
+
     anchors.fill: parent
     radius: width / 2
     sourceSize: root.sourceSize
-    opacity: root.front === imageA ? 1 : 0
-    onStatusChanged: root.settle(imageA)
+    opacity: root.front === face ? 1 : 0
+    onStatusChanged: root.settle(face)
 
     Behavior on opacity {
       NumberAnimation {
@@ -69,19 +70,11 @@ Item {
     }
   }
 
-  RoundedImage {
-    id: imageB
-    anchors.fill: parent
-    radius: width / 2
-    sourceSize: root.sourceSize
-    opacity: root.front === imageB ? 1 : 0
-    onStatusChanged: root.settle(imageB)
+  Face {
+    id: imageA
+  }
 
-    Behavior on opacity {
-      NumberAnimation {
-        duration: Theme.animMove
-        easing.type: Easing.InOutQuad
-      }
-    }
+  Face {
+    id: imageB
   }
 }

@@ -29,7 +29,7 @@ Item {
     target: flick
     property: "contentY"
     duration: Theme.animResize
-    easing.type: Easing.OutCubic
+    easing.type: Theme.easeOut
   }
 
   Keys.onPressed: event => {

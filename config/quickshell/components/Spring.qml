@@ -13,8 +13,15 @@ Item {
   property real epsilon: Theme.springEpsilon
   property real slowdown: Theme.animSlowdown
   readonly property bool running: frames.running
+  readonly property real progress: Math.max(0, Math.min(1, value))
 
   signal settled
+
+  function snap() {
+    frames.stop();
+    velocity = 0;
+    value = target;
+  }
 
   function jump(to) {
     frames.stop();

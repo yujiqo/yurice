@@ -20,7 +20,7 @@ Island {
   Behavior on panelWidth {
     NumberAnimation {
       duration: Theme.animMove
-      easing.type: Easing.OutCubic
+      easing.type: Theme.easeOut
     }
   }
   hold: true

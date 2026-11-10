@@ -14,6 +14,24 @@ Item {
   property real dragValue: 0
   property bool glide: false
   readonly property real shown: Math.max(0, Math.min(1, pressed ? dragValue : glide ? spring.value : value))
+  readonly property real handleWidth: 4
+  readonly property real handleGap: 4
+  readonly property real handleX: shown * (width - handleWidth)
+
+  signal moved(real value)
+
+  function keyAdjust(direction) {
+    moved(Math.max(0, Math.min(1, value + direction * step)));
+  }
+
+  function emitAt(x) {
+    dragValue = Math.max(0, Math.min(1, (x - handleWidth / 2) / (width - handleWidth)));
+    moved(dragValue);
+  }
+
+  activeFocusOnTab: interactive
+  implicitWidth: 200
+  implicitHeight: 32
 
   onValueChanged: pressed ? spring.jump(value) : spring.target = value
 
@@ -22,28 +40,8 @@ Item {
     Component.onCompleted: jump(root.value)
   }
 
-  signal moved(real value)
-
-  function keyAdjust(direction) {
-    moved(Math.max(0, Math.min(1, value + direction * step)));
-  }
-
-  activeFocusOnTab: interactive
-
   FocusRing {
     anchors.margins: -2
-  }
-
-  readonly property real handleWidth: 4
-  readonly property real handleGap: 4
-  readonly property real handleX: shown * (width - handleWidth)
-
-  implicitWidth: 200
-  implicitHeight: 32
-
-  function emitAt(x) {
-    dragValue = Math.max(0, Math.min(1, (x - handleWidth / 2) / (width - handleWidth)));
-    moved(dragValue);
   }
 
   Rectangle {

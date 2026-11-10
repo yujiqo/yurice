@@ -14,7 +14,7 @@ Island {
   clickable: true
   onClicked: request("weather")
   width: implicitWidth * Math.max(0, appear.value)
-  opacity: Math.max(0, Math.min(1, appear.value))
+  opacity: appear.progress
   visible: appear.value > 0.01
 
   Spring {

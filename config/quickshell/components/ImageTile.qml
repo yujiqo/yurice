@@ -83,56 +83,20 @@ Item {
       }
     }
 
-    Rectangle {
+    Badge {
       anchors.right: parent.right
-      anchors.top: parent.top
-      anchors.margins: 6
-      width: 24
-      height: 24
-      radius: 12
       color: Theme.primary
-      scale: root.checked ? 1 : 0
-      visible: scale > 0
-
-      Behavior on scale {
-        NumberAnimation {
-          duration: Theme.animMove
-          easing.type: Easing.OutBack
-        }
-      }
-
-      Icon {
-        anchors.centerIn: parent
-        text: "check"
-        color: Theme.textOnPrimary
-        size: 16
-      }
+      shown: root.checked
+      icon: "check"
+      iconColor: Theme.textOnPrimary
     }
 
-    Rectangle {
+    Badge {
       anchors.left: parent.left
-      anchors.top: parent.top
-      anchors.margins: 6
-      width: 24
-      height: 24
-      radius: 12
       color: Qt.alpha(Theme.surface, 0.8)
-      scale: root.badged ? 1 : 0
-      visible: scale > 0
-
-      Behavior on scale {
-        NumberAnimation {
-          duration: Theme.animMove
-          easing.type: Easing.OutBack
-        }
-      }
-
-      Icon {
-        anchors.centerIn: parent
-        text: "verified_user"
-        color: Theme.primary
-        size: 16
-      }
+      shown: root.badged
+      icon: "verified_user"
+      iconColor: Theme.primary
     }
 
     Spinner {
@@ -148,6 +112,33 @@ Item {
       cursorShape: Qt.PointingHandCursor
       acceptedButtons: Qt.LeftButton | Qt.RightButton
       onClicked: event => event.button === Qt.RightButton ? root.rightClicked() : root.clicked()
+    }
+  }
+
+  component Badge: Rectangle {
+    property bool shown: false
+    property alias icon: badgeIcon.text
+    property alias iconColor: badgeIcon.color
+
+    anchors.top: parent.top
+    anchors.margins: 6
+    width: 24
+    height: 24
+    radius: 12
+    scale: shown ? 1 : 0
+    visible: scale > 0
+
+    Behavior on scale {
+      NumberAnimation {
+        duration: Theme.animMove
+        easing.type: Easing.OutBack
+      }
+    }
+
+    Icon {
+      id: badgeIcon
+      anchors.centerIn: parent
+      size: 16
     }
   }
 }

@@ -56,14 +56,14 @@ Column {
       property: "slideX"
       to: 0
       duration: Theme.animSlide
-      easing.type: Easing.OutCubic
+      easing.type: Theme.easeOut
     }
     NumberAnimation {
       target: root
       property: "slideY"
       to: 0
       duration: Theme.animSlide
-      easing.type: Easing.OutCubic
+      easing.type: Theme.easeOut
     }
     NumberAnimation {
       target: root

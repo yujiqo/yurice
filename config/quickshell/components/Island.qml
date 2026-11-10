@@ -6,6 +6,35 @@ import qs.services
 Rectangle {
   id: root
 
+  default property alias content: row.data
+  readonly property bool hovered: hover.hovered
+  readonly property bool expanded: hovered || open
+  property real padding: Theme.pillPadding
+  property real spacing: Theme.pillSegmentGap
+  property bool clickable: false
+  property bool held: false
+
+  property string current: ""
+  property bool open: false
+  property bool hold: false
+  property real panelWidth: Theme.panelWidth
+  property Component panel: null
+  property Component shownPanel: null
+  property Component pendingPanel: null
+  property int panelIndex: 0
+  property int shownIndex: 0
+  property real switchFade: 1
+  property real switchSlide: 0
+  property int switchDir: 1
+  readonly property real progress: openSpring.progress
+  readonly property bool holding: hold || (panelLoader.item?.keepOpen ?? false) || (open && Panels.keyboard)
+  readonly property real compactWidth: row.implicitWidth + padding * 2
+  readonly property real openWidth: Math.max(compactWidth, panelWidth)
+
+  signal clicked(var mouse)
+  signal request(string name)
+  signal dismissed
+
   function navTargets(node, found) {
     for (const child of node.children) {
       if (!child.visible || !child.enabled || child.opacity <= 0)
@@ -155,37 +184,6 @@ Rectangle {
     return true;
   }
 
-
-  default property alias content: row.data
-  readonly property bool hovered: hover.hovered
-  readonly property bool expanded: hovered || open
-  property real padding: Theme.pillPadding
-  property real spacing: Theme.pillSegmentGap
-  property bool clickable: false
-  property bool held: false
-
-  property string current: ""
-  property bool open: false
-  property bool hold: false
-  property real panelWidth: Theme.panelWidth
-  property Component panel: null
-  property Component shownPanel: null
-  property Component pendingPanel: null
-  property int panelIndex: 0
-  property int shownIndex: 0
-  property real switchFade: 1
-  property real switchSlide: 0
-  property int switchDir: 1
-  readonly property real progress: Math.max(0, Math.min(1, openSpring.value))
-  readonly property bool holding: hold || (panelLoader.item?.keepOpen ?? false) || (open && Panels.keyboard)
-
-  signal clicked(var mouse)
-  signal request(string name)
-  signal dismissed
-
-  readonly property real compactWidth: row.implicitWidth + padding * 2
-  readonly property real openWidth: Math.max(compactWidth, panelWidth)
-
   implicitWidth: compactWidth + (openWidth - compactWidth) * openSpring.value
   implicitHeight: Theme.pillHeight + panelHeight.value * openSpring.value
   radius: Theme.pillHeight / 2 + (Theme.panelRadius - Theme.pillHeight / 2) * progress
@@ -253,7 +251,7 @@ Rectangle {
         property: "switchSlide"
         to: 0
         duration: Theme.animSlide
-        easing.type: Easing.OutCubic
+        easing.type: Theme.easeOut
       }
     }
   }
@@ -278,10 +276,8 @@ Rectangle {
     id: panelHeight
     target: panelLoader.item ? panelLoader.item.implicitHeight + Theme.panelPadding : 0
     onTargetChanged: {
-      if (openSpring.value < 0.01) {
-        velocity = 0;
-        value = target;
-      }
+      if (openSpring.value < 0.01)
+        snap();
     }
   }
 

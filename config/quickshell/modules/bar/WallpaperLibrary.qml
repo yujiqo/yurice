@@ -86,7 +86,7 @@ Column {
       NumberAnimation {
         properties: "x,y"
         duration: Theme.animSlide
-        easing.type: Easing.OutCubic
+        easing.type: Theme.easeOut
       }
       NumberAnimation {
         properties: "opacity,scale"

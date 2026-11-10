@@ -6,7 +6,7 @@ Item {
   id: root
 
   property bool shown: false
-  readonly property real progress: Math.max(0, Math.min(1, spring.value))
+  readonly property real progress: spring.progress
 
   implicitWidth: Theme.pillSegmentGap * (1 + progress) + progress
   implicitHeight: Theme.pillHeight
@@ -14,7 +14,7 @@ Item {
   Spring {
     id: spring
     target: root.shown ? 1 : 0
-    Component.onCompleted: value = target
+    Component.onCompleted: snap()
   }
 
   Rectangle {

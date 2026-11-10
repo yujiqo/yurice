@@ -7,7 +7,7 @@ Item {
   property bool shown: false
   property real leading: 0
   default property alias content: holder.data
-  readonly property real progress: Math.max(0, Math.min(1, spring.value))
+  readonly property real progress: spring.progress
 
   implicitHeight: (holder.childrenRect.height + leading) * spring.value
   clip: true
@@ -16,7 +16,7 @@ Item {
   Spring {
     id: spring
     target: root.shown ? 1 : 0
-    Component.onCompleted: value = target
+    Component.onCompleted: snap()
   }
 
   Item {
