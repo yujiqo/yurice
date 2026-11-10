@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import qs.theme
 import qs.components
@@ -14,7 +15,7 @@ Column {
   readonly property var today: Weather.days[0] ?? null
 
   function time(date) {
-    return date ? Qt.formatTime(date, Settings.shownShortTimeFormat) : "–";
+    return date ? Qt.formatTime(date, Clock.shortTimeFormat) : "–";
   }
 
   Item {

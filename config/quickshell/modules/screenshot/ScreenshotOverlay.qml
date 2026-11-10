@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Wayland
 import QtQuick
@@ -30,7 +31,7 @@ PanelWindow {
   WlrLayershell.keyboardFocus: selecting && primary ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
   color: "transparent"
   mask: Region {
-    item: selecting ? content : null
+    item: root.selecting ? content : null
   }
 
   Component.onCompleted: Screenshot.register(name, root)

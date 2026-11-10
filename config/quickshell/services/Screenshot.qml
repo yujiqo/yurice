@@ -1,4 +1,5 @@
 pragma Singleton
+pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Io
 import QtQuick
@@ -29,7 +30,7 @@ Singleton {
   function start() {
     if (phase !== "")
       return;
-    output = Niri.focusedOutput || (Quickshell.screens[0]?.name ?? "");
+    output = Niri.activeOutput;
     takenAt = new Date();
     showPointer = false;
     busy = false;
@@ -97,10 +98,6 @@ Singleton {
     return folder + "/Screenshot from " + Qt.formatDateTime(takenAt, "yyyy-MM-dd HH-mm-ss") + ".png";
   }
 
-  function shortPath(path) {
-    return path.replace(Quickshell.env("HOME"), "~");
-  }
-
   function finish(symbol, summary, body) {
     cancel();
     Notifications.notifyLocal("screenshot", symbol, summary, body, 3000);
@@ -132,7 +129,7 @@ Singleton {
     overlay.grabRegion(result => {
       if (!result.saveToFile(path))
         return root.fail();
-      root.finish("screenshot_region", "Region saved", root.shortPath(path));
+      root.finish("screenshot_region", "Region saved", Paths.display(path));
     });
   }
 
@@ -145,7 +142,7 @@ Singleton {
     overlay.grabScreen(result => {
       if (!result.saveToFile(path))
         return root.fail();
-      root.finish("fullscreen", "Screen saved", root.shortPath(path));
+      root.finish("fullscreen", "Screen saved", Paths.display(path));
     });
   }
 

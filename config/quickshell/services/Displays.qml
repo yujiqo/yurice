@@ -1,4 +1,5 @@
 pragma Singleton
+pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Io
 import QtQuick
@@ -6,7 +7,7 @@ import QtQuick
 Singleton {
   id: root
 
-  readonly property string kdlPath: Settings.home + "/.config/yurice/custom/niri/outputs.kdl"
+  readonly property string kdlPath: Paths.custom + "/niri/outputs.kdl"
   readonly property int confirmSeconds: 10
 
   property bool editing: false

@@ -1,4 +1,5 @@
 pragma Singleton
+pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Io
 import QtQuick
@@ -223,7 +224,7 @@ Singleton {
 
   FileView {
     id: keyFile
-    path: Quickshell.env("HOME") + "/.config/yurice/wallhaven.key"
+    path: Paths.config + "/wallhaven.key"
     watchChanges: true
     printErrors: false
     onFileChanged: reload()
@@ -231,7 +232,7 @@ Singleton {
 
   FileView {
     id: filterFile
-    path: Wallpapers.stateDir + "/wallsearch.json"
+    path: Paths.state + "/wallsearch.json"
     watchChanges: true
     printErrors: false
     onFileChanged: reload()

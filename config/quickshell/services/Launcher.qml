@@ -1,8 +1,8 @@
 pragma Singleton
+pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Io
 import QtQuick
-import qs.components
 
 Singleton {
   id: root
@@ -11,7 +11,7 @@ Singleton {
   property string output: ""
   readonly property bool isOpen: mode !== ""
 
-  readonly property string cacheDir: Quickshell.env("HOME") + "/.cache/yurice/clip"
+  readonly property string cacheDir: Paths.cache + "/clip"
   readonly property var terminals: ["kitty", "foot", "alacritty", "wezterm", "ghostty", "org.wezfurlong.wezterm", "com.mitchellh.ghostty"]
 
   property string calcQuery: ""
@@ -23,7 +23,7 @@ Singleton {
   property var localIcons: ({})
 
   function open(next) {
-    output = Niri.focusedOutput || (Quickshell.screens[0]?.name ?? "");
+    output = Niri.activeOutput;
     mode = next;
     iconScan.running = true;
   }
@@ -32,9 +32,9 @@ Singleton {
     if (!name)
       return "";
     if (name.startsWith("/"))
-      return Utility.fileUrl(name);
+      return Paths.fileUrl(name);
     if (localIcons[name])
-      return Utility.fileUrl(localIcons[name]);
+      return Paths.fileUrl(localIcons[name]);
     return Quickshell.iconPath(name, true);
   }
 
@@ -208,7 +208,7 @@ Singleton {
 
   function paste(clip) {
     close();
-    Quickshell.execDetached(["sh", Quickshell.shellDir + "/scripts/clip-paste.sh", clip.id, ...terminals]);
+    Quickshell.execDetached(["sh", Paths.scripts + "/clip-paste.sh", clip.id, ...terminals]);
   }
 
   function remove(clip) {
@@ -279,7 +279,7 @@ Singleton {
 
   FileView {
     id: usageFile
-    path: Quickshell.env("HOME") + "/.local/state/yurice/launcher.json"
+    path: Paths.state + "/launcher.json"
     printErrors: false
 
     JsonAdapter {

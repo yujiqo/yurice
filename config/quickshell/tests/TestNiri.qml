@@ -1,3 +1,4 @@
+import Quickshell
 import QtQuick
 import qs.services
 
@@ -40,8 +41,10 @@ QtObject {
     seed();
     t.eq(Niri.workspaces.length, 3);
     t.eq(Niri.focusedOutput, "A");
+    t.eq(Niri.activeOutput, "A");
     reset();
     t.eq(Niri.focusedOutput, "");
+    t.eq(Niri.activeOutput, Quickshell.screens[0]?.name ?? "", "falls back to the first screen");
   }
 
   function test_workspaceActivated_sameOutput(t) {

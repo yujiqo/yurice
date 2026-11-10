@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import qs.theme
 import qs.components
@@ -31,8 +32,8 @@ Column {
 
       Label {
         anchors.verticalCenter: parent.verticalCenter
-        width: Settings.shownClock24h ? 44 : 70
-        opacity: Settings.timeFade
+        width: Clock.clock24h ? 44 : 70
+        opacity: Clock.fade
         text: ThemeMode.formatMinutes(ThemeMode[row.name])
 
         Behavior on width {

@@ -1,4 +1,5 @@
 pragma Singleton
+pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Io
 import QtQuick
@@ -8,6 +9,7 @@ Singleton {
 
   property var workspaces: []
   readonly property string focusedOutput: workspaces.find(w => w.is_focused)?.output ?? ""
+  readonly property string activeOutput: focusedOutput || (Quickshell.screens[0]?.name ?? "")
   property var windows: ({})
   property var layoutNames: []
   property int layoutIndex: 0

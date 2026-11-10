@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell
 import qs.theme
@@ -26,7 +27,7 @@ Column {
     visible: Wallpapers.wallpapers.length === 0
     horizontalAlignment: Text.AlignHCenter
     verticalAlignment: Text.AlignVCenter
-    text: Wallpapers.hideUnsafe ? "No safe wallpapers yet, mark some in weeb mode" : "No wallpapers in " + Settings.displayPath(Wallpapers.directory)
+    text: Wallpapers.hideUnsafe ? "No safe wallpapers yet, mark some in weeb mode" : "No wallpapers in " + Paths.display(Wallpapers.directory)
     color: Theme.textVariant
     font.family: Theme.labelFont
     font.pixelSize: Theme.menuTitleSize
@@ -104,7 +105,7 @@ Column {
 
       width: grid.cellWidth
       height: grid.cellHeight
-      source: "file://" + modelData
+      source: Paths.fileUrl(modelData)
       resolution: Wallpapers.resolutionOf(modelData)
       resolutionColor: canUpscale ? Theme.warn : Theme.text
       readonly property bool working: WallpaperTools.isBusy(modelData)
@@ -173,7 +174,7 @@ Column {
 
       Rectangle {
         anchors.fill: parent
-        radius: parent.radius
+        radius: tile.frame.radius
         color: Qt.alpha(Theme.surface, 0.72)
         opacity: tile.active ? 1 : 0
         visible: opacity > 0

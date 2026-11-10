@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
@@ -102,7 +103,7 @@ Scope {
         Image {
           id: image
           anchors.fill: parent
-          source: Wallpapers.ready && WallpaperPublish.displayFile !== "" ? "file://" + WallpaperPublish.displayFile : ""
+          source: Wallpapers.ready && WallpaperPublish.displayFile !== "" ? Paths.fileUrl(WallpaperPublish.displayFile) : ""
           sourceSize: Qt.size(window.modelData.width * window.modelData.devicePixelRatio, window.modelData.height * window.modelData.devicePixelRatio)
           fillMode: Image.PreserveAspectCrop
           asynchronous: true

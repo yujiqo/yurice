@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import qs.theme
 import qs.components
@@ -52,7 +53,7 @@ Column {
       id: image
       anchors.fill: parent
       fillMode: Image.PreserveAspectFit
-      source: Utility.fileUrl(AvatarEditor.file)
+      source: Paths.fileUrl(AvatarEditor.file)
       sourceSize: Qt.size(1600, 1600)
       autoTransform: true
       asynchronous: true

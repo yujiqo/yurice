@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import qs.theme
 import qs.components
@@ -48,7 +49,7 @@ Column {
 
       Label {
         width: parent.width
-        text: root.cropping ? AvatarEditor.file.slice(AvatarEditor.file.lastIndexOf("/") + 1) : "Pick an image"
+        text: root.cropping ? Paths.baseName(AvatarEditor.file) : "Pick an image"
         color: Theme.textVariant
         pixelSize: Theme.menuSubtitleSize
       }

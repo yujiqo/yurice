@@ -1,4 +1,5 @@
 pragma Singleton
+pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Io
 import QtQuick
@@ -15,7 +16,7 @@ Singleton {
   function open(next) {
     if (!names.includes(next) || (next === "danbooru" && WeebMode.hidesDanbooru))
       return;
-    output = Niri.focusedOutput || (Quickshell.screens[0]?.name ?? "");
+    output = Niri.activeOutput;
     name = next;
   }
 

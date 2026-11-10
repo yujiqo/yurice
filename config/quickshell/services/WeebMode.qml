@@ -1,4 +1,5 @@
 pragma Singleton
+pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Io
 import QtQuick
@@ -41,7 +42,7 @@ Singleton {
 
   FileView {
     id: file
-    path: Quickshell.env("HOME") + "/.local/state/yurice/weeb.json"
+    path: Paths.state + "/weeb.json"
     watchChanges: true
     printErrors: false
     onFileChanged: reload()

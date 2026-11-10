@@ -1,4 +1,5 @@
 pragma Singleton
+pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Io
 import QtQuick
@@ -8,9 +9,7 @@ import qs.theme
 Singleton {
   id: root
 
-  readonly property string home: Quickshell.env("HOME")
   readonly property string directory: Settings.wallpaperDirectory
-  readonly property string stateDir: home + "/.local/state/yurice"
   readonly property string matugenConfig: Quickshell.shellDir + "/../matugen/config.toml"
 
   property bool stateLoaded: false
@@ -33,20 +32,16 @@ Singleton {
   }
   property var resolutions: ({})
 
-  function fileName(path) {
-    return path.slice(path.lastIndexOf("/") + 1);
-  }
-
   function isSafe(path) {
-    return safeFiles[fileName(path)] === true;
+    return safeFiles[Paths.baseName(path)] === true;
   }
 
   function setSafe(path, on) {
     const next = Object.assign({}, safeFiles);
     if (on)
-      next[fileName(path)] = true;
+      next[Paths.baseName(path)] = true;
     else
-      delete next[fileName(path)];
+      delete next[Paths.baseName(path)];
     safeFiles = next;
     safeFile.setText(JSON.stringify(next, null, 2));
   }
@@ -153,12 +148,8 @@ Singleton {
   property string _pendingPalette: ""
   property bool _paletteChecked: false
 
-  function expand(path) {
-    return path.startsWith("~/") ? home + path.slice(1) : path;
-  }
-
   function set(path) {
-    path = expand(path);
+    path = Paths.expand(path);
     if (path === "" || path === current)
       return;
     if (hideUnsafe && !isSafe(path))
@@ -192,7 +183,7 @@ Singleton {
 
   FolderListModel {
     id: folder
-    folder: "file://" + root.directory
+    folder: Paths.fileUrl(root.directory)
     nameFilters: ["*.jpg", "*.jpeg", "*.png", "*.webp"]
     caseSensitive: false
     showDirs: false
@@ -204,7 +195,7 @@ Singleton {
 
   Process {
     running: true
-    command: ["mkdir", "-p", root.stateDir]
+    command: ["mkdir", "-p", Paths.state]
   }
 
   Process {
@@ -255,7 +246,7 @@ Singleton {
 
   FileView {
     id: stateFile
-    path: root.stateDir + "/wallpaper.json"
+    path: Paths.state + "/wallpaper.json"
     watchChanges: true
     printErrors: false
     onFileChanged: reload()
@@ -272,7 +263,7 @@ Singleton {
 
   FileView {
     id: safeFile
-    path: root.stateDir + "/wallpaper-safe.json"
+    path: Paths.state + "/wallpaper-safe.json"
     blockWrites: true
     watchChanges: true
     printErrors: false

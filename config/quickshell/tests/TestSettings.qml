@@ -14,20 +14,6 @@ QtObject {
     });
   }
 
-  function test_expandPath(t) {
-    t.eq(Settings.expandPath("~"), home);
-    t.eq(Settings.expandPath("~/Pictures"), home + "/Pictures");
-    t.eq(Settings.expandPath("~user/x"), "~user/x");
-    t.eq(Settings.expandPath("/abs/~/x"), "/abs/~/x");
-  }
-
-  function test_displayPath(t) {
-    t.eq(Settings.displayPath(home), "~");
-    t.eq(Settings.displayPath(home + "/Pictures"), "~/Pictures");
-    t.eq(Settings.displayPath(home + "x/Pictures"), home + "x/Pictures");
-    t.eq(Settings.displayPath("/etc/x"), "/etc/x");
-  }
-
   function test_defaults(t) {
     t.eq(Settings.wallpaperDirectory, home + "/Pictures/Wallpapers");
     t.eq(Settings.danbooruDirectory, home + "/Pictures/Danbooru");

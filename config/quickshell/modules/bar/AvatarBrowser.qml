@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import Qt.labs.folderlistmodel
 import qs.theme
@@ -25,7 +26,7 @@ Column {
     IconButton {
       anchors.verticalCenter: parent.verticalCenter
       icon: "home"
-      onClicked: AvatarEditor.navigate(Settings.home)
+      onClicked: AvatarEditor.navigate(Paths.home)
     }
 
     TextField {
@@ -33,16 +34,16 @@ Column {
       implicitHeight: 40
       leadingIcon: "folder"
       escapeLeaves: true
-      text: Settings.displayPath(AvatarEditor.folder)
+      text: Paths.display(AvatarEditor.folder)
       onAccepted: text => {
         const value = text.trim();
         if (value.startsWith("/") || value.startsWith("~"))
-          AvatarEditor.navigate(Settings.expandPath(value));
+          AvatarEditor.navigate(Paths.expand(value));
         blur();
       }
       onInputActiveFocusChanged: {
         if (!inputActiveFocus)
-          text = Qt.binding(() => Settings.displayPath(AvatarEditor.folder));
+          text = Qt.binding(() => Paths.display(AvatarEditor.folder));
       }
     }
   }
@@ -148,7 +149,7 @@ Column {
       }
       model: FolderListModel {
         id: files
-        folder: "file://" + root.shownFolder
+        folder: Paths.fileUrl(root.shownFolder)
         nameFilters: ["*.jpg", "*.jpeg", "*.png", "*.webp", "*.gif", "*.bmp"]
         caseSensitive: false
         showDirsFirst: true
@@ -173,7 +174,7 @@ Column {
         ImageTile {
           anchors.fill: parent
           visible: !cell.fileIsDir
-          source: cell.fileIsDir ? "" : Utility.fileUrl(cell.filePath)
+          source: cell.fileIsDir ? "" : Paths.fileUrl(cell.filePath)
           onClicked: AvatarEditor.pick(cell.filePath)
         }
 

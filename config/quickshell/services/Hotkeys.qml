@@ -1,4 +1,5 @@
 pragma Singleton
+pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Io
 import QtQuick
@@ -96,7 +97,7 @@ Singleton {
   }
 
   FileView {
-    path: Quickshell.env("HOME") + "/.config/niri/modules/binds.kdl"
+    path: Paths.home + "/.config/niri/modules/binds.kdl"
     watchChanges: true
     printErrors: false
     onFileChanged: reload()

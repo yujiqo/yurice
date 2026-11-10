@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import Quickshell.Io
 import qs.theme
@@ -146,7 +147,7 @@ Column {
     bottomPadding: 6
 
     function revert() {
-      field.text = Settings.displayPath(path);
+      field.text = Paths.display(path);
       error = "";
     }
 
@@ -178,13 +179,13 @@ Column {
 
     Process {
       id: check
-      command: ["sh", "-c", 'mkdir -p "$1" && test -d "$1" && test -w "$1"', "sh", Settings.expandPath(row.pending)]
+      command: ["sh", "-c", 'mkdir -p "$1" && test -d "$1" && test -w "$1"', "sh", Paths.expand(row.pending)]
       onExited: code => {
         if (code !== 0) {
           row.error = "Can't create or write to this folder";
           return;
         }
-        const display = Settings.displayPath(Settings.expandPath(row.pending).replace(/\/+$/, "") || "/");
+        const display = Paths.display(Paths.expand(row.pending).replace(/\/+$/, "") || "/");
         Settings.set(row.key, display);
         row.confirm();
       }

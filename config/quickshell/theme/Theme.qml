@@ -1,4 +1,5 @@
 pragma Singleton
+pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Io
 import QtQuick
@@ -138,11 +139,14 @@ Singleton {
   readonly property int animHover: 120
   readonly property int animResize: 150
   readonly property int animColor: 200
+  readonly property int animFadeOut: 180
+  readonly property int animFadeIn: 250
   readonly property int animRemove: 200
   readonly property int animMove: 250
   readonly property int animWallpaper: 800
   readonly property int animLock: 550
   readonly property int animLockSettle: 450
+  readonly property int animSpin: 900
   readonly property real lockZoom: 0.25
   readonly property int animPickerFade: 200
   readonly property int panelSettle: 450

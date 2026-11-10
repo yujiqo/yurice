@@ -1,7 +1,9 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import QtQuick.Effects
 import qs.theme
 import qs.components
+import qs.services
 
 Item {
   id: root
@@ -146,7 +148,7 @@ Item {
   Image {
     id: wallpaperImage
     anchors.fill: parent
-    source: root.imageSize.width > 0 ? Utility.fileUrl(root.wallpaper) : ""
+    source: root.imageSize.width > 0 ? Paths.fileUrl(root.wallpaper) : ""
     sourceSize: root.imageSize
     fillMode: Image.PreserveAspectCrop
     asynchronous: true

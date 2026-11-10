@@ -19,12 +19,6 @@ QtObject {
     t.eq(Utility.pick(39, steps, "low"), "low");
   }
 
-  function test_fileUrl(t) {
-    t.eq(Utility.fileUrl(""), "");
-    t.eq(Utility.fileUrl("/a/b.png"), "file:///a/b.png");
-    t.eq(Utility.fileUrl("/my dir/#1 50%.jpg"), "file:///my%20dir/%231%2050%25.jpg");
-  }
-
   function test_sameItems(t) {
     t.ok(Utility.sameItems([], []));
     t.ok(Utility.sameItems([1, "a"], [1, "a"]));

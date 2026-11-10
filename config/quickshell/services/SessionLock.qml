@@ -1,4 +1,5 @@
 pragma Singleton
+pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Io
 import Quickshell.Services.Pam
@@ -300,7 +301,7 @@ Singleton {
   Timer {
     interval: 8000
     running: root.sessionLocked && !root.secured
-    onTriggered: Quickshell.execDetached(["sh", Quickshell.shellDir + "/scripts/recover-session.sh", "-p", Quickshell.shellDir])
+    onTriggered: Quickshell.execDetached(["sh", Paths.scripts + "/recover-session.sh", "-p", Quickshell.shellDir])
   }
 
   Component.onCompleted: {

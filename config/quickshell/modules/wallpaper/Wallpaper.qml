@@ -1,8 +1,8 @@
+pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Wayland
 import QtQuick
 import qs.theme
-import qs.components
 import qs.services
 
 PanelWindow {
@@ -25,8 +25,8 @@ PanelWindow {
   readonly property size imageSize: Qt.size(modelData.width * modelData.devicePixelRatio, modelData.height * modelData.devicePixelRatio)
   readonly property string path: Wallpapers.current
 
-  property Image front: a
-  readonly property Image back: front === a ? b : a
+  property WallpaperImage front: a
+  readonly property WallpaperImage back: front === a ? b : a
 
   onPathChanged: load()
   Component.onCompleted: load()
@@ -87,7 +87,7 @@ PanelWindow {
   component WallpaperImage: Image {
     property string path: ""
     property string file: ""
-    source: path === "" ? "" : Utility.fileUrl(file)
+    source: path === "" ? "" : Paths.fileUrl(file)
     anchors.fill: parent
     opacity: 0
     fillMode: Image.PreserveAspectCrop

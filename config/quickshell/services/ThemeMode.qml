@@ -1,4 +1,5 @@
 pragma Singleton
+pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Io
 import QtQuick
@@ -43,11 +44,11 @@ Singleton {
   }
 
   function formatTime(date) {
-    return Qt.formatTime(date, Settings.shownShortTimeFormat);
+    return Qt.formatTime(date, Clock.shortTimeFormat);
   }
 
   function formatMinutes(minutes) {
-    return Qt.formatTime(new Date(2000, 0, 1, Math.floor(minutes / 60), minutes % 60), Settings.shownShortTimeFormat);
+    return Qt.formatTime(new Date(2000, 0, 1, Math.floor(minutes / 60), minutes % 60), Clock.shortTimeFormat);
   }
 
   function toggle() {
@@ -123,7 +124,7 @@ Singleton {
 
   FileView {
     id: file
-    path: Wallpapers.stateDir + "/theme.json"
+    path: Paths.state + "/theme.json"
     watchChanges: true
     printErrors: false
     onFileChanged: reload()

@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import qs.theme
 import qs.components
@@ -34,9 +35,9 @@ Island {
       id: time
       height: parent.height
       verticalAlignment: Text.AlignVCenter
-      text: Qt.formatDateTime(Clock.date, Settings.shownTimeFormat)
+      text: Qt.formatDateTime(Clock.date, Clock.timeFormat)
       color: Theme.text
-      opacity: Settings.timeFade
+      opacity: Clock.fade
       font.family: Theme.labelFont
       font.pixelSize: Theme.labelSize
     }

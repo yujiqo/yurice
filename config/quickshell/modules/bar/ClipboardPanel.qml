@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import qs.theme
 import qs.components
@@ -109,7 +110,7 @@ Column {
             radius: 10
             source: {
               const path = Launcher.thumbs[clipRow.modelData.id] ?? Launcher.thumb(clipRow.modelData);
-              return path ? Utility.fileUrl(path) : "";
+              return path ? Paths.fileUrl(path) : "";
             }
             sourceSize: Qt.size(168, 112)
           }

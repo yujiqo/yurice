@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Wayland
 import QtQuick
@@ -86,7 +87,7 @@ PanelWindow {
       Wallpapers.pickerOpen = false;
       return;
     }
-    targetScreen = Quickshell.screens.find(s => s.name === Niri.focusedOutput) ?? Quickshell.screens[0];
+    targetScreen = Quickshell.screens.find(s => s.name === Niri.activeOutput) ?? null;
     originIndex = Math.max(0, items.indexOf(Wallpapers.current));
     anchorIndex = originIndex;
     selected = originIndex;
@@ -315,7 +316,7 @@ PanelWindow {
         height: root.tileH * Theme.pickerBlurScale
         fillMode: Image.PreserveAspectCrop
         asynchronous: true
-        source: Utility.fileUrl(root.backdropPath)
+        source: Paths.fileUrl(root.backdropPath)
         sourceSize: Qt.size(width, height)
         visible: false
         onStatusChanged: Qt.callLater(root.tryStart, false)
@@ -383,7 +384,7 @@ PanelWindow {
             fillMode: Image.PreserveAspectCrop
             asynchronous: true
             mipmap: true
-            source: Utility.fileUrl(tile.modelData)
+            source: Paths.fileUrl(tile.modelData)
             sourceSize: root.thumbSize
             visible: false
           }
@@ -393,7 +394,7 @@ PanelWindow {
             anchors.fill: parent
             fillMode: Image.PreserveAspectCrop
             asynchronous: true
-            source: tile.needsFull ? Utility.fileUrl(tile.modelData) : ""
+            source: tile.needsFull ? Paths.fileUrl(tile.modelData) : ""
             sourceSize: Qt.size(root.tileW * root.dpr, root.tileH * root.dpr)
             visible: false
           }

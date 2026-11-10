@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import QtQuick
 import qs.theme
 
@@ -18,7 +19,7 @@ Icon {
     running: root.visible
     from: 0
     to: 360
-    duration: 900
+    duration: Theme.animSpin
     loops: Animation.Infinite
   }
 }

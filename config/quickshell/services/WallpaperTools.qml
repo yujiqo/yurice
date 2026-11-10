@@ -1,46 +1,11 @@
 pragma Singleton
+pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Io
 import QtQuick
 
 Singleton {
   id: root
-
-  readonly property string trashScript: '
-    f="$1"
-    T="${XDG_DATA_HOME:-$HOME/.local/share}/Trash"
-    mkdir -p "$T/files" "$T/info" || exit 1
-    base=$(basename "$f")
-    stem="${base%.*}"
-    ext="${base##*.}"
-    name="$base"
-    n=1
-    while [ -e "$T/files/$name" ] || [ -e "$T/info/$name.trashinfo" ]; do
-      name="$stem.$n.$ext"
-      n=$((n + 1))
-    done
-    printf "[Trash Info]\\nPath=%s\\nDeletionDate=%s\\n" "$2" "$(date +%Y-%m-%dT%H:%M:%S)" > "$T/info/$name.trashinfo" || exit 1
-    mv -- "$f" "$T/files/$name" || { rm -f "$T/info/$name.trashinfo"; exit 1; }
-  '
-
-  readonly property string upscaleScript: '
-    src="$1"; dst="$2"; backup="$3"; scale="$4"; size="$5"
-    tmp=$(mktemp -d "${XDG_RUNTIME_DIR:-/tmp}/yurice-upscale.XXXXXX") || exit 1
-    trap "rm -rf \\"$tmp\\"" EXIT
-    magick "$src[0]" -strip "$tmp/in.png" || exit 1
-    realesrgan-ncnn-vulkan -i "$tmp/in.png" -o "$tmp/out.png" -n realesr-animevideov3 -s "$scale" -t 128 || exit 1
-    before=$(magick "$tmp/in.png" -format "%[fx:mean]" info:)
-    after=$(magick "$tmp/out.png" -format "%[fx:mean]" info:)
-    if awk -v a="$after" -v b="$before" "BEGIN { exit !(a < b * 0.6) }"; then
-      echo "output looks corrupted (mean $after vs $before)" >&2
-      exit 1
-    fi
-    magick "$tmp/out.png" -filter Lanczos -resize "$size^>" "$tmp/final.png" || exit 1
-    mkdir -p "$(dirname "$backup")" || exit 1
-    [ -e "$backup" ] && backup="${backup%.*}.$(date +%s).${backup##*.}"
-    mv -- "$src" "$backup" || exit 1
-    mv -- "$tmp/final.png" "$dst" || { mv -- "$backup" "$src"; exit 1; }
-  '
 
   property list<string> queue: []
   property string active: ""
@@ -72,8 +37,8 @@ Singleton {
     const r = Wallpapers.resolutions[src];
     const target = Wallpapers.upscaleTarget;
     const scale = [2, 3].find(s => r.w * s >= target.width && r.h * s >= target.height) ?? 4;
-    const dir = src.slice(0, src.lastIndexOf("/"));
-    const name = src.slice(src.lastIndexOf("/") + 1);
+    const dir = Paths.dirName(src);
+    const name = Paths.baseName(src);
     const stem = name.includes(".") ? name.slice(0, name.lastIndexOf(".")) : name;
     let dst = `${dir}/${stem}.png`;
     if (dst.toLowerCase() === src.toLowerCase())
@@ -103,7 +68,7 @@ Singleton {
       property string size
       property var errors: []
 
-      command: ["sh", "-c", root.upscaleScript, "sh", src, dst, backup, String(scale), size]
+      command: ["sh", Paths.scripts + "/upscale-wallpaper.sh", src, dst, backup, String(scale), size]
       stderr: SplitParser {
         onRead: line => {
           const m = line.match(/^\s*(\d+(?:\.\d+)?)%\s*$/);
@@ -152,7 +117,7 @@ Singleton {
 
       property string path
 
-      command: ["sh", "-c", root.trashScript, "sh", path, encodeURI(path)]
+      command: ["sh", Paths.scripts + "/trash.sh", path, encodeURI(path)]
       onExited: code => {
         if (code === 0) {
           Wallpapers.forgetResolution(proc.path);

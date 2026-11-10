@@ -2,11 +2,6 @@ import QtQuick
 import qs.services
 
 QtObject {
-  function test_fileName(t) {
-    t.eq(Wallpapers.fileName("/a/b/c.jpg"), "c.jpg");
-    t.eq(Wallpapers.fileName("c.jpg"), "c.jpg");
-  }
-
   function test_safeList(t) {
     const before = Wallpapers.safeFiles;
     Wallpapers.setSafe("/w/one.jpg", true);

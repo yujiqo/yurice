@@ -1,3 +1,4 @@
+pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Wayland
 import QtQuick
@@ -181,7 +182,7 @@ ShellRoot {
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: workspaces.bottom
         anchors.topMargin: Theme.barGap * 2
-        visible: bar.modelData.name === (Niri.focusedOutput || Quickshell.screens[0]?.name)
+        visible: bar.modelData.name === Niri.activeOutput
       }
 
       Row {

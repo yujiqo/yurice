@@ -1,4 +1,5 @@
 pragma Singleton
+pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Io
 import QtQuick
@@ -11,7 +12,7 @@ Singleton {
   property string output: ""
 
   function open() {
-    output = Niri.focusedOutput || (Quickshell.screens[0]?.name ?? "");
+    output = Niri.activeOutput;
     isOpen = true;
   }
 

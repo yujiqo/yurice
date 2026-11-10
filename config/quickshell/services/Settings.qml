@@ -1,4 +1,5 @@
 pragma Singleton
+pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Io
 import QtQuick
@@ -6,14 +7,13 @@ import QtQuick
 Singleton {
   id: root
 
-  readonly property string home: Quickshell.env("HOME")
-  readonly property string directory: home + "/.config/yurice/custom/quickshell"
+  readonly property string directory: Paths.custom + "/quickshell"
   property var values: parse(file.text())
-  readonly property string wallpaperDirectory: expandPath(values.wallpaperDirectory || "~/Pictures/Wallpapers")
-  readonly property string danbooruDirectory: expandPath(values.danbooruDirectory || "~/Pictures/Danbooru")
-  readonly property string screenshotDirectory: expandPath(values.screenshotDirectory || "~/Pictures/Screenshots")
-  readonly property string avatarPath: expandPath(values.avatar || "~/.config/yurice/custom/avatars/weeb.jpg")
-  readonly property string normieAvatarPath: expandPath(values.normieAvatar || "~/.config/yurice/custom/avatars/normie.jpg")
+  readonly property string wallpaperDirectory: Paths.expand(values.wallpaperDirectory || "~/Pictures/Wallpapers")
+  readonly property string danbooruDirectory: Paths.expand(values.danbooruDirectory || "~/Pictures/Danbooru")
+  readonly property string screenshotDirectory: Paths.expand(values.screenshotDirectory || "~/Pictures/Screenshots")
+  readonly property string avatarPath: Paths.expand(values.avatar || Paths.custom + "/avatars/weeb.jpg")
+  readonly property string normieAvatarPath: Paths.expand(values.normieAvatar || Paths.custom + "/avatars/normie.jpg")
 
   readonly property int idleScreenOff: values.idleScreenOff ?? 10
   readonly property int idleLockedScreenOff: values.idleLockedScreenOff ?? 1
@@ -24,40 +24,6 @@ Singleton {
   readonly property bool clockSeconds: values.clockSeconds ?? false
   readonly property string shortTimeFormat: clock24h ? "HH:mm" : "h:mm AP"
   readonly property string timeFormat: clock24h ? (clockSeconds ? "HH:mm:ss" : "HH:mm") : (clockSeconds ? "h:mm:ss AP" : "h:mm AP")
-  property string shownTimeFormat: ""
-  property string shownShortTimeFormat: ""
-  property bool shownClock24h: true
-  property real timeFade: 1
-
-  onTimeFormatChanged: timeSwap.restart()
-
-  function showTimeFormat() {
-    shownTimeFormat = timeFormat;
-    shownShortTimeFormat = shortTimeFormat;
-    shownClock24h = clock24h;
-  }
-
-  SequentialAnimation {
-    id: timeSwap
-
-    NumberAnimation {
-      target: root
-      property: "timeFade"
-      to: 0
-      duration: 180
-      easing.type: Easing.InQuad
-    }
-    ScriptAction {
-      script: root.showTimeFormat()
-    }
-    NumberAnimation {
-      target: root
-      property: "timeFade"
-      to: 1
-      duration: 250
-      easing.type: Easing.OutQuad
-    }
-  }
 
   readonly property var weatherLocation: values.weatherLocation ?? null
   readonly property bool weatherFahrenheit: values.weatherFahrenheit ?? false
@@ -80,16 +46,7 @@ Singleton {
     file.setText(JSON.stringify(next, null, 2) + "\n");
   }
 
-  function expandPath(path) {
-    return path.replace(/^~(?=\/|$)/, home);
-  }
-
-  function displayPath(path) {
-    return path === home || path.startsWith(home + "/") ? "~" + path.slice(home.length) : path;
-  }
-
   Component.onCompleted: {
-    showTimeFormat();
     Quickshell.execDetached(["mkdir", "-p", directory]);
   }
 

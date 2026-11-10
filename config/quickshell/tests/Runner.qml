@@ -75,9 +75,41 @@ QtObject {
     return list;
   }
 
+  readonly property var instantiateFiles: Quickshell.env("YURICE_INSTANTIATE").split(":").filter(f => f !== "")
+  readonly property var requiredProperties: ({
+      "modules/bar/LevelsPanel.qml": {
+        kind: "volume"
+      }
+    })
+
+  property Item stage: Item {
+    visible: false
+    width: 1280
+    height: 720
+  }
+
+  function instantiate() {
+    const fixtures = Qt.createComponent(Qt.resolvedUrl("Fixtures.qml"), Component.PreferSynchronous);
+    if (fixtures.status !== Component.Ready) {
+      report(false, "fixtures", fixtures.errorString());
+      return;
+    }
+    fixtures.createObject(root).apply();
+    for (const file of instantiateFiles) {
+      const name = `instantiate ${file}`;
+      if (!selected(name))
+        continue;
+      const component = Qt.createComponent(Qt.resolvedUrl("../" + file), Component.PreferSynchronous);
+      const object = component.createObject(stage, requiredProperties[file] ?? {});
+      report(object !== null, name, component.errorString() || "createObject returned null");
+      object?.destroy();
+    }
+  }
+
   function step() {
     if (queue.length === 0) {
       ticker.stop();
+      instantiate();
       console.log("@@DONE");
       return;
     }

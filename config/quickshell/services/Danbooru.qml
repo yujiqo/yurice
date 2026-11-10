@@ -1,4 +1,5 @@
 pragma Singleton
+pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Io
 import QtQuick
@@ -309,7 +310,7 @@ Singleton {
       onExited: code => {
         root.setDownloading(dl.name, false);
         if (code === 0) {
-          root.showNotice("Saved to " + Settings.displayPath(root.directory));
+          root.showNotice("Saved to " + Paths.display(root.directory));
         } else {
           root.showNotice("Couldn't save image");
           console.warn("Danbooru: download failed", dl.url);
@@ -328,7 +329,7 @@ Singleton {
     id: ensureDirectory
     running: true
     command: ["mkdir", "-p", root.directory]
-    onExited: folder.folder = "file://" + root.directory
+    onExited: folder.folder = Paths.fileUrl(root.directory)
   }
 
   FolderListModel {
@@ -341,7 +342,7 @@ Singleton {
 
   FileView {
     id: keyFile
-    path: Quickshell.env("HOME") + "/.config/yurice/danbooru.key"
+    path: Paths.config + "/danbooru.key"
     watchChanges: true
     printErrors: false
     onFileChanged: reload()
@@ -349,7 +350,7 @@ Singleton {
 
   FileView {
     id: settingsFile
-    path: Quickshell.env("HOME") + "/.local/state/yurice/danbooru.json"
+    path: Paths.state + "/danbooru.json"
     watchChanges: true
     printErrors: false
     onFileChanged: reload()
