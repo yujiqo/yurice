@@ -26,8 +26,9 @@ Island {
     PowerProfiles.profile = profiles[(i + step + profiles.length) % profiles.length];
   }
 
-  open: current === "battery"
-  panel: current === "battery" ? batteryPanel : null
+  panels: ({
+      battery: batteryPanel
+    })
   panelWidth: 340
   spacing: 0
   clickable: true

@@ -9,8 +9,9 @@ Island {
 
   readonly property real avatarSize: Theme.pillHeight - 6
 
-  open: current === "user"
-  panel: current === "user" ? userPanel : null
+  panels: ({
+      user: userPanel
+    })
   panelWidth: AvatarEditor.active || Displays.editing ? 560 : 380
   Behavior on panelWidth {
     NumberAnimation {

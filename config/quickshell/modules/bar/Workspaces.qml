@@ -11,11 +11,13 @@ Island {
   property Item hoveredDot: null
   property real wheelDelta: 0
 
-  readonly property var panelNames: ["launcher", "clipboard", "power", "hotkeys", "screenshot"]
-
-  open: panelNames.includes(current)
-  panel: current === "launcher" ? launcherPanel : current === "clipboard" ? clipboardPanel : current === "power" ? powerPanel : current === "hotkeys" ? hotkeysPanel : current === "screenshot" ? screenshotPanel : null
-  panelIndex: Math.max(0, panelNames.indexOf(current))
+  panels: ({
+      launcher: launcherPanel,
+      clipboard: clipboardPanel,
+      power: powerPanel,
+      hotkeys: hotkeysPanel,
+      screenshot: screenshotPanel
+    })
   panelWidth: shownPanel === screenshotPanel ? 520 : shownPanel === powerPanel || shownPanel === hotkeysPanel ? 440 : Theme.launcherWidth
   Behavior on panelWidth {
     NumberAnimation {

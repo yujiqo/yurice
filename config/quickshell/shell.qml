@@ -173,8 +173,7 @@ ShellRoot {
           y: bar.hideOffset
         }
         output: bar.modelData.name
-        current: bar.dropdown
-        onDismissed: bar.dropdown = ""
+        host: bar
       }
 
       Toasts {
@@ -198,44 +197,30 @@ ShellRoot {
         }
 
         UserIsland {
-          current: bar.dropdown
-          onRequest: name => bar.request(name)
-          onDismissed: bar.dropdown = ""
+          host: bar
         }
         MediaIsland {
-          current: bar.dropdown
-          onRequest: name => bar.request(name)
-          onDismissed: bar.dropdown = ""
+          host: bar
         }
         ThemeIsland {
-          current: bar.dropdown
-          onRequest: name => bar.request(name)
-          onDismissed: bar.dropdown = ""
+          host: bar
         }
         WallpaperIsland {
-          current: bar.dropdown
-          onRequest: name => bar.request(name)
-          onDismissed: bar.dropdown = ""
+          host: bar
         }
         BarSlot {
           shown: !WeebMode.hidesDanbooru
           animate: WeebMode.loaded
 
           DanbooruIsland {
-            current: bar.dropdown
-            onRequest: name => bar.request(name)
-            onDismissed: bar.dropdown = ""
+            host: bar
           }
         }
         WeebIsland {
-          current: bar.dropdown
-          onRequest: name => bar.request(name)
-          onDismissed: bar.dropdown = ""
+          host: bar
         }
         WeatherIsland {
-          current: bar.dropdown
-          onRequest: name => bar.request(name)
-          onDismissed: bar.dropdown = ""
+          host: bar
         }
       }
 
@@ -252,24 +237,16 @@ ShellRoot {
         }
 
         ConnectivityIsland {
-          current: bar.dropdown
-          onRequest: name => bar.request(name)
-          onDismissed: bar.dropdown = ""
+          host: bar
         }
         LevelsIsland {
-          current: bar.dropdown
-          onRequest: name => bar.request(name)
-          onDismissed: bar.dropdown = ""
+          host: bar
         }
         BatteryIsland {
-          current: bar.dropdown
-          onRequest: name => bar.request(name)
-          onDismissed: bar.dropdown = ""
+          host: bar
         }
         TimeIsland {
-          current: bar.dropdown
-          onRequest: name => bar.request(name)
-          onDismissed: bar.dropdown = ""
+          host: bar
         }
       }
     }

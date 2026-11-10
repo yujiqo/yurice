@@ -30,8 +30,12 @@ Island {
   open: shown !== ""
   hold: osd !== ""
   panelWidth: 280
-  panel: shown === "brightness" ? brightnessPanel : shown === "volume" ? volumePanel : null
-  panelIndex: shown === "volume" ? 1 : 0
+  panels: ({
+      brightness: brightnessPanel,
+      volume: volumePanel
+    })
+  panel: panels[shown] ?? null
+  panelIndex: Math.max(0, panelNames.indexOf(shown))
   spacing: 0
 
   onHoveredChanged: {

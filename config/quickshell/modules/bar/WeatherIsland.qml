@@ -7,8 +7,9 @@ import qs.services
 Island {
   id: root
 
-  open: current === "weather"
-  panel: current === "weather" ? weatherPanel : null
+  panels: ({
+      weather: weatherPanel
+    })
   panelWidth: Theme.panelWidth
   spacing: 0
   clickable: true
@@ -20,7 +21,7 @@ Island {
   Spring {
     id: appear
     target: Weather.ready ? 1 : 0
-    Component.onCompleted: value = target
+    Component.onCompleted: snap()
   }
 
   Component {

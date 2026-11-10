@@ -8,9 +8,10 @@ import qs.services
 Island {
   id: root
 
-  open: current === "wifi" || current === "bluetooth"
-  panel: current === "wifi" ? wifiPanel : current === "bluetooth" ? bluetoothPanel : null
-  panelIndex: current === "bluetooth" ? 1 : 0
+  panels: ({
+      wifi: wifiPanel,
+      bluetooth: bluetoothPanel
+    })
   spacing: 0
 
   readonly property var networkSegments: {

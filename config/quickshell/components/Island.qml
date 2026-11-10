@@ -14,14 +14,17 @@ Rectangle {
   property bool clickable: false
   property bool held: false
 
-  property string current: ""
-  property bool open: false
+  property var host: null
+  property var panels: ({})
+  readonly property var panelNames: Object.keys(panels)
+  property string current: host?.dropdown ?? ""
+  property bool open: panelNames.includes(current)
   property bool hold: false
   property real panelWidth: Theme.panelWidth
-  property Component panel: null
+  property Component panel: panels[current] ?? null
   property Component shownPanel: null
   property Component pendingPanel: null
-  property int panelIndex: 0
+  property int panelIndex: Math.max(0, panelNames.indexOf(current))
   property int shownIndex: 0
   property real switchFade: 1
   property real switchSlide: 0
@@ -34,6 +37,12 @@ Rectangle {
   signal clicked(var mouse)
   signal request(string name)
   signal dismissed
+
+  onRequest: name => root.host?.request(name)
+  onDismissed: {
+    if (root.host)
+      root.host.dropdown = "";
+  }
 
   function navTargets(node, found) {
     for (const child of node.children) {

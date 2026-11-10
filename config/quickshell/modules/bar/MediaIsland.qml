@@ -12,8 +12,9 @@ Island {
   readonly property bool playing: player?.isPlaying ?? false
   readonly property int barsWidth: 14
 
-  open: current === "media"
-  panel: current === "media" ? mediaPanel : null
+  panels: ({
+      media: mediaPanel
+    })
   panelWidth: Theme.mediaPanelWidth
   clickable: true
   onClicked: request("media")
@@ -31,7 +32,7 @@ Island {
   Spring {
     id: appear
     target: root.present ? 1 : 0
-    Component.onCompleted: value = target
+    Component.onCompleted: snap()
   }
 
   Component {

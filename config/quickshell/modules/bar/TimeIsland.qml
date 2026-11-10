@@ -7,8 +7,9 @@ import qs.services
 Island {
   id: root
 
-  open: current === "calendar"
-  panel: current === "calendar" ? calendarPanel : null
+  panels: ({
+      calendar: calendarPanel
+    })
   panelWidth: 320
   spacing: 0
   clickable: true
