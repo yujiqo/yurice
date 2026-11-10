@@ -1,5 +1,6 @@
 import QtQuick
 import qs.theme
+import qs.services
 
 Item {
   id: root
@@ -11,7 +12,7 @@ Item {
   property real iconSize: width * 0.55
   property RoundedImage front: imageA
   readonly property RoundedImage back: front === imageA ? imageB : imageA
-  readonly property url target: path === "" ? "" : Utility.fileUrl(path)
+  readonly property url target: path === "" ? "" : Utility.fileUrl(path) + (AvatarEditor.revision > 0 ? "?v=" + AvatarEditor.revision : "")
   readonly property bool ready: front.status === Image.Ready
 
   onTargetChanged: load()

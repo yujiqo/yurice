@@ -10,7 +10,13 @@ Island {
 
   open: current === "user"
   panel: current === "user" ? userPanel : null
-  panelWidth: 380
+  panelWidth: AvatarEditor.active ? 560 : 380
+  Behavior on panelWidth {
+    NumberAnimation {
+      duration: Theme.animMove
+      easing.type: Easing.OutCubic
+    }
+  }
   padding: (Theme.pillHeight - avatarSize) / 2
   spacing: 0
   clickable: true

@@ -244,6 +244,107 @@ Column {
     }
   }
 
+  component AvatarChoice: Item {
+    id: choice
+
+    property string mode: ""
+    property string label: ""
+    property string path: ""
+
+    width: 120
+    height: 118
+
+    Rectangle {
+      anchors.fill: parent
+      radius: Theme.menuItemRadius
+      color: choiceMouse.containsMouse ? Theme.surfaceContainerHigh : Qt.alpha(Theme.surfaceContainerHigh, 0)
+
+      Behavior on color {
+        ColorAnimation {
+          duration: Theme.animHover
+        }
+      }
+    }
+
+    Avatar {
+      id: choiceAvatar
+      anchors.horizontalCenter: parent.horizontalCenter
+      y: 12
+      width: 68
+      height: 68
+      path: choice.path
+      iconSize: 36
+      scale: choiceMouse.pressed ? 0.94 : choiceMouse.containsMouse ? 1.04 : 1
+
+      Behavior on scale {
+        NumberAnimation {
+          duration: Theme.animMove
+          easing.type: Theme.easeOut
+        }
+      }
+
+      Rectangle {
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        width: 24
+        height: 24
+        radius: width / 2
+        color: Theme.primary
+        border.width: 2
+        border.color: Theme.surfaceContainer
+
+        Icon {
+          anchors.centerIn: parent
+          text: "edit"
+          color: Theme.textOnPrimary
+          size: 14
+        }
+      }
+    }
+
+    Text {
+      anchors.horizontalCenter: parent.horizontalCenter
+      anchors.top: choiceAvatar.bottom
+      anchors.topMargin: 8
+      text: choice.label
+      color: Theme.text
+      font.family: Theme.labelFont
+      font.pixelSize: Theme.menuSubtitleSize
+    }
+
+    MouseArea {
+      id: choiceMouse
+      anchors.fill: parent
+      hoverEnabled: true
+      cursorShape: Qt.PointingHandCursor
+      onClicked: AvatarEditor.open(choice.mode)
+    }
+  }
+
+  Group {
+    title: "Profile picture"
+
+    Row {
+      anchors.horizontalCenter: parent.horizontalCenter
+      spacing: 12
+      topPadding: 2
+      bottomPadding: 2
+
+      AvatarChoice {
+        visible: !WeebMode.hidesAvatar
+        mode: "weeb"
+        label: "Weeb"
+        path: Settings.avatarPath
+      }
+
+      AvatarChoice {
+        mode: "normie"
+        label: "Normie"
+        path: Settings.normieAvatarPath
+      }
+    }
+  }
+
   Group {
     title: "Idle"
 

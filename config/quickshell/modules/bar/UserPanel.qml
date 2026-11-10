@@ -7,17 +7,46 @@ Item {
   id: root
 
   property bool settingsOpen: false
+  readonly property bool keepOpen: AvatarEditor.active
+  readonly property real maxHeight: Theme.userPanelMaxHeight - Theme.pillHeight - Theme.panelPadding * 2
 
-  implicitHeight: Math.min(content.implicitHeight, Theme.userPanelMaxHeight - Theme.pillHeight - Theme.panelPadding * 2)
+  implicitHeight: AvatarEditor.active ? picker.implicitHeight : flick.height
 
   Component.onCompleted: SystemInfo.refresh()
+  Component.onDestruction: AvatarEditor.close()
+
+  AvatarPicker {
+    id: picker
+    width: parent.width
+    opacity: AvatarEditor.active ? 1 : 0
+    visible: opacity > 0
+    enabled: AvatarEditor.active
+
+    Behavior on opacity {
+      NumberAnimation {
+        duration: Theme.animMove
+        easing.type: Easing.InOutQuad
+      }
+    }
+  }
 
   Flickable {
     id: flick
-    anchors.fill: parent
+    width: parent.width
+    height: Math.min(content.implicitHeight, root.maxHeight)
     contentHeight: content.implicitHeight
     clip: true
     boundsBehavior: Flickable.StopAtBounds
+    opacity: AvatarEditor.active ? 0 : 1
+    visible: opacity > 0
+    enabled: !AvatarEditor.active
+
+    Behavior on opacity {
+      NumberAnimation {
+        duration: Theme.animMove
+        easing.type: Easing.InOutQuad
+      }
+    }
 
     Column {
       id: content
