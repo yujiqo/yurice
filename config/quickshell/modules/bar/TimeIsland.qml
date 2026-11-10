@@ -19,13 +19,27 @@ Island {
     CalendarPanel {}
   }
 
-  Text {
+  Item {
+    width: time.implicitWidth
     height: Theme.pillHeight
-    verticalAlignment: Text.AlignVCenter
-    text: Qt.formatDateTime(Clock.date, Settings.timeFormat)
-    color: Theme.text
-    font.family: Theme.labelFont
-    font.pixelSize: Theme.labelSize
+
+    Behavior on width {
+      NumberAnimation {
+        duration: Theme.animMove
+        easing.type: Theme.easeOut
+      }
+    }
+
+    Text {
+      id: time
+      height: parent.height
+      verticalAlignment: Text.AlignVCenter
+      text: Qt.formatDateTime(Clock.date, Settings.shownTimeFormat)
+      color: Theme.text
+      opacity: Settings.timeFade
+      font.family: Theme.labelFont
+      font.pixelSize: Theme.labelSize
+    }
   }
 
   Reveal {

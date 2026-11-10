@@ -31,8 +31,16 @@ Column {
 
       Label {
         anchors.verticalCenter: parent.verticalCenter
-        width: Settings.clock24h ? 44 : 70
+        width: Settings.shownClock24h ? 44 : 70
+        opacity: Settings.timeFade
         text: ThemeMode.formatMinutes(ThemeMode[row.name])
+
+        Behavior on width {
+          NumberAnimation {
+            duration: Theme.animMove
+            easing.type: Theme.easeOut
+          }
+        }
         pixelSize: Theme.menuSubtitleSize + 1
       }
 

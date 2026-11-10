@@ -14,7 +14,7 @@ Column {
   readonly property var today: Weather.days[0] ?? null
 
   function time(date) {
-    return date ? Qt.formatTime(date, Settings.shortTimeFormat) : "–";
+    return date ? Qt.formatTime(date, Settings.shownShortTimeFormat) : "–";
   }
 
   Item {

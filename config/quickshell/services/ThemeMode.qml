@@ -43,11 +43,11 @@ Singleton {
   }
 
   function formatTime(date) {
-    return Qt.formatTime(date, Settings.shortTimeFormat);
+    return Qt.formatTime(date, Settings.shownShortTimeFormat);
   }
 
   function formatMinutes(minutes) {
-    return Qt.formatTime(new Date(2000, 0, 1, Math.floor(minutes / 60), minutes % 60), Settings.shortTimeFormat);
+    return Qt.formatTime(new Date(2000, 0, 1, Math.floor(minutes / 60), minutes % 60), Settings.shownShortTimeFormat);
   }
 
   function toggle() {

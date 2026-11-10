@@ -24,6 +24,40 @@ Singleton {
   readonly property bool clockSeconds: values.clockSeconds ?? false
   readonly property string shortTimeFormat: clock24h ? "HH:mm" : "h:mm AP"
   readonly property string timeFormat: clock24h ? (clockSeconds ? "HH:mm:ss" : "HH:mm") : (clockSeconds ? "h:mm:ss AP" : "h:mm AP")
+  property string shownTimeFormat: ""
+  property string shownShortTimeFormat: ""
+  property bool shownClock24h: true
+  property real timeFade: 1
+
+  onTimeFormatChanged: timeSwap.restart()
+
+  function showTimeFormat() {
+    shownTimeFormat = timeFormat;
+    shownShortTimeFormat = shortTimeFormat;
+    shownClock24h = clock24h;
+  }
+
+  SequentialAnimation {
+    id: timeSwap
+
+    NumberAnimation {
+      target: root
+      property: "timeFade"
+      to: 0
+      duration: 180
+      easing.type: Easing.InQuad
+    }
+    ScriptAction {
+      script: root.showTimeFormat()
+    }
+    NumberAnimation {
+      target: root
+      property: "timeFade"
+      to: 1
+      duration: 250
+      easing.type: Easing.OutQuad
+    }
+  }
 
   readonly property var weatherLocation: values.weatherLocation ?? null
   readonly property bool weatherFahrenheit: values.weatherFahrenheit ?? false
@@ -54,7 +88,10 @@ Singleton {
     return path === home || path.startsWith(home + "/") ? "~" + path.slice(home.length) : path;
   }
 
-  Component.onCompleted: Quickshell.execDetached(["mkdir", "-p", directory])
+  Component.onCompleted: {
+    showTimeFormat();
+    Quickshell.execDetached(["mkdir", "-p", directory]);
+  }
 
   FileView {
     id: file
