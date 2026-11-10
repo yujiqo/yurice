@@ -26,7 +26,6 @@ Column {
     width: parent.width
     leadingIcon: "content_paste"
     placeholder: "Search clipboard…"
-    hint: "Alt+4 apps"
     onTextChanged: {
       root.query = text;
       list.currentIndex = 0;
@@ -38,10 +37,7 @@ Column {
         Launcher.paste(clip);
     }
     onKeyPressed: event => {
-      if ((event.key === Qt.Key_4 && (event.modifiers & Qt.AltModifier)) || event.key === Qt.Key_Escape) {
-        Launcher.showApps();
-        event.accepted = true;
-      } else if (event.key === Qt.Key_Delete && (event.modifiers & Qt.ShiftModifier)) {
+      if (event.key === Qt.Key_Delete && (event.modifiers & Qt.ShiftModifier)) {
         const clip = root.rows[list.currentIndex];
         if (clip)
           Launcher.remove(clip);

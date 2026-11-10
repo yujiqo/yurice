@@ -39,7 +39,6 @@ Column {
     width: parent.width
     leadingIcon: "search"
     placeholder: "Search apps or calculate…"
-    hint: "Alt+4 clipboard"
     onTextChanged: {
       root.query = text;
       Launcher.calculate(text);
@@ -47,12 +46,6 @@ Column {
     }
     onNavigate: delta => list.currentIndex = Math.max(0, Math.min(root.rows.length - 1, list.currentIndex + delta))
     onAccepted: root.activate(list.currentIndex)
-    onKeyPressed: event => {
-      if (event.key === Qt.Key_4 && (event.modifiers & Qt.AltModifier)) {
-        Launcher.showClipboard();
-        event.accepted = true;
-      }
-    }
   }
 
   Text {

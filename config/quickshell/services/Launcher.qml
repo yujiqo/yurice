@@ -76,17 +76,6 @@ Singleton {
     calcResult = "";
   }
 
-  function showClipboard() {
-    if (!isOpen)
-      return;
-    mode = "clipboard";
-  }
-
-  function showApps() {
-    if (isOpen)
-      mode = "launcher";
-  }
-
   function scoreText(text, q) {
     if (!text)
       return 0;
