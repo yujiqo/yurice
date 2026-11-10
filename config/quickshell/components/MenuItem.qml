@@ -19,7 +19,7 @@ Rectangle {
   activeFocusOnTab: true
   implicitHeight: Theme.menuItemHeight
   radius: Theme.menuItemRadius
-  color: active ? accent : mouse.containsMouse ? Theme.surfaceContainerHigh : "transparent"
+  color: active ? accent : mouse.containsMouse ? Theme.surfaceContainerHigh : Qt.alpha(Theme.surfaceContainerHigh, 0)
 
   Behavior on color {
     ColorAnimation {

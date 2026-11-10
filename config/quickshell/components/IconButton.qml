@@ -12,7 +12,7 @@ Rectangle {
   implicitWidth: 32
   implicitHeight: 32
   radius: width / 2
-  color: mouse.containsMouse ? Theme.surfaceContainerHighest : "transparent"
+  color: mouse.containsMouse ? Theme.surfaceContainerHighest : Qt.alpha(Theme.surfaceContainerHighest, 0)
 
   Behavior on color {
     ColorAnimation {
