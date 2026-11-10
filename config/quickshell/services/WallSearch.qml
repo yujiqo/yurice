@@ -3,24 +3,21 @@ pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Io
 import QtQuick
+import qs.components
 
 Singleton {
   id: root
 
-  property string query: ""
-  property string phase: "idle"
-  property string error: ""
-  property var results: []
-  property int page: 1
-  property bool hasMore: false
-  property bool loadingMore: false
-  property var downloads: ({})
-  property var applied: ({})
-  property int requestId: 0
-
-  readonly property bool searching: phase === "searching"
-  readonly property bool busy: searching || Object.keys(downloads).length > 0
-  readonly property string apiKey: keyFile.text().trim()
+  property alias query: feed.query
+  property alias phase: feed.phase
+  property alias error: feed.error
+  property alias results: feed.results
+  property alias hasMore: feed.hasMore
+  property alias loadingMore: feed.loadingMore
+  property alias downloads: feed.downloads
+  readonly property alias searching: feed.searching
+  readonly property bool busy: feed.searching || feed.downloading
+  readonly property string apiKey: keyFile.lines[0] ?? ""
   readonly property bool hasApiKey: apiKey !== ""
   readonly property string resolution: Wallpapers.screenResolution
 
@@ -35,13 +32,7 @@ Singleton {
   readonly property bool atleast: filters.atleast
 
   function setApiKey(key) {
-    keyWriter.command = ["sh", "-c", 'mkdir -p "$(dirname "$1")" && umask 077 && printf %s "$2" > "$1"', "sh", keyFile.path, key.trim()];
-    keyWriter.running = true;
-  }
-
-  Process {
-    id: keyWriter
-    onExited: keyFile.reload()
+    keyFile.write(key.trim());
   }
 
   function setFilter(name, value) {
@@ -64,11 +55,11 @@ Singleton {
     target: WeebMode
     function onHidesAnimeFilterChanged() {
       if (WeebMode.hidesAnimeFilter)
-        root.reset();
+        feed.reset();
     }
     function onHidesAdultFiltersChanged() {
       if (WeebMode.hidesAdultFilters)
-        root.reset();
+        feed.reset();
     }
   }
 
@@ -83,7 +74,8 @@ Singleton {
     return url;
   }
 
-  function parse(data) {
+  function parse(body) {
+    const data = JSON.parse(body);
     return {
       items: (data.data ?? []).map(w => ({
             id: w.id,
@@ -98,136 +90,43 @@ Singleton {
     };
   }
 
-  function fetch(p, done) {
-    const id = ++requestId;
-    const xhr = new XMLHttpRequest();
-    xhr.onreadystatechange = () => {
-      if (xhr.readyState !== XMLHttpRequest.DONE || id !== requestId)
-        return;
-      if (xhr.status === 429) {
-        done(null, "Too many requests, try again in a minute");
-        return;
-      }
-      if (xhr.status !== 200) {
-        done(null, xhr.status === 0 ? "No connection" : `Search failed (${xhr.status})`);
-        return;
-      }
-      try {
-        done(parse(JSON.parse(xhr.responseText)), "");
-      } catch (e) {
-        done(null, "Unexpected response");
-      }
-    };
-    xhr.open("GET", buildUrl(query, p));
-    xhr.send();
-  }
-
   function search(q) {
-    query = q.trim();
-    page = 1;
-    results = [];
-    hasMore = false;
-    loadingMore = false;
-    error = "";
-    phase = "searching";
-    fetch(1, (res, err) => {
-      if (!res) {
-        error = err;
-        phase = "error";
-        return;
-      }
-      results = res.items;
-      hasMore = res.more;
-      phase = "results";
-    });
+    feed.search(q);
   }
 
   function loadMore() {
-    if (phase !== "results" || !hasMore || loadingMore)
-      return;
-    loadingMore = true;
-    fetch(page + 1, (res, err) => {
-      loadingMore = false;
-      if (!res)
-        return;
-      page += 1;
-      results = results.concat(res.items);
-      hasMore = res.more;
-    });
-  }
-
-  function reset() {
-    requestId++;
-    phase = "idle";
-    results = [];
-    error = "";
+    feed.loadMore();
   }
 
   function pathFor(item) {
     return `${Wallpapers.directory}/wallhaven-${item.id}.${item.ext}`;
   }
 
-  function setDownloading(id, on) {
-    const next = Object.assign({}, downloads);
-    if (on)
-      next[id] = true;
-    else
-      delete next[id];
-    downloads = next;
-  }
-
   function download(item) {
-    if (downloads[item.id])
-      return;
     const path = pathFor(item);
-    if (Wallpapers.allWallpapers.includes(path)) {
-      finish(item, path);
-      return;
-    }
-    setDownloading(item.id, true);
-    const proc = downloader.createObject(root, {
-      item: item,
-      path: path
-    });
-    proc.running = true;
+    if (Wallpapers.allWallpapers.includes(path))
+      apply(item, path);
+    else
+      feed.download(item.id, item.full, path, item);
   }
 
-  function finish(item, path) {
-    const next = Object.assign({}, applied);
-    next[item.id] = true;
-    applied = next;
+  function apply(item, path) {
     if (item.purity === "sfw" && item.category !== "anime")
       Wallpapers.setSafe(path, true);
     Wallpapers.set(path);
   }
 
-  Component {
-    id: downloader
-
-    Process {
-      id: proc
-
-      property var item
-      property string path
-
-      command: ["sh", "-c", 'mkdir -p "$(dirname "$2")" && curl -fsSL --retry 2 -o "$2.part" "$1" && mv "$2.part" "$2"', "sh", item.full, path]
-      onExited: code => {
-        root.setDownloading(proc.item.id, false);
-        if (code === 0)
-          root.finish(proc.item, proc.path);
-        else
-          console.warn("WallSearch: download failed", proc.item.full);
-        proc.destroy();
-      }
-    }
+  SearchFeed {
+    id: feed
+    urlFor: (q, p) => root.buildUrl(q, p)
+    parser: body => root.parse(body)
+    onDownloaded: (key, path, item) => root.apply(item, path)
+    onDownloadFailed: (key, url) => console.warn("WallSearch: download failed", url)
   }
 
-  FileView {
+  KeyFile {
     id: keyFile
     path: Paths.config + "/wallhaven.key"
-    watchChanges: true
-    printErrors: false
-    onFileChanged: reload()
   }
 
   FileView {

@@ -1,6 +1,5 @@
 pragma ComponentBehavior: Bound
 import QtQuick
-import Quickshell
 import qs.theme
 import qs.components
 import qs.services
@@ -155,85 +154,13 @@ Column {
     }
   }
 
-  Item {
-    width: parent.width
-    height: 56
-    visible: root.searching
-
-    Row {
-      anchors.centerIn: parent
-      spacing: 6
-
-      Spinner {
-        anchors.verticalCenter: parent.verticalCenter
-        tint: Theme.tertiary
-      }
-
-      Text {
-        anchors.verticalCenter: parent.verticalCenter
-        text: "Searching Danbooru…"
-        color: Theme.text
-        font.family: Theme.labelFont
-        font.pixelSize: Theme.menuTitleSize
-      }
-    }
-  }
-
-  Text {
-    width: parent.width
-    height: 56
-    visible: !Danbooru.down && (Danbooru.phase === "error" || (Danbooru.phase === "results" && Danbooru.results.length === 0))
-    horizontalAlignment: Text.AlignHCenter
-    verticalAlignment: Text.AlignVCenter
-    wrapMode: Text.WordWrap
-    text: Danbooru.phase === "error" ? Danbooru.error : "Nothing found"
-    color: Theme.textVariant
-    font.family: Theme.labelFont
-    font.pixelSize: Theme.menuTitleSize
-  }
-
-  GridView {
-    id: grid
-
-    readonly property int columns: 3
-
-    width: parent.width
-    height: Math.min(contentHeight, root.gridMaxHeight)
-    visible: !Danbooru.down && Danbooru.phase === "results" && Danbooru.results.length > 0
-    clip: true
-    cellWidth: width / columns
-    cellHeight: Theme.thumbHeight + 6
-    boundsBehavior: Flickable.StopAtBounds
-    interactive: contentHeight > height
-    model: ScriptModel {
-      values: Danbooru.results
-    }
-    onAtYEndChanged: {
-      if (atYEnd && contentHeight > height)
-        Danbooru.loadMore();
-    }
-
-    footer: Item {
-      width: grid.width
-      height: Danbooru.loadingMore ? 40 : 0
-
-      Spinner {
-        anchors.centerIn: parent
-        visible: Danbooru.loadingMore
-        tint: Theme.tertiary
-      }
-    }
-
-    delegate: ImageTile {
-      required property var modelData
-
-      width: grid.cellWidth
-      height: grid.cellHeight
-      source: modelData.thumb
-      resolution: modelData.resolution
-      busy: Danbooru.isDownloading(modelData)
-      checked: Danbooru.isSaved(modelData)
-      onClicked: Danbooru.save(modelData)
-    }
+  SearchResults {
+    feed: Danbooru
+    label: "Danbooru"
+    blocked: Danbooru.down
+    maxHeight: root.gridMaxHeight
+    busyFor: item => Danbooru.isDownloading(item)
+    checkedFor: item => Danbooru.isSaved(item)
+    onActivated: item => Danbooru.save(item)
   }
 }

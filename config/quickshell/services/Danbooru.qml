@@ -4,6 +4,7 @@ import Quickshell
 import Quickshell.Io
 import QtQuick
 import Qt.labs.folderlistmodel
+import qs.components
 
 Singleton {
   id: root
@@ -15,34 +16,29 @@ Singleton {
   readonly property int pageSize: 30
   readonly property var imageExts: ["jpg", "jpeg", "png", "webp", "gif"]
 
-  property string query: settings.query
-  property string phase: "idle"
-  property string error: ""
-  property var results: []
-  property int page: 1
-  property bool hasMore: false
-  property bool loadingMore: false
-  property var downloads: ({})
+  property alias query: feed.query
+  property alias phase: feed.phase
+  property alias error: feed.error
+  property alias results: feed.results
+  property alias hasMore: feed.hasMore
+  property alias loadingMore: feed.loadingMore
+  property alias downloads: feed.downloads
   property var saved: ({})
-  property int requestId: 0
 
   property string health: "unknown"
   property bool watching: false
   property string notice: ""
 
-  readonly property bool searching: phase === "searching"
-  readonly property bool downloading: Object.keys(downloads).length > 0
+  readonly property alias searching: feed.searching
+  readonly property alias downloading: feed.downloading
   readonly property bool busy: searching || downloading
   readonly property bool down: health === "down"
-  readonly property var credentials: keyFile.text().split("\n").map(s => s.trim())
-  readonly property string login: credentials[0] ?? ""
-  readonly property string apiKey: credentials[1] ?? ""
+  readonly property string login: keyFile.lines[0] ?? ""
+  readonly property string apiKey: keyFile.lines[1] ?? ""
   readonly property bool hasApiKey: login !== "" && apiKey !== ""
 
   function setCredentials(name, key) {
-    const content = name.trim() !== "" && key.trim() !== "" ? `${name.trim()}\n${key.trim()}` : "";
-    keyWriter.command = ["sh", "-c", 'mkdir -p "$(dirname "$1")" && umask 077 && printf %s "$2" > "$1"', "sh", keyFile.path, content];
-    keyWriter.running = true;
+    keyFile.write(name.trim() !== "" && key.trim() !== "" ? `${name.trim()}\n${key.trim()}` : "");
   }
 
   function setSafeOnly(on) {
@@ -114,70 +110,27 @@ Singleton {
     return `Search failed (${status})`;
   }
 
-  function fetch(p, done) {
-    const id = ++requestId;
-    const proc = fetcher.createObject(root, {
-      requestId: id,
-      url: buildUrl(query, p),
-      done: done
-    });
-    proc.running = true;
-  }
-
-  function clearResults() {
-    requestId++;
-    phase = "idle";
-    results = [];
-    hasMore = false;
-    loadingMore = false;
-    error = "";
-  }
-
   Connections {
     target: WeebMode
     function onHidesDanbooruChanged() {
       if (WeebMode.hidesDanbooru)
-        root.clearResults();
+        feed.reset();
     }
   }
 
   function search(q) {
     if (WeebMode.hidesDanbooru)
       return;
-    query = q.trim();
-    settings.query = query;
-    settingsFile.writeAdapter();
-    page = 1;
-    results = [];
-    hasMore = false;
-    loadingMore = false;
-    error = "";
-    phase = "searching";
-    fetch(1, (res, err) => {
-      if (!res) {
-        error = err;
-        phase = "error";
-        return;
-      }
-      results = res.items;
-      hasMore = res.more;
-      phase = "results";
-    });
+    feed.search(q);
+    if (settings.query !== feed.query) {
+      settings.query = feed.query;
+      settingsFile.writeAdapter();
+    }
   }
 
   function loadMore() {
-    if (WeebMode.hidesDanbooru || phase !== "results" || !hasMore || loadingMore)
-      return;
-    loadingMore = true;
-    fetch(page + 1, (res, err) => {
-      loadingMore = false;
-      if (!res)
-        return;
-      page += 1;
-      const seen = new Set(results.map(r => r.id));
-      results = results.concat(res.items.filter(r => !seen.has(r.id)));
-      hasMore = res.more;
-    });
+    if (!WeebMode.hidesDanbooru)
+      feed.loadMore();
   }
 
   function fileName(item) {
@@ -192,25 +145,11 @@ Singleton {
     return downloads[fileName(item)] === true;
   }
 
-  function setDownloading(key, on) {
-    const next = Object.assign({}, downloads);
-    if (on)
-      next[key] = true;
-    else
-      delete next[key];
-    downloads = next;
-  }
-
   function save(item) {
     const name = fileName(item);
-    if (WeebMode.hidesDanbooru || downloads[name] || saved[name])
+    if (WeebMode.hidesDanbooru || saved[name])
       return;
-    setDownloading(name, true);
-    const proc = downloader.createObject(root, {
-      name: name,
-      url: item.full
-    });
-    proc.running = true;
+    feed.download(name, item.full, `${directory}/${name}`);
   }
 
   function rebuildSaved() {
@@ -220,9 +159,22 @@ Singleton {
     saved = next;
   }
 
-  Process {
-    id: keyWriter
-    onExited: keyFile.reload()
+  SearchFeed {
+    id: feed
+    query: settings.query
+    userAgent: root.userAgent
+    curlArgs: root.hasApiKey ? ["-u", `${root.login}:${root.apiKey}`] : []
+    parseError: "Danbooru is unavailable right now"
+    urlFor: (q, p) => root.buildUrl(q, p)
+    parser: body => root.parse(body)
+    describe: (status, body) => root.describe(status, body)
+    onResponded: status => root.setHealth(status >= 500 ? "down" : "up")
+    onParseFailed: root.setHealth("down")
+    onDownloaded: () => root.showNotice("Saved to " + Paths.display(root.directory))
+    onDownloadFailed: (key, url) => {
+      root.showNotice("Couldn't save image");
+      console.warn("Danbooru: download failed", url);
+    }
   }
 
   Process {
@@ -256,70 +208,6 @@ Singleton {
     onTriggered: root.notice = ""
   }
 
-  Component {
-    id: fetcher
-
-    Process {
-      id: proc
-
-      property int requestId
-      property string url
-      property var done
-
-      command: ["curl", "-sSL", "-m", "20", "-A", root.userAgent, "-w", "\n%{http_code}"].concat(root.hasApiKey ? ["-u", `${root.login}:${root.apiKey}`] : []).concat([url])
-      stdout: StdioCollector {
-        id: out
-      }
-      onExited: code => {
-        if (proc.requestId === root.requestId) {
-          const text = out.text;
-          const cut = text.lastIndexOf("\n");
-          const status = code === 0 ? parseInt(text.slice(cut + 1)) || 0 : 0;
-          const body = cut >= 0 ? text.slice(0, cut) : "";
-          if (status !== 0)
-            root.setHealth(status >= 500 ? "down" : "up");
-          if (status !== 200) {
-            proc.done(null, root.describe(status, body));
-          } else {
-            let res = null;
-            try {
-              res = root.parse(body);
-            } catch (e) {
-              root.setHealth("down");
-              proc.done(null, "Danbooru is unavailable right now");
-            }
-            if (res)
-              proc.done(res, "");
-          }
-        }
-        proc.destroy();
-      }
-    }
-  }
-
-  Component {
-    id: downloader
-
-    Process {
-      id: dl
-
-      property string name
-      property string url
-
-      command: ["sh", "-c", 'mkdir -p "$1" && curl -fsSL --retry 2 -A "$4" -o "$1/$2.part" "$3" && mv "$1/$2.part" "$1/$2"', "sh", root.directory, name, url, root.userAgent]
-      onExited: code => {
-        root.setDownloading(dl.name, false);
-        if (code === 0) {
-          root.showNotice("Saved to " + Paths.display(root.directory));
-        } else {
-          root.showNotice("Couldn't save image");
-          console.warn("Danbooru: download failed", dl.url);
-        }
-        dl.destroy();
-      }
-    }
-  }
-
   onDirectoryChanged: {
     ensureDirectory.running = false;
     ensureDirectory.running = true;
@@ -340,12 +228,9 @@ Singleton {
       root.rebuildSaved()
   }
 
-  FileView {
+  KeyFile {
     id: keyFile
     path: Paths.config + "/danbooru.key"
-    watchChanges: true
-    printErrors: false
-    onFileChanged: reload()
   }
 
   FileView {

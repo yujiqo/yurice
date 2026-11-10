@@ -28,7 +28,7 @@ QtObject {
   }
 
   function test_wallSearch_parse(t) {
-    const res = WallSearch.parse({
+    const res = WallSearch.parse(JSON.stringify({
       data: [{
           id: "abc",
           thumbs: {
@@ -43,7 +43,7 @@ QtObject {
         current_page: 1,
         last_page: 3
       }
-    });
+    }));
     t.eq(res, {
       items: [{
           id: "abc",
@@ -56,7 +56,7 @@ QtObject {
         }],
       more: true
     });
-    t.eq(WallSearch.parse({}), {
+    t.eq(WallSearch.parse("{}"), {
       items: [],
       more: false
     });

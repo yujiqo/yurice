@@ -1,5 +1,6 @@
 import Quickshell
 import QtQuick
+import qs.services
 
 QtObject {
   id: root
@@ -79,6 +80,19 @@ QtObject {
   readonly property var requiredProperties: ({
       "modules/bar/LevelsPanel.qml": {
         kind: "volume"
+      },
+      "components/SearchResults.qml": {
+        feed: Danbooru,
+        label: "test",
+        busyFor: item => false,
+        checkedFor: item => false
+      },
+      "components/SearchFeed.qml": {
+        urlFor: (q, p) => "",
+        parser: body => ({
+            items: [],
+            more: false
+          })
       }
     })
 
@@ -109,7 +123,11 @@ QtObject {
   function step() {
     if (queue.length === 0) {
       ticker.stop();
-      instantiate();
+      try {
+        instantiate();
+      } catch (e) {
+        report(false, "instantiate", e.message ?? e);
+      }
       console.log("@@DONE");
       return;
     }

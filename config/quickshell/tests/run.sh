@@ -113,7 +113,7 @@ while ! grep -q '@@DONE' "$log" 2>/dev/null; do
 done
 
 results=$(grep -oE '@@(PASS|FAIL|DONE).*' "$log" | sed 's/\x1b\[[0-9;]*m//g')
-runtime=$(sed 's/\x1b\[[0-9;]*m//g' "$log" | grep -E 'ReferenceError|TypeError|RangeError|SyntaxError|is not defined|was not initialized|Unable to assign|Cannot assign' | sed -E 's/^ *[A-Z]+ *[a-z.]*: *//' | sort -u || true)
+runtime=$(sed 's/\x1b\[[0-9;]*m//g' "$log" | grep -v '@@' | grep -E 'ReferenceError|TypeError|RangeError|SyntaxError|is not defined|was not initialized|Unable to assign|Cannot assign' | sed -E 's/^ *[A-Z]+ *[a-z.]*: *//' | sort -u || true)
 if [ -n "$runtime" ]; then
   results+=$'\n'$(sed 's/^/@@FAIL runtime: /' <<<"$runtime")
 fi

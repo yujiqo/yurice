@@ -1,6 +1,5 @@
 pragma ComponentBehavior: Bound
 import QtQuick
-import Quickshell
 import qs.theme
 import qs.components
 import qs.services
@@ -197,89 +196,18 @@ Column {
           }
         }
       }
-
     }
   }
 
-  Item {
-    width: parent.width
-    height: 56
-    visible: root.searching
-
-    Row {
-      anchors.centerIn: parent
-      spacing: 6
-
-      Spinner {
-        anchors.verticalCenter: parent.verticalCenter
-        tint: Theme.wallpaper
-      }
-
-      Text {
-        anchors.verticalCenter: parent.verticalCenter
-        text: "Searching wallpapers…"
-        color: Theme.text
-        font.family: Theme.labelFont
-        font.pixelSize: Theme.menuTitleSize
-      }
-    }
-  }
-
-  Text {
-    width: parent.width
-    height: 56
-    visible: WallSearch.phase === "error" || (WallSearch.phase === "results" && WallSearch.results.length === 0)
-    horizontalAlignment: Text.AlignHCenter
-    verticalAlignment: Text.AlignVCenter
-    text: WallSearch.phase === "error" ? WallSearch.error : "No wallpapers found"
-    color: Theme.textVariant
-    font.family: Theme.labelFont
-    font.pixelSize: Theme.menuTitleSize
-  }
-
-  GridView {
-    id: grid
-
-    readonly property int columns: 3
-
-    width: parent.width
-    height: Math.min(contentHeight, root.gridMaxHeight)
-    visible: WallSearch.phase === "results" && WallSearch.results.length > 0
-    clip: true
-    cellWidth: width / columns
-    cellHeight: Theme.thumbHeight + 6
-    boundsBehavior: Flickable.StopAtBounds
-    interactive: contentHeight > height
-    model: ScriptModel {
-      values: WallSearch.results
-    }
-    onAtYEndChanged: {
-      if (atYEnd && contentHeight > height)
-        WallSearch.loadMore();
-    }
-
-    footer: Item {
-      width: grid.width
-      height: WallSearch.loadingMore ? 40 : 0
-
-      Spinner {
-        anchors.centerIn: parent
-        visible: WallSearch.loadingMore
-        tint: Theme.wallpaper
-      }
-    }
-
-    delegate: ImageTile {
-      required property var modelData
-
-      width: grid.cellWidth
-      height: grid.cellHeight
-      source: modelData.thumb
-      resolution: modelData.resolution
-      busy: WallSearch.downloads[modelData.id] === true
-      checked: Wallpapers.current === WallSearch.pathFor(modelData)
-      onClicked: WallSearch.download(modelData)
-    }
+  SearchResults {
+    feed: WallSearch
+    label: "wallpapers"
+    emptyText: "No wallpapers found"
+    tint: Theme.wallpaper
+    maxHeight: root.gridMaxHeight
+    busyFor: item => WallSearch.downloads[item.id] === true
+    checkedFor: item => Wallpapers.current === WallSearch.pathFor(item)
+    onActivated: item => WallSearch.download(item)
   }
 
   component FilterRow: Row {
