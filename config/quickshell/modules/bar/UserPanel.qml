@@ -7,13 +7,36 @@ Item {
   id: root
 
   property bool settingsOpen: false
-  readonly property bool keepOpen: AvatarEditor.active
+  readonly property bool keepOpen: AvatarEditor.active || Displays.editing || Displays.confirming
+  readonly property bool mainShown: !AvatarEditor.active && !Displays.editing
   readonly property real maxHeight: Theme.userPanelMaxHeight - Theme.pillHeight - Theme.panelPadding * 2
 
-  implicitHeight: AvatarEditor.active ? picker.implicitHeight : flick.height
+  implicitHeight: AvatarEditor.active ? picker.implicitHeight : Displays.editing ? displays.implicitHeight : flick.height
 
-  Component.onCompleted: SystemInfo.refresh()
-  Component.onDestruction: AvatarEditor.close()
+  Component.onCompleted: {
+    SystemInfo.refresh();
+    Displays.views++;
+  }
+  Component.onDestruction: {
+    AvatarEditor.close();
+    Displays.views--;
+    Displays.detach();
+  }
+
+  DisplaysView {
+    id: displays
+    width: parent.width
+    opacity: Displays.editing ? 1 : 0
+    visible: opacity > 0
+    enabled: Displays.editing
+
+    Behavior on opacity {
+      NumberAnimation {
+        duration: Theme.animMove
+        easing.type: Easing.InOutQuad
+      }
+    }
+  }
 
   AvatarPicker {
     id: picker
@@ -37,9 +60,9 @@ Item {
     contentHeight: content.implicitHeight
     clip: true
     boundsBehavior: Flickable.StopAtBounds
-    opacity: AvatarEditor.active ? 0 : 1
+    opacity: root.mainShown ? 1 : 0
     visible: opacity > 0
-    enabled: !AvatarEditor.active
+    enabled: root.mainShown
 
     Behavior on opacity {
       NumberAnimation {

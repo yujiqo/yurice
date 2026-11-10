@@ -346,6 +346,26 @@ Column {
   }
 
   Group {
+    title: "Displays"
+
+    MenuItem {
+      x: 4
+      width: parent.width - 8
+      icon: "monitor"
+      title: "Displays"
+      subtitle: Displays.outputs.length > 0 ? Displays.outputs.filter(o => o.enabled).map(o => `${o.name} · ${o.mode.width}×${o.mode.height}`).join("  ") : "Resolution, refresh rate, scale, rotation"
+      onClicked: Displays.open()
+
+      Icon {
+        anchors.verticalCenter: parent.verticalCenter
+        text: "chevron_right"
+        color: Theme.textVariant
+        size: Theme.menuIconSize
+      }
+    }
+  }
+
+  Group {
     title: "Idle"
 
     DurationRow {

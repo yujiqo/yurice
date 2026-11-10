@@ -10,7 +10,7 @@ Island {
 
   open: current === "user"
   panel: current === "user" ? userPanel : null
-  panelWidth: AvatarEditor.active ? 560 : 380
+  panelWidth: AvatarEditor.active || Displays.editing ? 560 : 380
   Behavior on panelWidth {
     NumberAnimation {
       duration: Theme.animMove

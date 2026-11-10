@@ -40,6 +40,12 @@ ShellRoot {
   Variants {
     model: Quickshell.screens
 
+    DisplayConfirm {}
+  }
+
+  Variants {
+    model: Quickshell.screens
+
     PanelWindow {
       id: bar
 
@@ -116,6 +122,14 @@ ShellRoot {
         target: WeebMode
         function onHidesDanbooruChanged() {
           if (WeebMode.hidesDanbooru && bar.dropdown === "danbooru")
+            bar.dropdown = "";
+        }
+      }
+
+      Connections {
+        target: Displays
+        function onConfirmingChanged() {
+          if (Displays.confirming && bar.dropdown === "user")
             bar.dropdown = "";
         }
       }
