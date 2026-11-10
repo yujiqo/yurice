@@ -22,7 +22,7 @@ Singleton {
   property string file: ""
   property bool saving: false
   property string error: ""
-  property int revision: 0
+  readonly property real revision: Settings.values.avatarRevision ?? 0
   readonly property string target: mode === "normie" ? Settings.normieAvatarPath : Settings.avatarPath
 
   function open(next) {
@@ -77,7 +77,7 @@ Singleton {
         console.warn("AvatarEditor:", cropErrors.text.trim());
         return;
       }
-      root.revision++;
+      Settings.set("avatarRevision", Date.now());
       WallpaperPublish.schedule();
       root.close();
     }
