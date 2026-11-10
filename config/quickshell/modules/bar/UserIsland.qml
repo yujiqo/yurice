@@ -26,30 +26,12 @@ Island {
     width: root.avatarSize
     height: Theme.pillHeight
 
-    Rectangle {
+    Avatar {
       anchors.centerIn: parent
       width: root.avatarSize
       height: root.avatarSize
-      radius: width / 2
-      color: Theme.surfaceContainer
-      visible: avatar.status !== Image.Ready
-
-      Icon {
-        anchors.centerIn: parent
-        text: "person"
-        color: Theme.primary
-        size: Theme.iconSize - 2
-      }
-    }
-
-    RoundedImage {
-      id: avatar
-      anchors.centerIn: parent
-      width: root.avatarSize
-      height: root.avatarSize
-      radius: width / 2
-      source: Utility.fileUrl(SessionLock.avatar)
-      sourceSize: Qt.size(root.avatarSize * 2, root.avatarSize * 2)
+      path: SessionLock.avatar
+      iconSize: Theme.iconSize - 2
     }
   }
 

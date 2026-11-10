@@ -191,28 +191,14 @@ Item {
       width: 340
       spacing: 14
 
-      Rectangle {
+      Avatar {
         anchors.horizontalCenter: parent.horizontalCenter
         width: 128
         height: 128
-        radius: width / 2
-        color: Theme.surfaceContainerHigh
-
-        RoundedImage {
-          id: avatarImage
-          anchors.fill: parent
-          radius: width / 2
-          source: Utility.fileUrl(root.avatar)
-          sourceSize: Qt.size(256, 256)
-        }
-
-        Icon {
-          anchors.centerIn: parent
-          visible: avatarImage.status !== Image.Ready
-          text: "person"
-          color: Theme.textVariant
-          size: 64
-        }
+        path: root.avatar
+        fallbackColor: Theme.surfaceContainerHigh
+        iconColor: Theme.textVariant
+        iconSize: 64
 
         MouseArea {
           anchors.fill: parent

@@ -108,6 +108,7 @@ Singleton {
   readonly property int panelRadius: 22
   readonly property int panelPadding: 10
   readonly property int dropdownMaxHeight: 520
+  readonly property int userPanelMaxHeight: 780
   readonly property int menuListMaxHeight: 372
   readonly property int menuItemHeight: 54
   readonly property int menuItemRadius: 14

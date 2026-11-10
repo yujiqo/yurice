@@ -3,115 +3,143 @@ import qs.theme
 import qs.components
 import qs.services
 
-Column {
+Item {
   id: root
 
-  spacing: 8
+  property bool settingsOpen: false
+
+  implicitHeight: Math.min(content.implicitHeight, Theme.userPanelMaxHeight - Theme.pillHeight - Theme.panelPadding * 2)
 
   Component.onCompleted: SystemInfo.refresh()
 
-  Item {
-    width: parent.width
-    height: 72
+  Flickable {
+    id: flick
+    anchors.fill: parent
+    contentHeight: content.implicitHeight
+    clip: true
+    boundsBehavior: Flickable.StopAtBounds
 
-    Item {
-      id: hero
-      anchors.left: parent.left
-      anchors.leftMargin: 8
-      anchors.verticalCenter: parent.verticalCenter
-      width: 56
-      height: 56
+    Column {
+      id: content
+      width: flick.width
+      spacing: 8
 
-      Rectangle {
-        anchors.fill: parent
-        radius: width / 2
-        color: Theme.surfaceContainer
-        visible: heroImage.status !== Image.Ready
+      Item {
+        width: parent.width
+        height: 72
 
-        Icon {
-          anchors.centerIn: parent
-          text: "person"
-          color: Theme.primary
-          size: 30
+        Avatar {
+          id: hero
+          anchors.left: parent.left
+          anchors.leftMargin: 8
+          anchors.verticalCenter: parent.verticalCenter
+          width: 56
+          height: 56
+          path: SessionLock.avatar
+          iconSize: 30
+        }
+
+        Column {
+          anchors.left: hero.right
+          anchors.leftMargin: 14
+          anchors.right: parent.right
+          anchors.verticalCenter: parent.verticalCenter
+          spacing: 4
+
+          Label {
+            width: parent.width
+            text: SessionLock.userName
+            color: Theme.text
+            pixelSize: 24
+          }
+
+          Label {
+            width: parent.width
+            text: SystemInfo.hostname !== "" ? SessionLock.userName + "@" + SystemInfo.hostname : ""
+            color: Theme.textVariant
+            pixelSize: Theme.menuSubtitleSize
+          }
         }
       }
 
-      RoundedImage {
-        id: heroImage
-        anchors.fill: parent
-        radius: width / 2
-        source: Utility.fileUrl(SessionLock.avatar)
-        sourceSize: Qt.size(112, 112)
-      }
-    }
-
-    Column {
-      anchors.left: hero.right
-      anchors.leftMargin: 14
-      anchors.right: parent.right
-      anchors.verticalCenter: parent.verticalCenter
-      spacing: 4
-
-      Label {
+      Rectangle {
         width: parent.width
-        text: SessionLock.userName
-        color: Theme.text
-        pixelSize: 24
-      }
+        height: details.implicitHeight + 8
+        radius: Theme.menuItemRadius
+        color: Theme.surfaceContainer
 
-      Label {
-        width: parent.width
-        text: SystemInfo.hostname !== "" ? SessionLock.userName + "@" + SystemInfo.hostname : ""
-        color: Theme.textVariant
-        pixelSize: Theme.menuSubtitleSize
-      }
-    }
-  }
+        Column {
+          id: details
+          y: 4
+          width: parent.width
 
-  Rectangle {
-    width: parent.width
-    height: details.implicitHeight + 8
-    radius: Theme.menuItemRadius
-    color: Theme.surfaceContainer
+          InfoRow {
+            width: parent.width
+            icon: "schedule"
+            label: "Uptime"
+            value: SystemInfo.loaded ? SystemInfo.uptime : "—"
+          }
 
-    Column {
-      id: details
-      y: 4
-      width: parent.width
+          InfoRow {
+            width: parent.width
+            icon: "dns"
+            label: "Hostname"
+            value: SystemInfo.hostname || "—"
+          }
 
-      InfoRow {
-        width: parent.width
-        icon: "schedule"
-        label: "Uptime"
-        value: SystemInfo.loaded ? SystemInfo.uptime : "—"
+          InfoRow {
+            width: parent.width
+            icon: "memory"
+            label: "Kernel"
+            value: SystemInfo.kernel || "—"
+          }
+
+          InfoRow {
+            width: parent.width
+            icon: "ac_unit"
+            label: "NixOS"
+            value: SystemInfo.version || "—"
+          }
+
+          InfoRow {
+            width: parent.width
+            icon: "history"
+            label: "Generation"
+            value: SystemInfo.generation > 0 ? `${SystemInfo.generation} · ${Qt.formatDateTime(SystemInfo.generationDate, "dd MMM yyyy")}` : "—"
+          }
+        }
       }
 
-      InfoRow {
+      MenuItem {
         width: parent.width
-        icon: "dns"
-        label: "Hostname"
-        value: SystemInfo.hostname || "—"
+        icon: "settings"
+        title: "Settings"
+        onClicked: root.settingsOpen = !root.settingsOpen
+
+        Icon {
+          anchors.verticalCenter: parent.verticalCenter
+          text: "expand_more"
+          color: Theme.textVariant
+          size: Theme.menuIconSize
+          rotation: root.settingsOpen ? 180 : 0
+
+          Behavior on rotation {
+            NumberAnimation {
+              duration: Theme.animMove
+              easing.type: Theme.easeOut
+            }
+          }
+        }
       }
 
-      InfoRow {
+      Collapse {
         width: parent.width
-        icon: "memory"
-        label: "Kernel"
-        value: SystemInfo.kernel || "—"
-      }
+        shown: root.settingsOpen
 
-      InfoRow {
-        width: parent.width
-        icon: "ac_unit"
-        label: "NixOS"
-        value: SystemInfo.version || "—"
-      }
-
-      InfoRow {
-        width: parent.width
-        icon: "history"
-        label: "Generation"
-        value: SystemInfo.generation > 0 ? `${SystemInfo.generation} · ${Qt.formatDateTime(SystemInfo.generationDate, "dd MMM yyyy")}` : "—"
+        UserSettings {
+          width: parent.width
+          bottomPadding: 4
+        }
       }
     }
   }

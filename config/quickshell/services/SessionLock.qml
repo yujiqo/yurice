@@ -311,21 +311,47 @@ Singleton {
   }
 
   IdleMonitor {
-    enabled: root.phase === "idle"
-    timeout: 1800
+    enabled: root.phase === "idle" && Settings.idleScreenOff > 0
+    timeout: Math.max(1, Settings.idleScreenOff) * 60
     onIsIdleChanged: {
       if (isIdle)
-        root.lockAndSuspend();
+        Qt.callLater(root.powerOffMonitors);
     }
   }
 
   IdleMonitor {
-    enabled: root.phase === "locked" && root.secured
-    timeout: 300
+    enabled: root.phase === "idle" && Settings.idleLock > 0
+    timeout: Math.max(1, Settings.idleLock) * 60
     onIsIdleChanged: {
       if (isIdle)
-        Session.run("suspend");
+        Qt.callLater(root.lock);
     }
+  }
+
+  IdleMonitor {
+    enabled: root.phase === "locked" && root.secured && Settings.idleLockedScreenOff > 0
+    timeout: Math.max(1, Settings.idleLockedScreenOff) * 60
+    onIsIdleChanged: {
+      if (isIdle)
+        Qt.callLater(root.powerOffMonitors);
+    }
+  }
+
+  IdleMonitor {
+    enabled: root.phase === "locked" && root.secured && Settings.idleSuspend > 0
+    timeout: Math.max(1, Settings.idleSuspend) * 60
+    onIsIdleChanged: {
+      if (isIdle)
+        Qt.callLater(root.suspendIdle);
+    }
+  }
+
+  function powerOffMonitors() {
+    Quickshell.execDetached(["niri", "msg", "action", "power-off-monitors"]);
+  }
+
+  function suspendIdle() {
+    Session.run("suspend");
   }
 
   IpcHandler {
