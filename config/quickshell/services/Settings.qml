@@ -11,6 +11,7 @@ Singleton {
   property var values: parse(file.text())
   readonly property string wallpaperDirectory: expandPath(values.wallpaperDirectory || "~/Pictures/Wallpapers")
   readonly property string danbooruDirectory: expandPath(values.danbooruDirectory || "~/Pictures/Danbooru")
+  readonly property string screenshotDirectory: expandPath(values.screenshotDirectory || "~/Pictures/Screenshots")
   readonly property string avatarPath: expandPath(values.avatar || "~/.config/yurice/custom/avatars/weeb.jpg")
   readonly property string normieAvatarPath: expandPath(values.normieAvatar || "~/.config/yurice/custom/avatars/normie.jpg")
 

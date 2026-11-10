@@ -6,7 +6,7 @@ import QtQuick
 Singleton {
   id: root
 
-  readonly property string folder: Quickshell.env("HOME") + "/Pictures/Screenshots"
+  readonly property string folder: Settings.screenshotDirectory
   readonly property string clipFile: Quickshell.cacheDir + "/screenshot.png"
 
   property string phase: ""

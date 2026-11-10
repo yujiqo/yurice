@@ -22,6 +22,10 @@ Rectangle {
     input.forceActiveFocus();
   }
 
+  function blur() {
+    input.focus = false;
+  }
+
   function keyActivate() {
     focusInput();
   }

@@ -7,6 +7,8 @@ Item {
   property string icon: ""
   property string label: ""
   property string value: ""
+  property color valueColor: Theme.text
+  property real valueOpacity: 1
 
   implicitHeight: 38
 
@@ -37,7 +39,8 @@ Item {
     anchors.verticalCenter: parent.verticalCenter
     maxWidth: root.width * 0.6
     text: root.value
-    color: Theme.text
+    color: root.valueColor
+    opacity: root.valueOpacity
     pixelSize: Theme.menuSubtitleSize + 1
   }
 }

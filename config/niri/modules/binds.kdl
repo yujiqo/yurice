@@ -111,8 +111,6 @@ binds {
 
   // section: Screenshots
   Print      repeat=false hotkey-overlay-title="Screenshot" { spawn "qs" "ipc" "call" "screenshot" "start"; }
-  Ctrl+Print { screenshot-screen; }
-  Alt+Print  { screenshot-window; }
 
   // section: System
   Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }

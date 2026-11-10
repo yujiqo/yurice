@@ -1,4 +1,5 @@
 import QtQuick
+import Quickshell.Io
 import qs.theme
 import qs.components
 import qs.services
@@ -105,6 +106,118 @@ Column {
     }
   }
 
+  component PathRow: Column {
+    id: row
+
+    property string key: ""
+    property string icon: ""
+    property string label: ""
+    property string path: ""
+    property string error: ""
+    property string pending: ""
+    property bool saved: false
+    property string message: ""
+    property bool messageIsError: false
+
+    onErrorChanged: {
+      if (error === "")
+        return;
+      message = error;
+      messageIsError = true;
+    }
+
+    onSavedChanged: {
+      if (!saved)
+        return;
+      message = "Saved";
+      messageIsError = false;
+    }
+
+    width: parent.width
+    bottomPadding: 6
+
+    function revert() {
+      field.text = Settings.displayPath(path);
+      error = "";
+    }
+
+    function confirm() {
+      field.blur();
+      revert();
+      saved = true;
+      savedTimer.restart();
+    }
+
+    function submit(text) {
+      const value = text.trim();
+      saved = false;
+      if (value === "") {
+        Settings.set(key, undefined);
+        Qt.callLater(confirm);
+        return;
+      }
+      if (!value.startsWith("/") && !value.startsWith("~")) {
+        error = "Use an absolute path or one starting with ~";
+        return;
+      }
+      pending = value;
+      check.running = true;
+    }
+
+    onPathChanged: revert()
+    Component.onCompleted: revert()
+
+    Process {
+      id: check
+      command: ["sh", "-c", 'mkdir -p "$1" && test -d "$1" && test -w "$1"', "sh", Settings.expandPath(row.pending)]
+      onExited: code => {
+        if (code !== 0) {
+          row.error = "Can't create or write to this folder";
+          return;
+        }
+        const display = Settings.displayPath(Settings.expandPath(row.pending).replace(/\/+$/, "") || "/");
+        Settings.set(row.key, display);
+        row.confirm();
+      }
+    }
+
+    Timer {
+      id: savedTimer
+      interval: 2500
+      onTriggered: row.saved = false
+    }
+
+    InfoRow {
+      width: parent.width
+      icon: row.icon
+      label: row.label
+      value: row.message
+      valueColor: row.messageIsError ? Theme.error : Theme.primary
+      valueOpacity: row.error !== "" || row.saved ? 1 : 0
+
+      Behavior on valueOpacity {
+        NumberAnimation {
+          duration: Theme.animMove
+          easing.type: Easing.InOutQuad
+        }
+      }
+    }
+
+    TextField {
+      id: field
+      x: 8
+      width: parent.width - 16
+      implicitHeight: 40
+      escapeLeaves: true
+      hint: inputActiveFocus ? "Enter" : ""
+      onAccepted: text => row.submit(text)
+      onInputActiveFocusChanged: {
+        if (!inputActiveFocus && !check.running)
+          row.revert();
+      }
+    }
+  }
+
   component SwitchRow: InfoRow {
     id: row
 
@@ -147,6 +260,31 @@ Column {
       icon: "mode_standby"
       label: "Locked: suspend"
       key: "idleSuspend"
+    }
+  }
+
+  Group {
+    title: "Folders"
+
+    PathRow {
+      icon: "wallpaper"
+      label: "Wallpapers"
+      key: "wallpaperDirectory"
+      path: Settings.wallpaperDirectory
+    }
+
+    PathRow {
+      icon: "download"
+      label: "Danbooru downloads"
+      key: "danbooruDirectory"
+      path: Settings.danbooruDirectory
+    }
+
+    PathRow {
+      icon: "screenshot_monitor"
+      label: "Screenshots"
+      key: "screenshotDirectory"
+      path: Settings.screenshotDirectory
     }
   }
 }

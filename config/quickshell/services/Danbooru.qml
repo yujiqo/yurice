@@ -319,7 +319,13 @@ Singleton {
     }
   }
 
+  onDirectoryChanged: {
+    ensureDirectory.running = false;
+    ensureDirectory.running = true;
+  }
+
   Process {
+    id: ensureDirectory
     running: true
     command: ["mkdir", "-p", root.directory]
     onExited: folder.folder = "file://" + root.directory
