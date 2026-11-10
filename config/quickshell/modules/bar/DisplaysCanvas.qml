@@ -1,6 +1,5 @@
 import QtQuick
 import qs.theme
-import qs.components
 import qs.services
 
 Rectangle {
@@ -29,7 +28,6 @@ Rectangle {
       height: Math.max(1, maxY - minY)
     };
   }
-  property bool dragging: false
   property var frozen: null
   readonly property var view: frozen ?? fit(bounds)
 

@@ -307,8 +307,6 @@ PanelWindow {
     Keys.onPressed: event => root.handleKey(event)
 
     Item {
-      id: backdrop
-
       anchors.fill: parent
 
       Image {
@@ -343,8 +341,6 @@ PanelWindow {
     }
 
     Item {
-      id: grid
-
       transformOrigin: Item.TopLeft
       scale: root.zoom
       x: content.width / 2 - focusXSpring.value * root.zoom

@@ -106,7 +106,6 @@ Island {
   }
 
   Item {
-    id: dots
     width: view.contentWidth
     height: Theme.pillHeight
 

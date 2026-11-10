@@ -46,16 +46,11 @@ Singleton {
   property string active: ""
   property real progress: 0
   readonly property bool upscaling: active !== ""
-  readonly property string activeName: active.slice(active.lastIndexOf("/") + 1)
   readonly property string status: {
     if (!upscaling)
       return "";
     const text = `Upscaling ${Math.floor(progress * 100)}%`;
     return queue.length > 0 ? `${text} · ${queue.length} queued` : text;
-  }
-
-  function isQueued(path) {
-    return queue.includes(path);
   }
 
   function isBusy(path) {

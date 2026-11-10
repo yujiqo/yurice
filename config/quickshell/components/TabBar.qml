@@ -28,7 +28,6 @@ Item {
   }
 
   Rectangle {
-    id: indicator
     y: 4
     height: parent.height - 8
     radius: height / 2

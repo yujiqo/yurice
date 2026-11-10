@@ -206,8 +206,6 @@ PanelWindow {
     }
 
     MouseArea {
-      id: mouse
-
       property string mode: ""
       property real pressX: 0
       property real pressY: 0

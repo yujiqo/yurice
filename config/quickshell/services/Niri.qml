@@ -11,7 +11,6 @@ Singleton {
   property var windows: ({})
   property var layoutNames: []
   property int layoutIndex: 0
-  readonly property string layoutName: layoutNames[layoutIndex] ?? ""
 
   signal layoutSwitched(int index)
 

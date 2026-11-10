@@ -29,7 +29,6 @@ Column {
     }
 
     TextField {
-      id: pathField
       width: parent.width - 72
       implicitHeight: 40
       leadingIcon: "folder"

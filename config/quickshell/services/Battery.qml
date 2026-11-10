@@ -29,7 +29,6 @@ Singleton {
   readonly property int limit: parseInt(limitFile.text()) || -1
   readonly property string technology: technologyFile.text().trim()
   readonly property string vendor: vendorFile.text().trim()
-  readonly property string model: device.model || modelFile.text().trim()
   readonly property real health: device.healthSupported && device.healthPercentage > 0 ? device.healthPercentage : designWh > 0 ? energyFull / designWh * 100 : -1
 
   readonly property string icon: {
@@ -84,12 +83,6 @@ Singleton {
   FileView {
     id: vendorFile
     path: root.sysfsDir ? root.sysfsDir + "manufacturer" : ""
-    printErrors: false
-  }
-
-  FileView {
-    id: modelFile
-    path: root.sysfsDir ? root.sysfsDir + "model_name" : ""
     printErrors: false
   }
 }

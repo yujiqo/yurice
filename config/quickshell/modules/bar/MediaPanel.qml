@@ -190,7 +190,6 @@ Column {
   }
 
   Item {
-    id: stage
     width: parent.width
     height: Theme.discSize + 16
 
@@ -260,8 +259,6 @@ Column {
     }
 
     MouseArea {
-      id: scrub
-
       property real lastAngle: 0
 
       anchors.centerIn: parent

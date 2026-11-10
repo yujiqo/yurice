@@ -123,8 +123,6 @@ Column {
       }
 
       MouseArea {
-        id: mover
-
         property real grabX: 0
         property real grabY: 0
 
