@@ -11,6 +11,7 @@ local always = {
 	"TabLineFill",
 	"TabLineSel",
 	"ColorColumn",
+	"Pmenu",
 }
 
 local gutter_patterns = {
@@ -60,6 +61,9 @@ local function set_transparent()
 	end
 
 	vim.api.nvim_set_hl(0, "TabLineFill", { bg = "none", fg = "#767676" })
+	vim.api.nvim_set_hl(0, "BlinkCmpMenuBorder", { link = "FloatBorder" })
+	vim.api.nvim_set_hl(0, "BlinkCmpDocBorder", { link = "FloatBorder" })
+	vim.api.nvim_set_hl(0, "BlinkCmpSignatureHelpBorder", { link = "FloatBorder" })
 end
 
 set_transparent()
