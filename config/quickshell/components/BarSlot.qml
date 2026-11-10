@@ -14,14 +14,15 @@ Item {
   visible: spring.value > 0.001
 
   onShownChanged: {
-    if (!animate)
+    if (animate)
+      spring.target = shown ? 1 : 0;
+    else
       spring.jump(shown ? 1 : 0);
   }
 
   Spring {
     id: spring
-    target: root.shown ? 1 : 0
-    Component.onCompleted: value = target
+    Component.onCompleted: jump(root.shown ? 1 : 0)
   }
 
   Item {
