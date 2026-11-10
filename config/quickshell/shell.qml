@@ -182,6 +182,11 @@ ShellRoot {
           y: bar.hideOffset
         }
 
+        UserIsland {
+          current: bar.dropdown
+          onRequest: name => bar.request(name)
+          onDismissed: bar.dropdown = ""
+        }
         MediaIsland {
           current: bar.dropdown
           onRequest: name => bar.request(name)

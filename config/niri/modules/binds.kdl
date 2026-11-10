@@ -15,6 +15,7 @@ binds {
   Mod+Y repeat=false hotkey-overlay-title="Clipboard" { spawn "qs" "ipc" "call" "launcher" "toggleClipboard"; }
   Mod+E repeat=false hotkey-overlay-title="Weather" { spawn "qs" "ipc" "call" "panel" "toggle" "weather"; }
   Mod+Comma repeat=false hotkey-overlay-title="Calendar" { spawn "qs" "ipc" "call" "panel" "toggle" "calendar"; }
+  Mod+Period repeat=false hotkey-overlay-title="User panel" { spawn "qs" "ipc" "call" "panel" "toggle" "user"; }
   Mod+A repeat=false hotkey-overlay-title="Volume" { spawn "qs" "ipc" "call" "panel" "toggle" "volume"; }
   Mod+Shift+A repeat=false hotkey-overlay-title="Brightness" { spawn "qs" "ipc" "call" "panel" "toggle" "brightness"; }
   Mod+N repeat=false hotkey-overlay-title="Wi-Fi" { spawn "qs" "ipc" "call" "panel" "toggle" "wifi"; }
