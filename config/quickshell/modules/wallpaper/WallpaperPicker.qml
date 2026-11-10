@@ -28,16 +28,7 @@ PanelWindow {
   readonly property real gap: Theme.pickerGap / Theme.pickerScale
   readonly property int cols: Math.max(1, Math.ceil(Math.sqrt(items.length)))
   readonly property real cornerRadius: Theme.pickerRadius * (1 - zoom) / (1 - Theme.pickerScale) / zoom
-  readonly property size thumbSize: {
-    let w = 0;
-    let h = 0;
-    for (const s of Quickshell.screens) {
-      w = Math.max(w, s.width * s.devicePixelRatio);
-      h = Math.max(h, s.height * s.devicePixelRatio);
-    }
-    const factor = Theme.pickerScale * Theme.pickerThumbOversample;
-    return Qt.size(w * factor, h * factor);
-  }
+  readonly property size thumbSize: Qt.size(Wallpapers.screenSize.width * Theme.pickerScale * Theme.pickerThumbOversample, Wallpapers.screenSize.height * Theme.pickerScale * Theme.pickerThumbOversample)
 
   screen: targetScreen
   visible: phase !== "closed" && phase !== "loading"

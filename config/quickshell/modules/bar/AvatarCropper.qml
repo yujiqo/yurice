@@ -107,7 +107,7 @@ Column {
         radius: width / 2
         color: "transparent"
         border.width: area.border
-        border.color: Qt.alpha("black", 0.6)
+        border.color: Qt.alpha(Theme.scrim, 0.6)
         antialiasing: true
       }
 

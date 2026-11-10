@@ -2,6 +2,7 @@ pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Wayland
 import QtQuick
+import qs.theme
 import qs.services
 
 Variants {
@@ -25,7 +26,7 @@ Variants {
 
     Rectangle {
       anchors.fill: parent
-      color: "black"
+      color: Theme.scrim
       opacity: Session.outro
     }
   }

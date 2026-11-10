@@ -71,7 +71,7 @@ Column {
 
           SwitchRow {
             required property var modelData
-          
+
             icon: modelData.icon
             label: modelData.label
             checked: WeebMode.isHidden(modelData.name)

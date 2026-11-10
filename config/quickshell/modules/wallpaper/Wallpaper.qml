@@ -3,6 +3,7 @@ import Quickshell
 import Quickshell.Wayland
 import QtQuick
 import qs.theme
+import qs.components
 import qs.services
 
 PanelWindow {
@@ -22,7 +23,7 @@ PanelWindow {
   WlrLayershell.namespace: "yurice-wallpaper"
   color: "transparent"
 
-  readonly property size imageSize: Qt.size(modelData.width * modelData.devicePixelRatio, modelData.height * modelData.devicePixelRatio)
+  readonly property size imageSize: Utility.pixelSize(modelData)
   readonly property string path: Wallpapers.current
 
   property WallpaperImage front: a
@@ -85,6 +86,8 @@ PanelWindow {
   }
 
   component WallpaperImage: Image {
+    id: image
+
     property string path: ""
     property string file: ""
     source: path === "" ? "" : Paths.fileUrl(file)
@@ -95,7 +98,7 @@ PanelWindow {
     asynchronous: true
     cache: true
     smooth: true
-    onStatusChanged: root.startFade(this)
+    onStatusChanged: root.startFade(image)
   }
 
   WallpaperImage {

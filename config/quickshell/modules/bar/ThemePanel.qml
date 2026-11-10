@@ -1,6 +1,5 @@
 pragma ComponentBehavior: Bound
 import QtQuick
-import qs.theme
 import qs.components
 import qs.services
 
@@ -9,48 +8,14 @@ Column {
 
   spacing: 8
 
-  component TimeRow: InfoRow {
-    id: row
-
+  component TimeRow: StepperRow {
     property string name: ""
-    readonly property int step: 30
 
-    width: parent.width
-    value: ""
-
-    Row {
-      anchors.right: parent.right
-      anchors.rightMargin: 6
-      anchors.verticalCenter: parent.verticalCenter
-      spacing: 2
-
-      IconButton {
-        anchors.verticalCenter: parent.verticalCenter
-        icon: "remove"
-        onClicked: ThemeMode.adjust(row.name, -row.step)
-      }
-
-      Label {
-        anchors.verticalCenter: parent.verticalCenter
-        width: Clock.clock24h ? 44 : 70
-        opacity: Clock.fade
-        text: ThemeMode.formatMinutes(ThemeMode[row.name])
-
-        Behavior on width {
-          NumberAnimation {
-            duration: Theme.animMove
-            easing.type: Theme.easeOut
-          }
-        }
-        pixelSize: Theme.menuSubtitleSize + 1
-      }
-
-      IconButton {
-        anchors.verticalCenter: parent.verticalCenter
-        icon: "add"
-        onClicked: ThemeMode.adjust(row.name, row.step)
-      }
-    }
+    valueText: ThemeMode.formatMinutes(ThemeMode[name])
+    valueWidth: Clock.clock24h ? 44 : 70
+    valueOpacity: Clock.fade
+    onDecreased: ThemeMode.adjust(name, -30)
+    onIncreased: ThemeMode.adjust(name, 30)
   }
 
   PanelHeader {

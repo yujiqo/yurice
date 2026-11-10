@@ -29,7 +29,7 @@ Singleton {
     if (phase !== "idle")
       return;
     marker.setText("locked");
-    const overlayOpen = Wallpapers.pickerOpen || Panels.keyboard || Session.isOpen || Launcher.isOpen;
+    const overlayOpen = Wallpapers.pickerOpen || Panels.isOpen || Session.isOpen || Launcher.isOpen;
     Wallpapers.pickerOpen = false;
     Panels.close();
     Session.close();

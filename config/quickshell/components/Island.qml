@@ -30,7 +30,7 @@ Rectangle {
   property real switchSlide: 0
   property int switchDir: 1
   readonly property real progress: openSpring.progress
-  readonly property bool holding: hold || (panelLoader.item?.keepOpen ?? false) || (open && Panels.keyboard)
+  readonly property bool holding: hold || (panelLoader.item?.keepOpen ?? false) || (open && Panels.isOpen)
   readonly property real compactWidth: row.implicitWidth + padding * 2
   readonly property real openWidth: Math.max(compactWidth, panelWidth)
 

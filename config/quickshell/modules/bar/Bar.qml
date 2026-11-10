@@ -1,0 +1,210 @@
+pragma ComponentBehavior: Bound
+import Quickshell
+import Quickshell.Wayland
+import QtQuick
+import qs.theme
+import qs.components
+import qs.services
+
+PanelWindow {
+  id: root
+
+  required property ShellScreen modelData
+  property string dropdown: ""
+  readonly property bool launcherHere: Launcher.isOpen && Launcher.output === modelData.name
+  readonly property bool launcherShown: isLauncher(dropdown)
+  readonly property bool powerHere: Session.isOpen && Session.output === modelData.name
+  readonly property string keyboardPanel: Panels.output === modelData.name ? Panels.name : ""
+
+  readonly property bool covered: Niri.outputCovered(modelData.name, modelData.width, modelData.height)
+  readonly property real hideOffset: -(Theme.barMarginTop + Theme.barHeight + 8) * hide.value
+
+  onCoveredChanged: {
+    if (covered)
+      dropdown = "";
+  }
+
+  Spring {
+    id: hide
+    target: root.covered ? 1 : 0
+  }
+
+  onKeyboardPanelChanged: {
+    if (keyboardPanel !== "")
+      dropdown = keyboardPanel;
+    else if (Panels.names.includes(dropdown))
+      dropdown = "";
+  }
+
+  onPowerHereChanged: {
+    if (powerHere)
+      dropdown = "power";
+    else if (dropdown === "power")
+      dropdown = "";
+  }
+
+  function request(name) {
+    dropdown = dropdown === name ? "" : name;
+  }
+
+  function isLauncher(name) {
+    return name === "launcher" || name === "clipboard";
+  }
+
+  function syncLauncher() {
+    if (Launcher.isOpen && Launcher.output === modelData.name)
+      dropdown = Launcher.mode;
+    else if (isLauncher(dropdown))
+      dropdown = "";
+  }
+
+  onLauncherHereChanged: syncLauncher()
+
+  onDropdownChanged: {
+    if (Launcher.isOpen && Launcher.output === modelData.name && !isLauncher(dropdown))
+      Launcher.close();
+    if (powerHere && dropdown !== "power")
+      Session.close();
+    if (keyboardPanel !== "" && dropdown !== keyboardPanel)
+      Panels.close();
+  }
+
+  Connections {
+    target: Launcher
+    function onModeChanged() {
+      root.syncLauncher();
+    }
+  }
+
+  Connections {
+    target: WeebMode
+    function onHidesDanbooruChanged() {
+      if (WeebMode.hidesDanbooru && root.dropdown === "danbooru")
+        root.dropdown = "";
+    }
+  }
+
+  Connections {
+    target: Displays
+    function onConfirmingChanged() {
+      if (Displays.confirming && root.dropdown === "user")
+        root.dropdown = "";
+    }
+  }
+
+  screen: modelData
+  anchors {
+    top: true
+    left: true
+    right: true
+  }
+  implicitHeight: Math.min(Theme.barMarginTop + Theme.barHeight + Theme.dropdownMaxHeight + Theme.toastAreaHeight, modelData.height)
+  exclusionMode: ExclusionMode.Normal
+  exclusiveZone: Theme.barMarginTop + Theme.barHeight
+  WlrLayershell.keyboardFocus: launcherShown || dropdown === "power" || keyboardPanel !== "" ? WlrKeyboardFocus.Exclusive : dropdown !== "" ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+  color: "transparent"
+
+  mask: Region {
+    item: workspaces
+
+    Region {
+      item: leftRow
+    }
+    Region {
+      item: rightRow
+    }
+    Region {
+      x: toasts.x
+      y: toasts.y
+      width: toasts.visible ? toasts.width : 0
+      height: toasts.contentHeight
+    }
+  }
+
+  Workspaces {
+    id: workspaces
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.top: parent.top
+    anchors.topMargin: Theme.barMarginTop
+    opacity: 1 - hide.value
+    transform: Translate {
+      y: root.hideOffset
+    }
+    output: root.modelData.name
+    host: root
+  }
+
+  Toasts {
+    id: toasts
+    anchors.horizontalCenter: parent.horizontalCenter
+    anchors.top: workspaces.bottom
+    anchors.topMargin: Theme.barGap * 2
+    visible: root.modelData.name === Niri.activeOutput
+  }
+
+  Row {
+    id: leftRow
+    anchors.left: parent.left
+    anchors.leftMargin: Theme.barMargin
+    anchors.top: parent.top
+    anchors.topMargin: Theme.barMarginTop
+    spacing: Theme.barGap
+    opacity: 1 - hide.value
+    transform: Translate {
+      y: root.hideOffset
+    }
+
+    UserIsland {
+      host: root
+    }
+    MediaIsland {
+      host: root
+    }
+    ThemeIsland {
+      host: root
+    }
+    WallpaperIsland {
+      host: root
+    }
+    BarSlot {
+      shown: !WeebMode.hidesDanbooru
+      animate: WeebMode.loaded
+
+      DanbooruIsland {
+        host: root
+      }
+    }
+    WeebIsland {
+      host: root
+    }
+    WeatherIsland {
+      host: root
+    }
+  }
+
+  Row {
+    id: rightRow
+    anchors.right: parent.right
+    anchors.rightMargin: Theme.barMargin
+    anchors.top: parent.top
+    anchors.topMargin: Theme.barMarginTop
+    spacing: Theme.barGap
+    opacity: 1 - hide.value
+    transform: Translate {
+      y: root.hideOffset
+    }
+
+    ConnectivityIsland {
+      host: root
+    }
+    LevelsIsland {
+      host: root
+    }
+    BatteryIsland {
+      host: root
+    }
+    TimeIsland {
+      host: root
+    }
+  }
+}

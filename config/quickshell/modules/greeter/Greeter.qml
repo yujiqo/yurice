@@ -2,6 +2,8 @@ pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Wayland
 import QtQuick
+import qs.theme
+import qs.components
 import qs.services
 import qs.modules.lock
 
@@ -25,11 +27,11 @@ Scope {
       WlrLayershell.layer: WlrLayer.Overlay
       WlrLayershell.namespace: "yurice-greeter"
       WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
-      color: "black"
+      color: Theme.scrim
 
       LockSurface {
         anchors.fill: parent
-        imageSize: Qt.size(window.modelData.width * window.modelData.devicePixelRatio, window.modelData.height * window.modelData.devicePixelRatio)
+        imageSize: Utility.pixelSize(window.modelData)
         wallpaper: GreeterSession.wallpaper
         reveal: GreeterSession.reveal
         interactive: GreeterSession.phase === "ready"

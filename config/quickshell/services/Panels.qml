@@ -11,7 +11,7 @@ Singleton {
 
   property string name: ""
   property string output: ""
-  readonly property bool keyboard: name !== ""
+  readonly property bool isOpen: name !== ""
 
   function open(next) {
     if (!names.includes(next) || (next === "danbooru" && WeebMode.hidesDanbooru))

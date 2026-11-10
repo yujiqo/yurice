@@ -30,7 +30,7 @@ Item {
       {
         id: "reboot",
         icon: "restart_alt",
-        label: "Restart"
+        label: "Reboot"
       },
       {
         id: "poweroff",

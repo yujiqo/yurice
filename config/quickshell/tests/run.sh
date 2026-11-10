@@ -68,6 +68,11 @@ for script in scripts/*.sh; do
   fi
 done
 
+if grep -rnE '[[:space:]]+$' --include='*.qml' --include='*.sh' components modules services theme tests scripts shell.qml greeter.qml >&2; then
+  echo "FAIL trailing whitespace" >&2
+  exit 1
+fi
+
 smoke=$(find components modules services theme -name '*.qml' | sort | tr '\n' ':')
 tests=$(cd tests && ls Test*.qml | sed 's/\.qml$//' | tr '\n' ':')
 instantiate=$(find components modules/bar -name '*.qml' | sort | while read -r file; do

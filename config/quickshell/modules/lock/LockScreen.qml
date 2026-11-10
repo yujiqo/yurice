@@ -2,6 +2,8 @@ pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Wayland
 import QtQuick
+import qs.theme
+import qs.components
 import qs.services
 
 Scope {
@@ -18,11 +20,11 @@ Scope {
     WlSessionLockSurface {
       id: surface
 
-      color: "black"
+      color: Theme.scrim
 
       LockSurface {
         anchors.fill: parent
-        imageSize: surface.screen ? Qt.size(surface.screen.width * surface.screen.devicePixelRatio, surface.screen.height * surface.screen.devicePixelRatio) : Qt.size(0, 0)
+        imageSize: Utility.pixelSize(surface.screen)
         onReady: SessionLock.surfaceReady(surface.screen?.name)
         wallpaper: WallpaperPublish.displayFile
         snapshot: SessionLock.snapshots[surface.screen?.name] ?? ""

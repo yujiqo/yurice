@@ -5,6 +5,7 @@ import Quickshell.Wayland
 import QtQuick
 import QtQuick.Effects
 import qs.theme
+import qs.components
 import qs.services
 
 Scope {
@@ -97,14 +98,14 @@ Scope {
 
       Rectangle {
         anchors.fill: parent
-        color: "black"
+        color: Theme.scrim
         opacity: root.cover
 
         Image {
           id: image
           anchors.fill: parent
           source: Wallpapers.ready && WallpaperPublish.displayFile !== "" ? Paths.fileUrl(WallpaperPublish.displayFile) : ""
-          sourceSize: Qt.size(window.modelData.width * window.modelData.devicePixelRatio, window.modelData.height * window.modelData.devicePixelRatio)
+          sourceSize: Utility.pixelSize(window.modelData)
           fillMode: Image.PreserveAspectCrop
           asynchronous: true
           cache: true

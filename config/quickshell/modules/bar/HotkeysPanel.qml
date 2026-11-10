@@ -79,15 +79,8 @@ Item {
           width: content.width
           spacing: 2
 
-          Text {
-            leftPadding: 8
-            bottomPadding: 4
-            text: section.modelData.title.toUpperCase()
-            color: Theme.clock
-            font.family: Theme.labelFont
-            font.pixelSize: Theme.menuSubtitleSize - 2
-            font.letterSpacing: 1
-            font.bold: true
+          SectionTitle {
+            title: section.modelData.title
           }
 
           Repeater {

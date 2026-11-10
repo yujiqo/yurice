@@ -8,7 +8,7 @@ QtObject {
     t.eq(Panels.name, "");
     Panels.open("media");
     t.eq(Panels.name, "media");
-    t.ok(Panels.keyboard);
+    t.ok(Panels.isOpen);
     Panels.toggle("media");
     t.eq(Panels.name, "");
     Panels.toggle("calendar");

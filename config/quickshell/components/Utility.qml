@@ -1,6 +1,7 @@
 pragma Singleton
 pragma ComponentBehavior: Bound
 import Quickshell
+import QtQuick
 
 Singleton {
   function seg(icon, label, color) {
@@ -33,5 +34,9 @@ Singleton {
     if (hours > 0)
       return `${hours}h ${minutes}m`;
     return `${minutes}m`;
+  }
+
+  function pixelSize(screen) {
+    return screen ? Qt.size(screen.width * screen.devicePixelRatio, screen.height * screen.devicePixelRatio) : Qt.size(0, 0);
   }
 }

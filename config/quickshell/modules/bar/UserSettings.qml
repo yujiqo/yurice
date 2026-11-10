@@ -21,16 +21,6 @@ Column {
 
   spacing: 14
 
-  function formatMinutes(minutes) {
-    if (minutes <= 0)
-      return "Never";
-    if (minutes < 60)
-      return minutes + " min";
-    const hours = Math.floor(minutes / 60);
-    const rest = minutes % 60;
-    return rest > 0 ? `${hours} h ${rest} min` : `${hours} h`;
-  }
-
   function stepMinutes(current, direction) {
     const steps = minuteSteps;
     if (direction > 0) {
@@ -50,15 +40,8 @@ Column {
     width: parent.width
     spacing: 2
 
-    Text {
-      leftPadding: 8
-      bottomPadding: 4
-      text: group.title.toUpperCase()
-      color: Theme.clock
-      font.family: Theme.labelFont
-      font.pixelSize: Theme.menuSubtitleSize - 2
-      font.letterSpacing: 1
-      font.bold: true
+    SectionTitle {
+      title: group.title
     }
 
     Card {
@@ -66,45 +49,15 @@ Column {
     }
   }
 
-  component DurationRow: InfoRow {
-    id: row
-
+  component DurationRow: StepperRow {
     property string key: ""
     readonly property int minutes: Settings[key]
 
-    width: parent.width
-    value: ""
-
-    Row {
-      anchors.right: parent.right
-      anchors.rightMargin: 6
-      anchors.verticalCenter: parent.verticalCenter
-      spacing: 2
-
-      IconButton {
-        anchors.verticalCenter: parent.verticalCenter
-        icon: "remove"
-        opacity: row.minutes > 0 ? 1 : 0.4
-        onClicked: Settings.set(row.key, root.stepMinutes(row.minutes, -1))
-      }
-
-      Text {
-        anchors.verticalCenter: parent.verticalCenter
-        width: 64
-        horizontalAlignment: Text.AlignHCenter
-        text: root.formatMinutes(row.minutes)
-        color: Theme.text
-        font.family: Theme.labelFont
-        font.pixelSize: Theme.menuSubtitleSize + 1
-      }
-
-      IconButton {
-        anchors.verticalCenter: parent.verticalCenter
-        icon: "add"
-        opacity: row.minutes < root.minuteSteps[root.minuteSteps.length - 1] ? 1 : 0.4
-        onClicked: Settings.set(row.key, root.stepMinutes(row.minutes, 1))
-      }
-    }
+    valueText: minutes > 0 ? Utility.formatDuration(minutes * 60) : "Never"
+    canDecrease: minutes > 0
+    canIncrease: minutes < root.minuteSteps[root.minuteSteps.length - 1]
+    onDecreased: Settings.set(key, root.stepMinutes(minutes, -1))
+    onIncreased: Settings.set(key, root.stepMinutes(minutes, 1))
   }
 
   component PathRow: Column {
@@ -221,9 +174,9 @@ Column {
 
   component SettingSwitch: SwitchRow {
     id: row
-  
+
     property string key: ""
-  
+
     checked: Settings[row.key]
     onToggled: Settings.set(row.key, !Settings[row.key])
   }

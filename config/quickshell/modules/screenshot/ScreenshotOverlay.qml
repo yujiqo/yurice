@@ -123,7 +123,7 @@ PanelWindow {
 
     Rectangle {
       anchors.fill: parent
-      color: "black"
+      color: Theme.scrim
       opacity: root.selecting ? 0.45 : 0
 
       Behavior on opacity {

@@ -57,6 +57,7 @@ Singleton {
   readonly property color wsUrgent: error
   readonly property color wsOccupied: outline
   readonly property color wsEmpty: surfaceContainerHighest
+  readonly property color scrim: "black"
 
   FileView {
     id: paletteView

@@ -59,6 +59,27 @@ Item {
     text: "Nothing"
   }
 
+  StepperRow {
+    id: stepper
+    property int amount: 5
+    valueText: amount + " min"
+    canDecrease: amount > 0
+    onDecreased: amount--
+    onIncreased: amount++
+  }
+
+  function test_stepperRow(t) {
+    const row = stepper.children.find(c => c.spacing === 2);
+    const [minus, label, plus] = row.children;
+    t.eq([label.text, minus.opacity, plus.opacity], ["5 min", 1, 1]);
+    plus.clicked();
+    minus.clicked();
+    minus.clicked();
+    t.eq(stepper.amount, 4);
+    stepper.amount = 0;
+    t.eq([label.text, minus.opacity], ["0 min", 0.4]);
+  }
+
   function test_cardSizesToContent(t) {
     t.eq([card.implicitHeight, card.width, card.radius], [58, suite.width, Theme.menuItemRadius]);
     t.eq(spaced.implicitHeight, 10 + 8 + 10 + 16);

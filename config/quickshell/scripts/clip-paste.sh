@@ -1,4 +1,4 @@
-#!/usr/bin/env sh
+#!/bin/sh
 id=$1
 shift
 cliphist decode "$id" | wl-copy || exit 1
