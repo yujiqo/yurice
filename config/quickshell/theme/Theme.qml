@@ -127,7 +127,7 @@ Singleton {
 
   // --- Fonts ---
   readonly property string iconFont: "Material Symbols Sharp"
-  readonly property int iconSize: 16
+  readonly property int iconSize: 20
   readonly property string labelFont: "Agave Nerd Font"
   readonly property int labelSize: 18
 
