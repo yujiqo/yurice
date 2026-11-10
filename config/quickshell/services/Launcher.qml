@@ -70,6 +70,13 @@ Singleton {
       open("launcher");
   }
 
+  function toggleClipboard() {
+    if (mode === "clipboard")
+      close();
+    else
+      open("clipboard");
+  }
+
   function close() {
     mode = "";
     calcQuery = "";
@@ -295,10 +302,7 @@ Singleton {
       root.toggle();
     }
     function toggleClipboard(): void {
-      if (root.mode === "clipboard")
-        root.close();
-      else
-        root.open("clipboard");
+      root.toggleClipboard();
     }
     function close(): void {
       root.close();

@@ -88,7 +88,7 @@ Item {
           anchors.verticalCenter: parent.verticalCenter
           width: 56
           height: 56
-          path: SessionLock.avatar
+          path: WeebMode.avatar
           iconSize: 30
         }
 
@@ -101,14 +101,14 @@ Item {
 
           Label {
             width: parent.width
-            text: SessionLock.userName
+            text: Session.userName
             color: Theme.text
             pixelSize: 24
           }
 
           Label {
             width: parent.width
-            text: SystemInfo.hostname !== "" ? SessionLock.userName + "@" + SystemInfo.hostname : ""
+            text: SystemInfo.hostname !== "" ? Session.userName + "@" + SystemInfo.hostname : ""
             color: Theme.textVariant
             pixelSize: Theme.menuSubtitleSize
           }

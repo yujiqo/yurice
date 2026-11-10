@@ -40,13 +40,13 @@ Scope {
         placeholder: GreeterSession.placeholder
         busy: GreeterSession.authenticating
         error: GreeterSession.error
-        firmwareAvailable: GreeterSession.firmwareAvailable
+        firmwareAvailable: Session.firmwareAvailable
         canSwitchUser: GreeterSession.users.length > 1
         onReady: GreeterSession.surfaceReady(window.modelData.name)
         onPromptRequested: GreeterSession.openPrompt(window.modelData.name)
         onPromptDismissed: GreeterSession.closePrompt()
         onSubmitted: password => GreeterSession.submit(password)
-        onPowerRequested: action => GreeterSession.power(action)
+        onPowerRequested: action => Session.power(action)
         onUserSwitchRequested: delta => GreeterSession.switchUser(delta)
       }
     }

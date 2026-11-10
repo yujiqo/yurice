@@ -10,6 +10,10 @@ Singleton {
 
   property bool isOpen: false
   property string output: ""
+  property bool loggingOut: false
+  property real outro: 0
+  property bool firmwareAvailable: false
+  readonly property string userName: Quickshell.env("USER")
 
   function open() {
     output = Niri.activeOutput;
@@ -33,8 +37,12 @@ Singleton {
     runner.running = true;
   }
 
-  property bool loggingOut: false
-  property real outro: 0
+  function power(action) {
+    if (action === "firmware")
+      run("reboot", ["--firmware-setup"]);
+    else
+      run(action);
+  }
 
   function logout() {
     close();
@@ -52,6 +60,12 @@ Singleton {
     duration: Theme.animLock
     easing.type: Easing.InOutCubic
     onFinished: Quickshell.execDetached(["niri", "msg", "action", "quit", "--skip-confirmation"])
+  }
+
+  Process {
+    running: true
+    command: ["test", "-d", "/sys/firmware/efi"]
+    onExited: code => root.firmwareAvailable = code === 0
   }
 
   Process {

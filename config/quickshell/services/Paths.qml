@@ -1,6 +1,7 @@
 pragma Singleton
 pragma ComponentBehavior: Bound
 import Quickshell
+import QtQuick
 
 Singleton {
   readonly property string home: Quickshell.env("HOME")
@@ -8,6 +9,7 @@ Singleton {
   readonly property string custom: config + "/custom"
   readonly property string state: home + "/.local/state/yurice"
   readonly property string cache: home + "/.cache/yurice"
+  readonly property string shared: Quickshell.env("YURICE_STATE_ROOT") || "/var/lib/yurice"
   readonly property string scripts: Quickshell.shellDir + "/scripts"
 
   function expand(path) {
@@ -31,4 +33,6 @@ Singleton {
   function dirName(path) {
     return path.slice(0, Math.max(0, path.lastIndexOf("/")));
   }
+
+  Component.onCompleted: Quickshell.execDetached(["mkdir", "-p", state, cache])
 }

@@ -29,16 +29,16 @@ Scope {
         reveal: SessionLock.reveal
         interactive: SessionLock.phase === "locked"
         primary: surface.screen?.name === SessionLock.promptOutput
-        avatar: SessionLock.avatar
-        userName: SessionLock.userName
+        avatar: WeebMode.avatar
+        userName: Session.userName
         promptOpen: SessionLock.promptOpen
         busy: SessionLock.authenticating
         error: SessionLock.error
-        firmwareAvailable: SessionLock.firmwareAvailable
+        firmwareAvailable: Session.firmwareAvailable
         onPromptRequested: SessionLock.openPrompt(surface.screen?.name)
         onPromptDismissed: SessionLock.closePrompt()
         onSubmitted: password => SessionLock.submit(password)
-        onPowerRequested: action => SessionLock.power(action)
+        onPowerRequested: action => Session.power(action)
       }
     }
   }

@@ -8,7 +8,7 @@ Singleton {
   id: root
 
   readonly property string folder: Settings.screenshotDirectory
-  readonly property string clipFile: Quickshell.cacheDir + "/screenshot.png"
+  readonly property string clipFile: Paths.cache + "/screenshot.png"
 
   property string phase: ""
   property string output: ""
@@ -94,7 +94,7 @@ Singleton {
     selH = h;
   }
 
-  function fileName() {
+  function outputPath() {
     return folder + "/Screenshot from " + Qt.formatDateTime(takenAt, "yyyy-MM-dd HH-mm-ss") + ".png";
   }
 
@@ -125,7 +125,7 @@ Singleton {
     if (!selecting || busy || !hasSelection || !overlay)
       return;
     busy = true;
-    const path = fileName();
+    const path = outputPath();
     overlay.grabRegion(result => {
       if (!result.saveToFile(path))
         return root.fail();
@@ -138,7 +138,7 @@ Singleton {
     if (!selecting || busy || !overlay)
       return;
     busy = true;
-    const path = fileName();
+    const path = outputPath();
     overlay.grabScreen(result => {
       if (!result.saveToFile(path))
         return root.fail();

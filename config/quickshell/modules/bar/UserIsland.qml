@@ -37,7 +37,7 @@ Island {
       anchors.centerIn: parent
       width: root.avatarSize
       height: root.avatarSize
-      path: SessionLock.avatar
+      path: WeebMode.avatar
       iconSize: Theme.iconSize - 2
     }
   }
@@ -48,7 +48,7 @@ Island {
 
     Row {
       Label {
-        text: SessionLock.userName
+        text: Session.userName
       }
 
       Item {

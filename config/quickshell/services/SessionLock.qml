@@ -19,14 +19,11 @@ Singleton {
   property string error: ""
   property var snapshots: ({})
   property var readySurfaces: ({})
-  property bool firmwareAvailable: false
   property string pendingPassword: ""
   property bool suspendPending: false
   property bool preparingForSleep: false
 
   readonly property bool sessionLocked: phase === "locking" || phase === "locked" || phase === "unlocking"
-  readonly property string userName: Quickshell.env("USER")
-  readonly property string avatar: WeebMode.hidesAvatar ? Settings.normieAvatarPath : Settings.avatarPath
 
   function lock() {
     if (phase !== "idle")
@@ -65,6 +62,10 @@ Singleton {
 
   onPhaseChanged: trySuspend()
   onSecuredChanged: trySuspend()
+
+  function powerOffMonitors() {
+    Quickshell.execDetached(["niri", "msg", "action", "power-off-monitors"]);
+  }
 
   function handleSleepSignal(line) {
     if (line === "b true") {
@@ -185,13 +186,6 @@ Singleton {
       lock();
   }
 
-  function power(action) {
-    if (action === "firmware")
-      Session.run("reboot", ["--firmware-setup"]);
-    else
-      Session.run(action);
-  }
-
   NumberAnimation {
     id: revealAnim
     target: root
@@ -255,12 +249,6 @@ Singleton {
     blockLoading: true
     blockWrites: true
     printErrors: false
-  }
-
-  Process {
-    running: true
-    command: ["test", "-d", "/sys/firmware/efi"]
-    onExited: code => root.firmwareAvailable = code === 0
   }
 
   Process {
@@ -343,16 +331,8 @@ Singleton {
     timeout: Math.max(1, Settings.idleSuspend) * 60
     onIsIdleChanged: {
       if (isIdle)
-        Qt.callLater(root.suspendIdle);
+        Qt.callLater(() => Session.run("suspend"));
     }
-  }
-
-  function powerOffMonitors() {
-    Quickshell.execDetached(["niri", "msg", "action", "power-off-monitors"]);
-  }
-
-  function suspendIdle() {
-    Session.run("suspend");
   }
 
   IpcHandler {

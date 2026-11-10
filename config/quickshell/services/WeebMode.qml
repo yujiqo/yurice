@@ -19,6 +19,7 @@ Singleton {
   readonly property bool hidesAnimeFilter: normie && state.hideAnimeFilter
   readonly property bool hidesAdultFilters: normie && state.hideAdultFilters
   readonly property bool hidesAvatar: normie && state.hideAvatar
+  readonly property string avatar: hidesAvatar ? Settings.normieAvatarPath : Settings.avatarPath
 
   function toggle() {
     set(normie ? "weeb" : "normie");

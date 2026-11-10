@@ -9,8 +9,8 @@ Singleton {
   id: root
 
   readonly property string cacheFile: Paths.cache + "/wallpaper-cache.jpg"
-  readonly property string publishDir: `${Quickshell.env("YURICE_STATE_ROOT") || "/var/lib/yurice"}/users/${Quickshell.env("USER")}`
-  readonly property string avatar: WeebMode.hidesAvatar ? Settings.normieAvatarPath : Settings.avatarPath
+  readonly property string publishDir: `${Paths.shared}/users/${Session.userName}`
+  readonly property string avatar: WeebMode.avatar
   readonly property string cachedFor: cachePath.text().trim()
   readonly property string displayFile: Wallpapers.current !== "" && Wallpapers.current === cachedFor ? cacheFile : Wallpapers.current
   property bool pending: false

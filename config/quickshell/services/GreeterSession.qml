@@ -9,7 +9,6 @@ import qs.theme
 Singleton {
   id: root
 
-  readonly property string stateRoot: Quickshell.env("YURICE_STATE_ROOT") || "/var/lib/yurice"
   readonly property var sessionCommand: ["sh", Paths.scripts + "/start-session.sh"].concat((Quickshell.env("YURICE_SESSION") || "niri-session").split(" "))
 
   property string phase: "waiting"
@@ -24,7 +23,6 @@ Singleton {
   property int selected: Math.max(0, users.indexOf(lastUser.text().trim()))
   property var readySurfaces: ({})
   property int pendingSwitch: 0
-  property bool firmwareAvailable: false
 
   readonly property var users: {
     const list = [];
@@ -38,7 +36,7 @@ Singleton {
     return list.sort();
   }
   readonly property string userName: users[selected] ?? ""
-  readonly property string userDir: `${stateRoot}/users/${userName}`
+  readonly property string userDir: `${Paths.shared}/users/${userName}`
   readonly property string wallpaper: userName === "" ? "" : `${userDir}/wallpaper.jpg`
   readonly property string avatar: userName === "" ? "" : `${userDir}/avatar.jpg`
 
@@ -124,12 +122,6 @@ Singleton {
     error = message;
   }
 
-  function power(action) {
-    const args = action === "firmware" ? ["reboot", "--firmware-setup"] : [action];
-    powerProcess.command = ["systemctl"].concat(args);
-    powerProcess.running = true;
-  }
-
   Connections {
     target: Greetd
     function onAuthMessage(message, isError, responseRequired, echoResponse) {
@@ -190,16 +182,6 @@ Singleton {
     onTriggered: root.show()
   }
 
-  Process {
-    id: powerProcess
-  }
-
-  Process {
-    running: true
-    command: ["test", "-d", "/sys/firmware/efi"]
-    onExited: code => root.firmwareAvailable = code === 0
-  }
-
   FileView {
     id: passwd
     path: Quickshell.env("YURICE_PASSWD") || "/etc/passwd"
@@ -209,7 +191,7 @@ Singleton {
 
   FileView {
     id: lastUser
-    path: `${root.stateRoot}/greeter/last-user`
+    path: `${Paths.shared}/greeter/last-user`
     blockLoading: true
     blockWrites: true
     printErrors: false

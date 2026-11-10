@@ -15,11 +15,6 @@ Singleton {
   }
 
   function shortName(name) {
-    const lower = name.toLowerCase();
-    if (lower.startsWith("english"))
-      return "EN";
-    if (lower.startsWith("russian"))
-      return "RU";
     return name.slice(0, 2).toUpperCase();
   }
 

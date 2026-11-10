@@ -7,8 +7,8 @@ import QtQuick
 Singleton {
   id: root
 
-  readonly property string backlightDir: "/sys/class/backlight/intel_backlight"
-  readonly property bool available: maxFile.loaded && curFile.loaded
+  property string backlightDir: ""
+  readonly property bool available: backlightDir !== "" && maxFile.loaded && curFile.loaded
   readonly property int percent: Math.round(parseInt(curFile.text()) / parseInt(maxFile.text()) * 100) || 0
 
   property string pending: ""
@@ -32,12 +32,12 @@ Singleton {
 
   FileView {
     id: maxFile
-    path: root.backlightDir + "/max_brightness"
+    path: root.backlightDir ? root.backlightDir + "/max_brightness" : ""
   }
 
   FileView {
     id: curFile
-    path: root.backlightDir + "/actual_brightness"
+    path: root.backlightDir ? root.backlightDir + "/actual_brightness" : ""
     watchChanges: true
     onFileChanged: reload()
   }
@@ -50,6 +50,14 @@ Singleton {
         root.pending = "";
         root.run(arg);
       }
+    }
+  }
+
+  Process {
+    running: true
+    command: ["sh", "-c", "ls -d /sys/class/backlight/* 2>/dev/null | head -n 1"]
+    stdout: StdioCollector {
+      onStreamFinished: root.backlightDir = text.trim()
     }
   }
 }

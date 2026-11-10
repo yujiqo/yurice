@@ -31,6 +31,21 @@ Singleton {
     return wallpapers.length > 0 ? wallpapers[0] : "";
   }
   property var resolutions: ({})
+  property bool pickerOpen: false
+  property string coveredOutput: ""
+  property string pendingPalette: ""
+  property bool paletteChecked: false
+  readonly property size upscaleTarget: Qt.size(3840, 2160)
+  readonly property size screenSize: {
+    let w = 0;
+    let h = 0;
+    for (const s of Quickshell.screens) {
+      w = Math.max(w, s.width * s.devicePixelRatio);
+      h = Math.max(h, s.height * s.devicePixelRatio);
+    }
+    return Qt.size(Math.round(w), Math.round(h));
+  }
+  readonly property string screenResolution: `${screenSize.width}x${screenSize.height}`
 
   function isSafe(path) {
     return safeFiles[Paths.baseName(path)] === true;
@@ -46,7 +61,7 @@ Singleton {
     safeFile.setText(JSON.stringify(next, null, 2));
   }
 
-  function _readSafe() {
+  function readSafe() {
     try {
       safeFiles = JSON.parse(safeFile.text());
     } catch (e) {
@@ -73,34 +88,21 @@ Singleton {
 
   onHideUnsafeChanged: pickerOpen = false
   onReadyChanged: {
-    _checkPalette();
+    checkPalette();
     syncPalette();
   }
-
-  readonly property size screenSize: {
-    let w = 0;
-    let h = 0;
-    for (const s of Quickshell.screens) {
-      w = Math.max(w, s.width * s.devicePixelRatio);
-      h = Math.max(h, s.height * s.devicePixelRatio);
-    }
-    return Qt.size(Math.round(w), Math.round(h));
-  }
-  readonly property string screenResolution: `${screenSize.width}x${screenSize.height}`
 
   function resolutionOf(path) {
     const r = resolutions[path];
     return r && r.w > 0 ? `${r.w}x${r.h}` : "";
   }
 
-  readonly property size upscaleTarget: Qt.size(3840, 2160)
-
   function canUpscale(path) {
     const r = resolutions[path];
     return !!r && r.w > 0 && (r.w < upscaleTarget.width || r.h < upscaleTarget.height);
   }
 
-  function _measure() {
+  function measure() {
     const missing = allWallpapers.filter(p => !resolutions[p]);
     if (missing.length === 0 || identify.running)
       return;
@@ -115,7 +117,7 @@ Singleton {
     resolutions = next;
   }
 
-  onAllWallpapersChanged: _measure()
+  onAllWallpapersChanged: measure()
 
   Process {
     id: identify
@@ -137,16 +139,10 @@ Singleton {
             };
         }
         root.resolutions = next;
-        Qt.callLater(root._measure);
+        Qt.callLater(root.measure);
       }
     }
   }
-
-  property bool pickerOpen: false
-  property string coveredOutput: ""
-
-  property string _pendingPalette: ""
-  property bool _paletteChecked: false
 
   function set(path) {
     path = Paths.expand(path);
@@ -165,7 +161,7 @@ Singleton {
     if (path === "")
       return;
     if (matugen.running) {
-      _pendingPalette = path;
+      pendingPalette = path;
       return;
     }
     matugen.path = path;
@@ -174,7 +170,7 @@ Singleton {
     matugen.running = true;
   }
 
-  function _rebuild() {
+  function rebuild() {
     const list = [];
     for (let i = 0; i < folder.count; i++)
       list.push(folder.get(i, "filePath"));
@@ -188,14 +184,9 @@ Singleton {
     caseSensitive: false
     showDirs: false
     sortField: FolderListModel.Name
-    onCountChanged: root._rebuild()
+    onCountChanged: root.rebuild()
     onStatusChanged: if (status === FolderListModel.Ready)
-      root._rebuild()
-  }
-
-  Process {
-    running: true
-    command: ["mkdir", "-p", Paths.state]
+      root.rebuild()
   }
 
   Process {
@@ -214,9 +205,9 @@ Singleton {
         ThemeMode.markApplied(mode);
       }
       Theme.reloadPalette();
-      if (root._pendingPalette !== "") {
-        const next = root._pendingPalette;
-        root._pendingPalette = "";
+      if (root.pendingPalette !== "") {
+        const next = root.pendingPalette;
+        root.pendingPalette = "";
         root.generatePalette(next);
       }
     }
@@ -231,18 +222,18 @@ Singleton {
     }
   }
 
-  function _checkPalette() {
-    if (current === "" || _paletteChecked)
+  function checkPalette() {
+    if (current === "" || paletteChecked)
       return;
-    _paletteChecked = true;
+    paletteChecked = true;
     paletteCheck.running = true;
   }
 
   onCurrentChanged: {
-    _checkPalette();
+    checkPalette();
     syncPalette();
   }
-  Component.onCompleted: _checkPalette()
+  Component.onCompleted: checkPalette()
 
   FileView {
     id: stateFile
@@ -268,7 +259,7 @@ Singleton {
     watchChanges: true
     printErrors: false
     onFileChanged: reload()
-    onLoaded: root._readSafe()
+    onLoaded: root.readSafe()
     onLoadFailed: root.safeLoaded = true
   }
 

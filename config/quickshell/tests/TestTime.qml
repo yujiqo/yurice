@@ -1,4 +1,5 @@
 import QtQuick
+import qs.components
 import qs.services
 
 QtObject {
@@ -7,11 +8,13 @@ QtObject {
   }
 
   function test_formatDuration(t) {
-    t.eq(Battery.formatDuration(0), "0m");
-    t.eq(Battery.formatDuration(59 * 60), "59m");
-    t.eq(Battery.formatDuration(3600), "1h 0m");
-    t.eq(Battery.formatDuration(3720), "1h 2m");
-    t.eq(Battery.formatDuration(89), "1m");
+    t.eq(Utility.formatDuration(0), "0m");
+    t.eq(Utility.formatDuration(59 * 60), "59m");
+    t.eq(Utility.formatDuration(3600), "1h 0m");
+    t.eq(Utility.formatDuration(3720), "1h 2m");
+    t.eq(Utility.formatDuration(89), "1m");
+    t.eq(Utility.formatDuration(-5), "0m");
+    t.eq(Utility.formatDuration(26 * 3600 + 180), "1d 2h 3m");
   }
 
   function test_isLightAt_daytimeWindow(t) {

@@ -42,19 +42,12 @@ Singleton {
 
   readonly property string status: {
     if (charging)
-      return timeToFull > 0 ? `Full in ${formatDuration(timeToFull)}` : "Charging";
+      return timeToFull > 0 ? `Full in ${Utility.formatDuration(timeToFull)}` : "Charging";
     if (full)
       return "Fully charged";
     if (plugged)
       return limit > 0 && percent >= limit - 1 ? `Plugged in · held at ${limit}%` : "Plugged in · not charging";
-    return timeToEmpty > 0 ? `${formatDuration(timeToEmpty)} remaining` : "On battery";
-  }
-
-  function formatDuration(seconds) {
-    const total = Math.round(seconds / 60);
-    const h = Math.floor(total / 60);
-    const m = total % 60;
-    return h > 0 ? `${h}h ${m}m` : `${m}m`;
+    return timeToEmpty > 0 ? `${Utility.formatDuration(timeToEmpty)} remaining` : "On battery";
   }
 
   FileView {

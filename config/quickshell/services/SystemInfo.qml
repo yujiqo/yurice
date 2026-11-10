@@ -3,6 +3,7 @@ pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Io
 import QtQuick
+import qs.components
 
 Singleton {
   id: root
@@ -15,24 +16,12 @@ Singleton {
   property date bootTime: new Date()
   property bool loaded: false
 
-  readonly property string uptime: formatUptime((Clock.date - bootTime) / 1000)
+  readonly property string uptime: Utility.formatDuration((Clock.date - bootTime) / 1000)
   readonly property string version: {
     const parts = nixosVersion.split(".");
     if (parts.length < 4)
       return nixosVersion;
     return `${parts[0]}.${parts[1]} · ${parts[3]}`;
-  }
-
-  function formatUptime(seconds) {
-    const total = Math.max(0, Math.floor(seconds / 60));
-    const days = Math.floor(total / 1440);
-    const hours = Math.floor(total % 1440 / 60);
-    const minutes = total % 60;
-    if (days > 0)
-      return `${days}d ${hours}h ${minutes}m`;
-    if (hours > 0)
-      return `${hours}h ${minutes}m`;
-    return `${minutes}m`;
   }
 
   function refresh() {
@@ -42,15 +31,7 @@ Singleton {
 
   Process {
     id: reader
-    command: ["sh", "-c", `
-      echo "$(cat /proc/sys/kernel/hostname)"
-      echo "$(uname -r)"
-      echo "$(cat /run/current-system/nixos-version 2>/dev/null || nixos-version 2>/dev/null)"
-      echo "$(cut -d' ' -f1 /proc/uptime)"
-      link=$(readlink /nix/var/nix/profiles/system)
-      echo "$link"
-      echo "$(stat -c %Y "/nix/var/nix/profiles/$link" 2>/dev/null || echo 0)"
-    `]
+    command: ["sh", Paths.scripts + "/system-info.sh"]
     stdout: StdioCollector {
       onStreamFinished: {
         const lines = text.split("\n");
