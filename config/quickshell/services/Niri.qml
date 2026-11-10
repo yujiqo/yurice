@@ -8,6 +8,7 @@ Singleton {
 
   property var workspaces: []
   readonly property string focusedOutput: workspaces.find(w => w.is_focused)?.output ?? ""
+  property var windows: ({})
   property var layoutNames: []
   property int layoutIndex: 0
   readonly property string layoutName: layoutNames[layoutIndex] ?? ""
@@ -26,6 +27,13 @@ Singleton {
   function outputWorkspaces(output) {
     const target = output || focusedOutput;
     return workspaces.filter(w => w.output === target).sort((a, b) => a.idx - b.idx);
+  }
+
+  function outputCovered(output, width, height) {
+    const ws = workspaces.find(w => w.output === output && w.is_active);
+    const win = ws ? windows[ws.active_window_id] : null;
+    const size = win?.layout?.tile_size;
+    return !!size && !win.is_floating && size[0] >= width && size[1] >= height;
   }
 
   function focusWorkspaceId(id) {
@@ -93,6 +101,29 @@ Singleton {
     } else if (event.KeyboardLayoutSwitched) {
       layoutIndex = event.KeyboardLayoutSwitched.idx;
       layoutSwitched(layoutIndex);
+    } else if (event.WindowsChanged) {
+      const map = {};
+      for (const w of event.WindowsChanged.windows)
+        map[w.id] = w;
+      windows = map;
+    } else if (event.WindowOpenedOrChanged) {
+      const w = event.WindowOpenedOrChanged.window;
+      windows = Object.assign({}, windows, {
+        [w.id]: w
+      });
+    } else if (event.WindowClosed) {
+      const next = Object.assign({}, windows);
+      delete next[event.WindowClosed.id];
+      windows = next;
+    } else if (event.WindowLayoutsChanged) {
+      const next = Object.assign({}, windows);
+      for (const [id, layout] of event.WindowLayoutsChanged.changes) {
+        if (next[id])
+          next[id] = Object.assign({}, next[id], {
+            layout
+          });
+      }
+      windows = next;
     } else if (event.WorkspaceUrgencyChanged) {
       const {
         id,

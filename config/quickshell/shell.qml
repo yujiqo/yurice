@@ -52,6 +52,19 @@ ShellRoot {
       readonly property bool powerHere: Session.isOpen && Session.output === modelData.name
       readonly property string keyboardPanel: Panels.output === modelData.name ? Panels.name : ""
 
+      readonly property bool covered: Niri.outputCovered(modelData.name, modelData.width, modelData.height)
+      readonly property real hideOffset: -(Theme.barMarginTop + Theme.barHeight + 8) * hide.value
+
+      onCoveredChanged: {
+        if (covered)
+          dropdown = "";
+      }
+
+      Spring {
+        id: hide
+        target: bar.covered ? 1 : 0
+      }
+
       onKeyboardPanelChanged: {
         if (keyboardPanel !== "")
           dropdown = keyboardPanel;
@@ -112,11 +125,10 @@ ShellRoot {
         left: true
         right: true
       }
-      implicitHeight: Math.min(Theme.barHeight + Theme.dropdownMaxHeight + Theme.toastAreaHeight, modelData.height - Theme.barMarginTop)
+      implicitHeight: Math.min(Theme.barMarginTop + Theme.barHeight + Theme.dropdownMaxHeight + Theme.toastAreaHeight, modelData.height)
       exclusionMode: ExclusionMode.Normal
-      exclusiveZone: Theme.barHeight
+      exclusiveZone: Theme.barMarginTop + Theme.barHeight
       WlrLayershell.keyboardFocus: launcherShown || dropdown === "power" || keyboardPanel !== "" ? WlrKeyboardFocus.Exclusive : dropdown !== "" ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
-      margins.top: Theme.barMarginTop
       color: "transparent"
 
       mask: Region {
@@ -140,6 +152,11 @@ ShellRoot {
         id: clock
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.top: parent.top
+        anchors.topMargin: Theme.barMarginTop
+        opacity: 1 - hide.value
+        transform: Translate {
+          y: bar.hideOffset
+        }
         current: bar.dropdown
         onRequest: name => bar.request(name)
         onDismissed: bar.dropdown = ""
@@ -158,7 +175,12 @@ ShellRoot {
         anchors.left: parent.left
         anchors.leftMargin: Theme.barMargin
         anchors.top: parent.top
+        anchors.topMargin: Theme.barMarginTop
         spacing: Theme.barGap
+        opacity: 1 - hide.value
+        transform: Translate {
+          y: bar.hideOffset
+        }
 
         Workspaces {
           id: workspaces
@@ -203,7 +225,12 @@ ShellRoot {
         anchors.right: parent.right
         anchors.rightMargin: Theme.barMargin
         anchors.top: parent.top
+        anchors.topMargin: Theme.barMarginTop
         spacing: Theme.barGap
+        opacity: 1 - hide.value
+        transform: Translate {
+          y: bar.hideOffset
+        }
 
         WeatherIsland {
           current: bar.dropdown
