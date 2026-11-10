@@ -109,7 +109,7 @@ binds {
   Mod+Shift+Equal { set-window-height "+10%"; }
 
   // section: Screenshots
-  Print      { screenshot; }
+  Print      repeat=false hotkey-overlay-title="Screenshot" { spawn "qs" "ipc" "call" "screenshot" "start"; }
   Ctrl+Print { screenshot-screen; }
   Alt+Print  { screenshot-window; }
 
