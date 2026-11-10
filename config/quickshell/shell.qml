@@ -2,6 +2,7 @@ import Quickshell
 import Quickshell.Wayland
 import QtQuick
 import qs.theme
+import qs.components
 import qs.services
 import qs.modules.bar
 import qs.modules.wallpaper
@@ -180,11 +181,15 @@ ShellRoot {
           onRequest: name => bar.request(name)
           onDismissed: bar.dropdown = ""
         }
-        DanbooruIsland {
-          visible: !WeebMode.hidesDanbooru
-          current: bar.dropdown
-          onRequest: name => bar.request(name)
-          onDismissed: bar.dropdown = ""
+        BarSlot {
+          shown: !WeebMode.hidesDanbooru
+          animate: WeebMode.loaded
+
+          DanbooruIsland {
+            current: bar.dropdown
+            onRequest: name => bar.request(name)
+            onDismissed: bar.dropdown = ""
+          }
         }
         WeebIsland {
           current: bar.dropdown
