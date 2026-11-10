@@ -22,7 +22,9 @@ Singleton {
   readonly property string wifiSsid: wifiNetwork?.name ?? ""
   readonly property bool ethernet: wiredDevice?.connected ?? false
 
-  readonly property var networks: wifiNetworks.filter(n => n.name !== "").sort((a, b) => (b.connected - a.connected) || (b.known - a.known) || (Math.round(b.signalStrength * 5) - Math.round(a.signalStrength * 5)) || a.name.localeCompare(b.name))
+  function listNetworks() {
+    return wifiNetworks.filter(n => n.name !== "").sort((a, b) => (b.connected - a.connected) || (b.known - a.known) || (Math.round(b.signalStrength * 5) - Math.round(a.signalStrength * 5)) || a.name.localeCompare(b.name));
+  }
 
   function percentOf(strength) {
     return Math.round(strength <= 1 ? strength * 100 : strength);

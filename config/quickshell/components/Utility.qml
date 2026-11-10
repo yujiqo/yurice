@@ -23,4 +23,8 @@ Singleton {
       return "";
     return "file://" + path.split("/").map(encodeURIComponent).join("/");
   }
+
+  function sameItems(a, b) {
+    return a.length === b.length && a.every((item, i) => item === b[i]);
+  }
 }

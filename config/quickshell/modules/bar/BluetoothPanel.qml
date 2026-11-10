@@ -10,9 +10,35 @@ Column {
 
   readonly property var adapter: Bluetooth.defaultAdapter
   readonly property bool powered: adapter?.enabled ?? false
-  readonly property var devices: (adapter?.devices.values ?? []).filter(d => !d.blocked)
-  readonly property var known: devices.filter(d => d.paired || d.bonded).sort((a, b) => (b.connected - a.connected) || a.name.localeCompare(b.name))
-  readonly property var available: devices.filter(d => !d.paired && !d.bonded && d.deviceName !== "").sort((a, b) => a.name.localeCompare(b.name))
+  readonly property var allDevices: adapter?.devices.values ?? []
+  property var known: []
+  property var available: []
+
+  function refreshDevices() {
+    const devices = allDevices.filter(d => !d.blocked);
+    const nextKnown = devices.filter(d => d.paired || d.bonded).sort((a, b) => (b.connected - a.connected) || a.name.localeCompare(b.name));
+    const nextAvailable = devices.filter(d => !d.paired && !d.bonded && d.deviceName !== "").sort((a, b) => a.name.localeCompare(b.name));
+    if (!Utility.sameItems(known, nextKnown))
+      known = nextKnown;
+    if (!Utility.sameItems(available, nextAvailable))
+      available = nextAvailable;
+  }
+
+  onAllDevicesChanged: refreshSoon.start()
+  Component.onCompleted: refreshDevices()
+
+  Timer {
+    id: refreshSoon
+    interval: 250
+    onTriggered: root.refreshDevices()
+  }
+
+  Timer {
+    interval: 1000
+    running: true
+    repeat: true
+    onTriggered: root.refreshDevices()
+  }
 
   function iconFor(device) {
     const icon = device.icon;
@@ -81,7 +107,7 @@ Column {
   Binding {
     target: BluetoothAgent
     property: "accept"
-    value: root.devices.some(d => d.pairing)
+    value: root.allDevices.some(d => d.pairing)
   }
   onPoweredChanged: {
     if (started)

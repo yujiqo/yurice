@@ -14,7 +14,7 @@ Icon {
   horizontalAlignment: Text.AlignHCenter
   verticalAlignment: Text.AlignVCenter
 
-  RotationAnimator on rotation {
+  NumberAnimation on rotation {
     running: root.visible
     from: 0
     to: 360

@@ -15,27 +15,49 @@ Column {
 
   property bool scanning: true
   property int scanBaseline: 0
+  property var networks: []
 
   function startScan() {
-    scanBaseline = Network.networks.length;
+    scanBaseline = networks.length;
     scanning = true;
     scanTimeout.restart();
   }
 
-  Component.onCompleted: startScan()
+  function refreshNetworks() {
+    const next = Network.listNetworks();
+    if (!Utility.sameItems(networks, next))
+      networks = next;
+  }
+
+  onNetworksChanged: {
+    if (scanning && networks.length > scanBaseline)
+      scanning = false;
+  }
+
+  Component.onCompleted: {
+    Network.setScanning(true);
+    refreshNetworks();
+    startScan();
+  }
   Component.onDestruction: Network.setScanning(false)
 
   Timer {
-    interval: Theme.panelSettle
+    id: refreshSoon
+    interval: 250
+    onTriggered: root.refreshNetworks()
+  }
+
+  Timer {
+    interval: 1000
     running: true
-    onTriggered: Network.setScanning(true)
+    repeat: true
+    onTriggered: root.refreshNetworks()
   }
 
   Connections {
     target: Network
-    function onNetworksChanged() {
-      if (root.scanning && Network.networks.length > root.scanBaseline)
-        root.scanning = false;
+    function onWifiNetworksChanged() {
+      refreshSoon.start();
     }
     function onWifiEnabledChanged() {
       if (Network.wifiEnabled)
@@ -67,7 +89,7 @@ Column {
       anchors.right: wifiSwitch.left
       anchors.rightMargin: 10
       anchors.verticalCenter: parent.verticalCenter
-      visible: Network.wifiEnabled && (root.scanning || Network.networks.length === 0)
+      visible: Network.wifiEnabled && (root.scanning || root.networks.length === 0)
     }
 
     Switch {
@@ -130,7 +152,7 @@ Column {
     interactive: contentHeight > height
 
     model: ScriptModel {
-      values: Network.networks
+      values: root.networks
     }
 
     displaced: Transition {
