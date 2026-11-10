@@ -34,84 +34,95 @@ Column {
     }
   ]
 
-  spacing: 8
+  spacing: 0
 
-  Item {
+  Collapse {
     width: parent.width
-    height: 64
-
-    Icon {
-      id: heroIcon
-      anchors.left: parent.left
-      anchors.leftMargin: 10
-      anchors.verticalCenter: parent.verticalCenter
-      text: WeebMode.icon
-      color: Theme.primary
-      size: 44
-    }
+    shown: !WeebMode.normie
 
     Column {
-      anchors.left: heroIcon.right
-      anchors.leftMargin: 14
-      anchors.right: parent.right
-      anchors.verticalCenter: parent.verticalCenter
-      spacing: 2
-
-      Label {
-        text: WeebMode.label
-        pixelSize: 30
-      }
-
-      Label {
-        width: parent.width
-        text: `${Wallpapers.safeCount} of ${Wallpapers.allWallpapers.length} wallpapers marked safe`
-        color: Theme.textVariant
-        pixelSize: Theme.menuSubtitleSize
-      }
-    }
-  }
-
-  Rectangle {
-    width: parent.width
-    height: toggles.implicitHeight + 8
-    radius: Theme.menuItemRadius
-    color: Theme.surfaceContainer
-
-    Column {
-      id: toggles
-      y: 4
       width: parent.width
+      spacing: 8
+      bottomPadding: 8
 
       Item {
         width: parent.width
-        height: 30
+        height: 64
 
-        Label {
+        Icon {
+          id: heroIcon
           anchors.left: parent.left
-          anchors.leftMargin: 12
+          anchors.leftMargin: 10
           anchors.verticalCenter: parent.verticalCenter
-          text: "Hide in normie mode"
-          pixelSize: Theme.menuSubtitleSize
+          text: WeebMode.icon
+          color: Theme.primary
+          size: 44
+        }
+
+        Column {
+          anchors.left: heroIcon.right
+          anchors.leftMargin: 14
+          anchors.right: parent.right
+          anchors.verticalCenter: parent.verticalCenter
+          spacing: 2
+
+          Label {
+            text: WeebMode.label
+            pixelSize: 30
+          }
+
+          Label {
+            width: parent.width
+            text: `${Wallpapers.safeCount} of ${Wallpapers.allWallpapers.length} wallpapers marked safe`
+            color: Theme.textVariant
+            pixelSize: Theme.menuSubtitleSize
+          }
         }
       }
 
-      Repeater {
-        model: root.items
+      Rectangle {
+        width: parent.width
+        height: toggles.implicitHeight + 8
+        radius: Theme.menuItemRadius
+        color: Theme.surfaceContainer
 
-        InfoRow {
-          required property var modelData
-
+        Column {
+          id: toggles
+          y: 4
           width: parent.width
-          icon: modelData.icon
-          label: modelData.label
-          value: ""
 
-          Switch {
-            anchors.right: parent.right
-            anchors.rightMargin: 10
-            anchors.verticalCenter: parent.verticalCenter
-            checked: WeebMode.isHidden(parent.modelData.name)
-            onToggled: WeebMode.setHidden(parent.modelData.name, !checked)
+          Item {
+            width: parent.width
+            height: 30
+
+            Label {
+              anchors.left: parent.left
+              anchors.leftMargin: 12
+              anchors.verticalCenter: parent.verticalCenter
+              text: "Hide in normie mode"
+              pixelSize: Theme.menuSubtitleSize
+            }
+          }
+
+          Repeater {
+            model: root.items
+
+            InfoRow {
+              required property var modelData
+
+              width: parent.width
+              icon: modelData.icon
+              label: modelData.label
+              value: ""
+
+              Switch {
+                anchors.right: parent.right
+                anchors.rightMargin: 10
+                anchors.verticalCenter: parent.verticalCenter
+                checked: WeebMode.isHidden(parent.modelData.name)
+                onToggled: WeebMode.setHidden(parent.modelData.name, !checked)
+              }
+            }
           }
         }
       }
