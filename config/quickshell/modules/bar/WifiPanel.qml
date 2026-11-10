@@ -130,27 +130,14 @@ Column {
     color: Theme.divider
   }
 
-  Text {
-    width: parent.width
-    height: Theme.menuItemHeight
+  EmptyState {
     visible: !Network.wifiEnabled
-    horizontalAlignment: Text.AlignHCenter
-    verticalAlignment: Text.AlignVCenter
     text: "Wi-Fi is off"
-    color: Theme.textVariant
-    font.family: Theme.labelFont
-    font.pixelSize: Theme.menuTitleSize
   }
 
-  ListView {
+  MenuList {
     id: list
-    width: parent.width
-    height: Math.min(contentHeight, Theme.menuListMaxHeight)
     visible: Network.wifiEnabled
-    clip: true
-    spacing: Theme.menuGap
-    boundsBehavior: Flickable.StopAtBounds
-    interactive: contentHeight > height
 
     model: ScriptModel {
       values: root.networks

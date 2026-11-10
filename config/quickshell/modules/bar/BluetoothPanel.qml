@@ -222,16 +222,9 @@ Column {
     }
   }
 
-  Text {
-    width: parent.width
-    height: Theme.menuItemHeight
+  EmptyState {
     visible: !root.powered
-    horizontalAlignment: Text.AlignHCenter
-    verticalAlignment: Text.AlignVCenter
     text: root.adapter ? "Bluetooth is off" : "No Bluetooth adapter"
-    color: Theme.textVariant
-    font.family: Theme.labelFont
-    font.pixelSize: Theme.menuTitleSize
   }
 
   Flickable {
@@ -273,15 +266,9 @@ Column {
         DeviceItem {}
       }
 
-      Text {
-        width: parent.width
-        height: Theme.menuItemHeight
+      EmptyState {
         visible: root.available.length === 0
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
         text: "Searching…"
-        color: Theme.textVariant
-        font.family: Theme.labelFont
         font.pixelSize: Theme.menuSubtitleSize
       }
     }

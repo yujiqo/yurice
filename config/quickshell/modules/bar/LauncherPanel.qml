@@ -44,33 +44,20 @@ Column {
       Launcher.calculate(text);
       list.currentIndex = 0;
     }
-    onNavigate: delta => list.currentIndex = Math.max(0, Math.min(root.rows.length - 1, list.currentIndex + delta))
+    onNavigate: delta => list.step(delta)
     onAccepted: root.activate(list.currentIndex)
   }
 
-  Text {
-    width: parent.width
-    height: Theme.menuItemHeight
+  EmptyState {
     visible: root.rows.length === 0
-    horizontalAlignment: Text.AlignHCenter
-    verticalAlignment: Text.AlignVCenter
     text: "No results"
-    color: Theme.textVariant
-    font.family: Theme.labelFont
-    font.pixelSize: Theme.menuTitleSize
   }
 
-  ListView {
+  MenuList {
     id: list
-    width: parent.width
-    height: Math.min(contentHeight, Theme.menuListMaxHeight)
     visible: root.rows.length > 0
-    clip: true
-    spacing: Theme.menuGap
-    boundsBehavior: Flickable.StopAtBounds
-    interactive: contentHeight > height
     model: root.rows
-    onCurrentIndexChanged: positionViewAtIndex(currentIndex, ListView.Contain)
+    followCurrent: true
 
     delegate: MenuItem {
       id: appRow

@@ -137,165 +137,148 @@ Column {
     onSelected: id => Displays.selected = id
   }
 
-  Rectangle {
-    width: parent.width
-    height: card.implicitHeight + 16
-    radius: Theme.menuItemRadius
-    color: Theme.surfaceContainer
+  Card {
     visible: root.output !== null && root.current !== null
+    padding: 8
+    spacing: 8
 
-    Column {
-      id: card
-      y: 8
+    SwitchRow {
+      icon: "info"
+      label: root.output ? root.output.title : ""
+      checked: root.current?.enabled ?? false
+      dimmed: root.locked || (root.current?.enabled && Displays.enabledCount <= 1)
+      onToggled: {
+        if (root.locked || (root.current.enabled && Displays.enabledCount <= 1))
+          return;
+        Displays.update(root.output.name, {
+          enabled: !root.current.enabled
+        });
+      }
+    }
+
+    Collapse {
       width: parent.width
-      spacing: 8
+      shown: root.current?.enabled ?? false
 
-      InfoRow {
+      Column {
         width: parent.width
-        icon: "info"
-        label: root.output ? root.output.title : ""
-        value: ""
+        spacing: 8
 
-        Switch {
-          anchors.right: parent.right
-          anchors.rightMargin: 10
-          anchors.verticalCenter: parent.verticalCenter
-          checked: root.current?.enabled ?? false
-          opacity: root.locked || (root.current?.enabled && Displays.enabledCount <= 1) ? 0.4 : 1
-          onToggled: {
-            if (root.locked || (root.current.enabled && Displays.enabledCount <= 1))
-              return;
-            Displays.update(root.output.name, {
-              enabled: !root.current.enabled
-            });
+        Section {
+          title: "Resolution"
+          icon: "aspect_ratio"
+          value: root.current ? `${root.current.width} × ${root.current.height}` : ""
+
+          Flow {
+            width: parent.width
+            spacing: 6
+
+            Repeater {
+              model: root.resolutions
+
+              Chip {
+                required property var modelData
+                text: `${modelData.width}×${modelData.height}`
+                selected: root.current && root.current.width === modelData.width && root.current.height === modelData.height
+                available: !root.locked
+                onClicked: Displays.setResolution(root.output.name, modelData.width, modelData.height)
+              }
+            }
           }
         }
-      }
 
-      Collapse {
-        width: parent.width
-        shown: root.current?.enabled ?? false
+        Section {
+          title: "Refresh rate"
+          icon: "speed"
+          value: root.current ? root.hz(root.current.refresh) : ""
 
-        Column {
-          width: parent.width
-          spacing: 8
-
-          Section {
-            title: "Resolution"
-            icon: "aspect_ratio"
-            value: root.current ? `${root.current.width} × ${root.current.height}` : ""
-
-            Flow {
-              width: parent.width
-              spacing: 6
-
-              Repeater {
-                model: root.resolutions
-
-                Chip {
-                  required property var modelData
-                  text: `${modelData.width}×${modelData.height}`
-                  selected: root.current && root.current.width === modelData.width && root.current.height === modelData.height
-                  available: !root.locked
-                  onClicked: Displays.setResolution(root.output.name, modelData.width, modelData.height)
-                }
-              }
-            }
-          }
-
-          Section {
-            title: "Refresh rate"
-            icon: "speed"
-            value: root.current ? root.hz(root.current.refresh) : ""
-
-            Flow {
-              width: parent.width
-              spacing: 6
-
-              Repeater {
-                model: root.rates
-
-                Chip {
-                  required property int modelData
-                  text: root.hz(modelData)
-                  selected: root.current && root.current.refresh === modelData
-                  available: !root.locked
-                  onClicked: Displays.update(root.output.name, {
-                    refresh: modelData
-                  })
-                }
-              }
-            }
-          }
-
-          InfoRow {
+          Flow {
             width: parent.width
-            icon: "zoom_in"
-            label: "Scale"
-            value: ""
+            spacing: 6
 
-            Row {
-              anchors.right: parent.right
-              anchors.rightMargin: 6
-              anchors.verticalCenter: parent.verticalCenter
-              spacing: 2
+            Repeater {
+              model: root.rates
 
-              IconButton {
-                anchors.verticalCenter: parent.verticalCenter
-                icon: "remove"
-                opacity: !root.locked && root.current && root.current.scale > 0.5 ? 1 : 0.4
-                onClicked: {
-                  if (!root.locked && root.current.scale > 0.5)
-                    Displays.update(root.output.name, {
-                      scale: Math.round((root.current.scale - 0.25) * 4) / 4
-                    });
-                }
-              }
-
-              Text {
-                anchors.verticalCenter: parent.verticalCenter
-                width: 64
-                horizontalAlignment: Text.AlignHCenter
-                text: root.current ? Math.round(root.current.scale * 100) + "%" : ""
-                color: Theme.text
-                font.family: Theme.labelFont
-                font.pixelSize: Theme.menuSubtitleSize + 1
-              }
-
-              IconButton {
-                anchors.verticalCenter: parent.verticalCenter
-                icon: "add"
-                opacity: !root.locked && root.current && root.current.scale < 3 ? 1 : 0.4
-                onClicked: {
-                  if (!root.locked && root.current.scale < 3)
-                    Displays.update(root.output.name, {
-                      scale: Math.round((root.current.scale + 0.25) * 4) / 4
-                    });
-                }
+              Chip {
+                required property int modelData
+                text: root.hz(modelData)
+                selected: root.current && root.current.refresh === modelData
+                available: !root.locked
+                onClicked: Displays.update(root.output.name, {
+                  refresh: modelData
+                })
               }
             }
           }
+        }
 
-          Section {
-            title: "Rotation"
-            icon: "screen_rotation"
-            value: ""
+        InfoRow {
+          width: parent.width
+          icon: "zoom_in"
+          label: "Scale"
+          value: ""
 
-            Row {
-              spacing: 6
+          Row {
+            anchors.right: parent.right
+            anchors.rightMargin: 6
+            anchors.verticalCenter: parent.verticalCenter
+            spacing: 2
 
-              Repeater {
-                model: root.rotations
+            IconButton {
+              anchors.verticalCenter: parent.verticalCenter
+              icon: "remove"
+              opacity: !root.locked && root.current && root.current.scale > 0.5 ? 1 : 0.4
+              onClicked: {
+                if (!root.locked && root.current.scale > 0.5)
+                  Displays.update(root.output.name, {
+                    scale: Math.round((root.current.scale - 0.25) * 4) / 4
+                  });
+              }
+            }
 
-                Chip {
-                  required property var modelData
-                  text: modelData.label
-                  selected: root.current && root.current.transform === modelData.value
-                  available: !root.locked
-                  onClicked: Displays.update(root.output.name, {
-                    transform: modelData.value
-                  })
-                }
+            Text {
+              anchors.verticalCenter: parent.verticalCenter
+              width: 64
+              horizontalAlignment: Text.AlignHCenter
+              text: root.current ? Math.round(root.current.scale * 100) + "%" : ""
+              color: Theme.text
+              font.family: Theme.labelFont
+              font.pixelSize: Theme.menuSubtitleSize + 1
+            }
+
+            IconButton {
+              anchors.verticalCenter: parent.verticalCenter
+              icon: "add"
+              opacity: !root.locked && root.current && root.current.scale < 3 ? 1 : 0.4
+              onClicked: {
+                if (!root.locked && root.current.scale < 3)
+                  Displays.update(root.output.name, {
+                    scale: Math.round((root.current.scale + 0.25) * 4) / 4
+                  });
+              }
+            }
+          }
+        }
+
+        Section {
+          title: "Rotation"
+          icon: "screen_rotation"
+          value: ""
+
+          Row {
+            spacing: 6
+
+            Repeater {
+              model: root.rotations
+
+              Chip {
+                required property var modelData
+                text: modelData.label
+                selected: root.current && root.current.transform === modelData.value
+                available: !root.locked
+                onClicked: Displays.update(root.output.name, {
+                  transform: modelData.value
+                })
               }
             }
           }

@@ -49,17 +49,10 @@ Column {
     }
   }
 
-  Text {
-    width: parent.width
+  EmptyState {
     height: 56
     visible: root.showMessage
-    horizontalAlignment: Text.AlignHCenter
-    verticalAlignment: Text.AlignVCenter
-    wrapMode: Text.WordWrap
     text: root.feed.phase === "error" ? root.feed.error : root.emptyText
-    color: Theme.textVariant
-    font.family: Theme.labelFont
-    font.pixelSize: Theme.menuTitleSize
   }
 
   GridView {

@@ -53,80 +53,32 @@ Column {
     }
   }
 
-  Item {
-    width: parent.width
-    height: 64
-
-    Icon {
-      id: heroIcon
-      anchors.left: parent.left
-      anchors.leftMargin: 10
-      anchors.verticalCenter: parent.verticalCenter
-      text: ThemeMode.icon
-      color: Theme.primary
-      size: 44
-    }
-
-    Column {
-      anchors.left: heroIcon.right
-      anchors.leftMargin: 14
-      anchors.right: parent.right
-      anchors.verticalCenter: parent.verticalCenter
-      spacing: 2
-
-      Label {
-        text: ThemeMode.label
-        pixelSize: 30
-      }
-
-      Label {
-        width: parent.width
-        text: ThemeMode.status
-        color: Theme.textVariant
-        pixelSize: Theme.menuSubtitleSize
-      }
-    }
+  PanelHeader {
+    icon: ThemeMode.icon
+    title: ThemeMode.label
+    subtitle: ThemeMode.status
   }
 
-  Rectangle {
-    width: parent.width
-    height: settings.implicitHeight + 8
-    radius: Theme.menuItemRadius
-    color: Theme.surfaceContainer
+  Card {
+    SwitchRow {
+      icon: "schedule"
+      label: "Automatic"
+      checked: ThemeMode.auto
+      onToggled: ThemeMode.setAuto(!ThemeMode.auto)
+    }
 
-    Column {
-      id: settings
-      y: 4
-      width: parent.width
+    TimeRow {
+      visible: ThemeMode.auto
+      icon: "light_mode"
+      label: "Light from"
+      name: "lightStart"
+    }
 
-      InfoRow {
-        width: parent.width
-        icon: "schedule"
-        label: "Automatic"
-        value: ""
-
-        Switch {
-          anchors.right: parent.right
-          anchors.rightMargin: 10
-          anchors.verticalCenter: parent.verticalCenter
-          checked: ThemeMode.auto
-          onToggled: ThemeMode.setAuto(!ThemeMode.auto)
-        }
-      }
-
-      TimeRow {
-        visible: ThemeMode.auto
-        icon: "light_mode"
-        label: "Light from"
-        name: "lightStart"
-      }
-
-      TimeRow {
-        visible: ThemeMode.auto
-        icon: "dark_mode"
-        label: "Dark from"
-        name: "lightEnd"
-      }
+    TimeRow {
+      visible: ThemeMode.auto
+      icon: "dark_mode"
+      label: "Dark from"
+      name: "lightEnd"
     }
   }
 

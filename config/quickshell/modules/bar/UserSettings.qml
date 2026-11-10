@@ -45,7 +45,7 @@ Column {
     id: group
 
     property string title: ""
-    default property alias rows: card.data
+    default property alias rows: card.content
 
     width: parent.width
     spacing: 2
@@ -61,17 +61,8 @@ Column {
       font.bold: true
     }
 
-    Rectangle {
-      width: parent.width
-      height: card.implicitHeight + 8
-      radius: Theme.menuItemRadius
-      color: Theme.surfaceContainer
-
-      Column {
-        id: card
-        y: 4
-        width: parent.width
-      }
+    Card {
+      id: card
     }
   }
 
@@ -228,21 +219,13 @@ Column {
     }
   }
 
-  component SwitchRow: InfoRow {
+  component SettingSwitch: SwitchRow {
     id: row
-
+  
     property string key: ""
-
-    width: parent.width
-    value: ""
-
-    Switch {
-      anchors.right: parent.right
-      anchors.rightMargin: 10
-      anchors.verticalCenter: parent.verticalCenter
-      checked: Settings[row.key]
-      onToggled: Settings.set(row.key, !Settings[row.key])
-    }
+  
+    checked: Settings[row.key]
+    onToggled: Settings.set(row.key, !Settings[row.key])
   }
 
   component AvatarChoice: Item {
@@ -397,13 +380,13 @@ Column {
   Group {
     title: "Clock"
 
-    SwitchRow {
+    SettingSwitch {
       icon: "schedule"
       label: "24-hour time"
       key: "clock24h"
     }
 
-    SwitchRow {
+    SettingSwitch {
       icon: "timer"
       label: "Show seconds"
       key: "clockSeconds"
@@ -413,7 +396,7 @@ Column {
   Group {
     title: "Weather"
 
-    SwitchRow {
+    SettingSwitch {
       icon: "thermostat"
       label: "Fahrenheit"
       key: "weatherFahrenheit"

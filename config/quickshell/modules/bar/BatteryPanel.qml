@@ -32,40 +32,11 @@ Column {
 
   spacing: 8
 
-  Item {
-    width: parent.width
-    height: 64
-
-    Icon {
-      id: heroIcon
-      anchors.left: parent.left
-      anchors.leftMargin: 10
-      anchors.verticalCenter: parent.verticalCenter
-      text: Battery.icon
-      color: Battery.color
-      size: 44
-    }
-
-    Column {
-      anchors.left: heroIcon.right
-      anchors.leftMargin: 14
-      anchors.right: parent.right
-      anchors.verticalCenter: parent.verticalCenter
-      spacing: 2
-
-      Label {
-        text: Battery.percent + "%"
-        color: Theme.text
-        pixelSize: 30
-      }
-
-      Label {
-        width: parent.width
-        text: Battery.status
-        color: Theme.textVariant
-        pixelSize: Theme.menuSubtitleSize
-      }
-    }
+  PanelHeader {
+    icon: Battery.icon
+    iconColor: Battery.color
+    title: Battery.percent + "%"
+    subtitle: Battery.status
   }
 
   Item {
@@ -107,62 +78,51 @@ Column {
     }
   }
 
-  Rectangle {
-    width: parent.width
-    height: details.implicitHeight + 8
-    radius: Theme.menuItemRadius
-    color: Theme.surfaceContainer
-
-    Column {
-      id: details
-      y: 4
+  Card {
+    InfoRow {
       width: parent.width
+      icon: "bolt"
+      label: Battery.charging ? "Charging at" : "Power draw"
+      value: Battery.rate > 0 ? Battery.rate.toFixed(1) + " W" : "—"
+    }
 
-      InfoRow {
-        width: parent.width
-        icon: "bolt"
-        label: Battery.charging ? "Charging at" : "Power draw"
-        value: Battery.rate > 0 ? Battery.rate.toFixed(1) + " W" : "—"
-      }
+    InfoRow {
+      width: parent.width
+      icon: "battery_android_full"
+      label: "Energy"
+      value: `${Battery.energy.toFixed(1)} / ${Battery.energyFull.toFixed(1)} Wh`
+    }
 
-      InfoRow {
-        width: parent.width
-        icon: "battery_android_full"
-        label: "Energy"
-        value: `${Battery.energy.toFixed(1)} / ${Battery.energyFull.toFixed(1)} Wh`
-      }
+    InfoRow {
+      width: parent.width
+      visible: Battery.health > 0
+      icon: "favorite"
+      label: "Health"
+      value: Battery.designWh > 0 ? `${Math.round(Battery.health)}% of ${Battery.designWh.toFixed(1)} Wh` : Math.round(Battery.health) + "%"
+    }
 
-      InfoRow {
-        width: parent.width
-        visible: Battery.health > 0
-        icon: "favorite"
-        label: "Health"
-        value: Battery.designWh > 0 ? `${Math.round(Battery.health)}% of ${Battery.designWh.toFixed(1)} Wh` : Math.round(Battery.health) + "%"
-      }
+    InfoRow {
+      width: parent.width
+      visible: Battery.cycles >= 0
+      icon: "autorenew"
+      label: "Cycles"
+      value: Battery.cycles
+    }
 
-      InfoRow {
-        width: parent.width
-        visible: Battery.cycles >= 0
-        icon: "autorenew"
-        label: "Cycles"
-        value: Battery.cycles
-      }
+    InfoRow {
+      width: parent.width
+      visible: Battery.limit > 0 && Battery.limit < 100
+      icon: "vertical_align_top"
+      label: "Charge limit"
+      value: Battery.limit + "%"
+    }
 
-      InfoRow {
-        width: parent.width
-        visible: Battery.limit > 0 && Battery.limit < 100
-        icon: "vertical_align_top"
-        label: "Charge limit"
-        value: Battery.limit + "%"
-      }
-
-      InfoRow {
-        width: parent.width
-        visible: value !== ""
-        icon: "info"
-        label: "Battery"
-        value: [Battery.vendor, Battery.technology].filter(s => s !== "").join(" · ")
-      }
+    InfoRow {
+      width: parent.width
+      visible: value !== ""
+      icon: "info"
+      label: "Battery"
+      value: [Battery.vendor, Battery.technology].filter(s => s !== "").join(" · ")
     }
   }
 

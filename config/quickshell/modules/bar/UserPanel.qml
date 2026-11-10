@@ -115,51 +115,40 @@ Item {
         }
       }
 
-      Rectangle {
-        width: parent.width
-        height: details.implicitHeight + 8
-        radius: Theme.menuItemRadius
-        color: Theme.surfaceContainer
-
-        Column {
-          id: details
-          y: 4
+      Card {
+        InfoRow {
           width: parent.width
+          icon: "schedule"
+          label: "Uptime"
+          value: SystemInfo.loaded ? SystemInfo.uptime : "—"
+        }
 
-          InfoRow {
-            width: parent.width
-            icon: "schedule"
-            label: "Uptime"
-            value: SystemInfo.loaded ? SystemInfo.uptime : "—"
-          }
+        InfoRow {
+          width: parent.width
+          icon: "dns"
+          label: "Hostname"
+          value: SystemInfo.hostname || "—"
+        }
 
-          InfoRow {
-            width: parent.width
-            icon: "dns"
-            label: "Hostname"
-            value: SystemInfo.hostname || "—"
-          }
+        InfoRow {
+          width: parent.width
+          icon: "memory"
+          label: "Kernel"
+          value: SystemInfo.kernel || "—"
+        }
 
-          InfoRow {
-            width: parent.width
-            icon: "memory"
-            label: "Kernel"
-            value: SystemInfo.kernel || "—"
-          }
+        InfoRow {
+          width: parent.width
+          icon: "ac_unit"
+          label: "NixOS"
+          value: SystemInfo.version || "—"
+        }
 
-          InfoRow {
-            width: parent.width
-            icon: "ac_unit"
-            label: "NixOS"
-            value: SystemInfo.version || "—"
-          }
-
-          InfoRow {
-            width: parent.width
-            icon: "history"
-            label: "Generation"
-            value: SystemInfo.generation > 0 ? `${SystemInfo.generation} · ${Qt.formatDateTime(SystemInfo.generationDate, "dd MMM yyyy")}` : "—"
-          }
+        InfoRow {
+          width: parent.width
+          icon: "history"
+          label: "Generation"
+          value: SystemInfo.generation > 0 ? `${SystemInfo.generation} · ${Qt.formatDateTime(SystemInfo.generationDate, "dd MMM yyyy")}` : "—"
         }
       }
 

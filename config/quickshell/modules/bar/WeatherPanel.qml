@@ -62,16 +62,9 @@ Column {
     }
   }
 
-  Rectangle {
-    width: parent.width
-    implicitHeight: details.implicitHeight + 8
-    height: implicitHeight
-    radius: Theme.menuItemRadius
-    color: Theme.surfaceContainer
-
+  Card {
     Grid {
       id: details
-      y: 4
       width: parent.width
       columns: 2
 
