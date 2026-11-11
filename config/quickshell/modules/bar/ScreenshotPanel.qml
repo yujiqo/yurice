@@ -79,42 +79,12 @@ Item {
           Repeater {
             model: column.modelData.hints
 
-            Item {
-              id: hint
-
+            KeyRow {
               required property var modelData
 
               width: hints.width
-              height: 30
-
-              Text {
-                anchors.left: parent.left
-                anchors.leftMargin: 6
-                anchors.right: keys.left
-                anchors.rightMargin: 8
-                anchors.verticalCenter: parent.verticalCenter
-                text: hint.modelData.label
-                elide: Text.ElideRight
-                color: Theme.text
-                font.family: Theme.labelFont
-                font.pixelSize: Theme.menuSubtitleSize
-              }
-
-              Row {
-                id: keys
-                anchors.right: parent.right
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: 3
-
-                Repeater {
-                  model: hint.modelData.keys
-
-                  Keycap {
-                    required property string modelData
-                    text: modelData
-                  }
-                }
-              }
+              label: modelData.label
+              keys: modelData.keys
             }
           }
         }

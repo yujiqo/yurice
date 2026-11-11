@@ -100,34 +100,10 @@ Item {
                 id: hover
               }
 
-              Text {
-                anchors.left: parent.left
-                anchors.leftMargin: 8
-                anchors.right: keys.left
-                anchors.rightMargin: 12
-                anchors.verticalCenter: parent.verticalCenter
-                text: entry.modelData.title
-                elide: Text.ElideRight
-                color: Theme.text
-                font.family: Theme.labelFont
-                font.pixelSize: Theme.menuSubtitleSize
-              }
-
-              Row {
-                id: keys
-                anchors.right: parent.right
-                anchors.rightMargin: 4
-                anchors.verticalCenter: parent.verticalCenter
-                spacing: 4
-
-                Repeater {
-                  model: entry.modelData.keys
-
-                  Keycap {
-                    required property string modelData
-                    text: modelData
-                  }
-                }
+              KeyRow {
+                anchors.fill: parent
+                label: entry.modelData.title
+                keys: entry.modelData.keys
               }
             }
           }

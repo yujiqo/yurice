@@ -115,15 +115,6 @@ Column {
       setDiscovering(powered);
   }
 
-  component SectionLabel: Text {
-    leftPadding: 12
-    topPadding: 6
-    bottomPadding: 2
-    color: Theme.textVariant
-    font.family: Theme.labelFont
-    font.pixelSize: Theme.menuSubtitleSize
-  }
-
   component DeviceItem: MenuItem {
     id: item
 
@@ -241,9 +232,9 @@ Column {
       width: parent.width
       spacing: Theme.menuGap
 
-      SectionLabel {
+      SectionTitle {
         visible: root.known.length > 0
-        text: "My devices"
+        title: "My devices"
       }
 
       Repeater {
@@ -254,8 +245,8 @@ Column {
         DeviceItem {}
       }
 
-      SectionLabel {
-        text: "Available devices"
+      SectionTitle {
+        title: "Available devices"
       }
 
       Repeater {

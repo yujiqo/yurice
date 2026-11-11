@@ -68,6 +68,18 @@ Item {
     onIncreased: amount++
   }
 
+  KeyRow {
+    id: keyRow
+    label: "Save region"
+    keys: ["Ctrl", "S"]
+  }
+
+  function test_keyRowLayout(t) {
+    const [label, keycaps] = keyRow.children;
+    const caps = keycaps.children.filter(c => c.text !== undefined).map(c => c.text);
+    t.eq([label.text, keyRow.implicitHeight, caps], ["Save region", 32, ["Ctrl", "S"]]);
+  }
+
   function test_stepperRow(t) {
     const row = stepper.children.find(c => c.spacing === 2);
     const [minus, label, plus] = row.children;
