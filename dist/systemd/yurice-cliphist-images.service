@@ -1,0 +1,11 @@
+[Unit]
+Description=Image clipboard history for yurice
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+ExecStart=wl-paste --type image --watch cliphist store
+Restart=on-failure
+
+[Install]
+WantedBy=graphical-session.target

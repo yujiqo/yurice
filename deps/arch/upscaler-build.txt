@@ -1,0 +1,8 @@
+git
+cmake
+ncnn
+glslang
+vulkan-headers
+vulkan-icd-loader
+libwebp
+unzip

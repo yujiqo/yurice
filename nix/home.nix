@@ -27,10 +27,7 @@ self: {
     path = self + "/wallpapers";
   };
 
-  noTitlebarButtons = ''
-    [Settings]
-    gtk-decoration-layout=:
-  '';
+  noTitlebarButtons = builtins.readFile ../dist/gtk/settings.ini;
 in {
   options.programs.yurice = {
     desktop.enable = lib.mkEnableOption "the yurice desktop (niri, quickshell, matugen theming)";
