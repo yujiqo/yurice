@@ -44,10 +44,10 @@ Column {
           clearable: true
           placeholder: "Tags (e.g. scenery sky)"
           escapeLeaves: true
+          tag: Danbooru.safeOnly ? "SFW" : ""
           hint: {
             const left = Danbooru.tagsLeft(field.text);
-            const count = left < 0 ? "too many tags" : left === 1 ? "1 tag left" : `${left} tags left`;
-            return Danbooru.safeOnly ? `SFW · ${count}` : count;
+            return left < 0 ? "too many tags" : left === 1 ? "1 tag left" : `${left} tags left`;
           }
           onAccepted: text => Danbooru.search(text)
         }

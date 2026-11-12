@@ -50,7 +50,7 @@ Column {
           clearable: true
           placeholder: "Search Wallhaven…"
           escapeLeaves: true
-          hint: WallSearch.hasApiKey && !WeebMode.hidesAdultFilters ? "" : "SFW"
+          tag: WallSearch.purity === "100" ? "SFW" : ""
           onAccepted: text => WallSearch.search(text)
         }
 

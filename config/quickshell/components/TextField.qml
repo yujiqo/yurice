@@ -11,6 +11,7 @@ Rectangle {
   property real placeholderOpacity: 1
   property string leadingIcon: ""
   property string hint: ""
+  property string tag: ""
   property bool clearable: false
   property bool escapeLeaves: false
   default property alias trailing: trailingRow.data
@@ -116,6 +117,53 @@ Rectangle {
     anchors.rightMargin: 8
     anchors.verticalCenter: parent.verticalCenter
     spacing: 4
+
+    Item {
+      id: tagSlot
+
+      readonly property bool shown: root.tag !== ""
+      property string shownText
+
+      Component.onCompleted: shownText = root.tag
+
+      anchors.verticalCenter: parent.verticalCenter
+      width: shown ? tagLabel.implicitWidth : 0
+      height: tagLabel.implicitHeight
+      visible: width > 0
+      clip: true
+      opacity: shown ? 1 : 0
+
+      Connections {
+        target: root
+        function onTagChanged() {
+          if (root.tag !== "")
+            tagSlot.shownText = root.tag;
+        }
+      }
+
+      Behavior on width {
+        NumberAnimation {
+          duration: Theme.animMove
+          easing.type: Theme.easeOut
+        }
+      }
+
+      Behavior on opacity {
+        NumberAnimation {
+          duration: Theme.animColor
+        }
+      }
+
+      Text {
+        id: tagLabel
+        rightPadding: 6
+        text: root.hint !== "" ? `${tagSlot.shownText} ·` : tagSlot.shownText
+        color: Theme.textVariant
+        opacity: 0.7
+        font.family: Theme.labelFont
+        font.pixelSize: Theme.menuSubtitleSize
+      }
+    }
 
     Text {
       anchors.verticalCenter: parent.verticalCenter
