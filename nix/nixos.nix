@@ -66,6 +66,7 @@ in {
         enable = lib.mkDefault true;
         pulse.enable = lib.mkDefault true;
       };
+      security.rtkit.enable = lib.mkDefault true;
       services.upower.enable = lib.mkDefault true;
       services.power-profiles-daemon.enable = lib.mkDefault true;
       hardware.bluetooth.enable = lib.mkDefault true;
