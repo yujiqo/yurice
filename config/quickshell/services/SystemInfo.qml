@@ -10,7 +10,10 @@ Singleton {
 
   property string hostname: ""
   property string kernel: ""
-  property string nixosVersion: ""
+  property string osVersion: ""
+  property string osId: ""
+  property string osName: ""
+  readonly property bool nixos: osId === "nixos"
   property int generation: 0
   property date generationDate: new Date(0)
   property date bootTime: new Date()
@@ -18,9 +21,9 @@ Singleton {
 
   readonly property string uptime: Utility.formatDuration((Clock.date - bootTime) / 1000)
   readonly property string version: {
-    const parts = nixosVersion.split(".");
-    if (parts.length < 4)
-      return nixosVersion;
+    const parts = osVersion.split(".");
+    if (!nixos || parts.length < 4)
+      return osVersion;
     return `${parts[0]}.${parts[1]} · ${parts[3]}`;
   }
 
@@ -37,7 +40,9 @@ Singleton {
         const lines = text.split("\n");
         root.hostname = (lines[0] ?? "").trim();
         root.kernel = (lines[1] ?? "").trim();
-        root.nixosVersion = (lines[2] ?? "").trim();
+        root.osVersion = (lines[2] ?? "").trim();
+        root.osId = (lines[6] ?? "").trim();
+        root.osName = (lines[7] ?? "").trim();
         const up = parseFloat(lines[3]);
         if (!isNaN(up))
           root.bootTime = new Date(Date.now() - up * 1000);

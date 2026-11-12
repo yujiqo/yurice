@@ -11,9 +11,6 @@ if status is-interactive
   alias cat="bat --theme base16-256 -S"
   alias top="btop"
   alias lgit="lazygit"
-
-  abbr -a nixos-switch "sudo nixos-rebuild switch --flake"
-  abbr -a darwin-switch "sudo darwin-rebuild switch --flake"
 end
 
 function files
@@ -31,6 +28,13 @@ function fastfetch
         return
     end
 
+    set -l distro (string match -rg '^ID="?([^"]+)"?' < /etc/os-release 2>/dev/null)
+    set -l logo ~/.config/fastfetch/images/$distro.png
+    if test -z "$distro"; or not test -f $logo
+        command fastfetch -c $generated --logo-type small
+        return
+    end
+
     set -l logo_slot 32
     set -l logo_margin 6
     set -l text_columns (math $COLUMNS - $logo_slot - $logo_margin)
@@ -45,7 +49,7 @@ function fastfetch
     set -l logo_right (math "$logo_margin + $logo_slot - $logo_width")
     set -l logo_top (math -s0 "max(0, ($rendered[2] - $logo_height) / 2 - 1)")
 
-    command fastfetch -c (printf '{"logo":{"source":"~/.config/fastfetch/images/nixos.png","type":"kitty-icat","width":%s,"height":%s,"padding":{"top":%s,"left":0,"right":%s}},"modules":[%s]}' $logo_width $logo_height $logo_top $logo_right $rendered[1] | psub -s .jsonc)
+    command fastfetch -c (printf '{"logo":{"source":"'$logo'","type":"kitty-icat","width":%s,"height":%s,"padding":{"top":%s,"left":0,"right":%s}},"modules":[%s]}' $logo_width $logo_height $logo_top $logo_right $rendered[1] | psub -s .jsonc)
 end
 
 function fish_greeting; end

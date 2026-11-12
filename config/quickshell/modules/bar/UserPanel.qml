@@ -139,13 +139,14 @@ Item {
 
         InfoRow {
           width: parent.width
-          icon: "ac_unit"
-          label: "NixOS"
+          icon: SystemInfo.nixos ? "ac_unit" : "computer"
+          label: SystemInfo.osName || "System"
           value: SystemInfo.version || "—"
         }
 
         InfoRow {
           width: parent.width
+          visible: SystemInfo.nixos
           icon: "history"
           label: "Generation"
           value: SystemInfo.generation > 0 ? `${SystemInfo.generation} · ${Qt.formatDateTime(SystemInfo.generationDate, "dd MMM yyyy")}` : "—"
