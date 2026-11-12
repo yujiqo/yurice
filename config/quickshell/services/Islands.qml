@@ -81,6 +81,8 @@ Singleton {
       return false;
     if (id === "danbooru")
       return !WeebMode.hidesDanbooru;
+    if (id === "media")
+      return Media.active !== null;
     if (id === "battery")
       return Battery.available;
     return true;

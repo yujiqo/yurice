@@ -6,10 +6,10 @@ QtObject {
     Panels.close();
     Panels.open("bogus");
     t.eq(Panels.name, "");
-    Panels.open("media");
-    t.eq(Panels.name, "media");
+    Panels.open("theme");
+    t.eq(Panels.name, "theme");
     t.ok(Panels.isOpen);
-    Panels.toggle("media");
+    Panels.toggle("theme");
     t.eq(Panels.name, "");
     Panels.toggle("calendar");
     Panels.toggle("weather");

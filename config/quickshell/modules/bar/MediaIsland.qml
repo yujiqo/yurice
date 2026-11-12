@@ -20,21 +20,6 @@ Island {
   onClicked: request("media")
   padding: (Theme.pillHeight - barsWidth) / 2
   spacing: 0
-  width: implicitWidth * Math.max(0, appear.value)
-  opacity: appear.progress
-  visible: appear.value > 0.01
-
-  onPresentChanged: {
-    if (!present && open)
-      dismissed();
-  }
-
-  Spring {
-    id: appear
-    target: root.present ? 1 : 0
-    Component.onCompleted: snap()
-  }
-
   Component {
     id: mediaPanel
 
