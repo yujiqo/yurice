@@ -21,6 +21,7 @@ binds {
   Mod+N repeat=false hotkey-overlay-title="Wi-Fi" { spawn "qs" "ipc" "call" "panel" "toggle" "wifi"; }
   Mod+Shift+N repeat=false hotkey-overlay-title="Bluetooth" { spawn "qs" "ipc" "call" "panel" "toggle" "bluetooth"; }
   Mod+B repeat=false hotkey-overlay-title="Battery" { spawn "qs" "ipc" "call" "panel" "toggle" "battery"; }
+  Mod+Shift+B repeat=false hotkey-overlay-title="Toggle caffeine" { spawn "qs" "ipc" "call" "caffeine" "toggle"; }
   Mod+Z repeat=false hotkey-overlay-title="Theme panel" { spawn "qs" "ipc" "call" "panel" "toggle" "theme"; }
   Mod+Shift+Z repeat=false hotkey-overlay-title="Switch theme" { spawn "qs" "ipc" "call" "theme" "toggle"; }
   Mod+S repeat=false hotkey-overlay-title="Weeb panel" { spawn "qs" "ipc" "call" "panel" "toggle" "weeb"; }

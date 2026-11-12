@@ -9,6 +9,7 @@ Item {
   property color iconColor: Theme.primary
   property string title: ""
   property string subtitle: ""
+  default property alias trailing: trailingRow.data
 
   width: parent.width
   height: 64
@@ -26,7 +27,8 @@ Item {
   Column {
     anchors.left: icon.right
     anchors.leftMargin: 14
-    anchors.right: parent.right
+    anchors.right: trailingRow.left
+    anchors.rightMargin: trailingRow.width > 0 ? 10 : 0
     anchors.verticalCenter: parent.verticalCenter
     spacing: 2
 
@@ -41,5 +43,13 @@ Item {
       color: Theme.textVariant
       pixelSize: Theme.menuSubtitleSize
     }
+  }
+
+  Row {
+    id: trailingRow
+    anchors.right: parent.right
+    anchors.rightMargin: width > 0 ? 10 : 0
+    anchors.verticalCenter: parent.verticalCenter
+    spacing: 6
   }
 }

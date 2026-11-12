@@ -31,10 +31,18 @@ Singleton {
       open();
   }
 
+  readonly property var sleepActions: ["suspend", "hibernate", "hybrid-sleep", "suspend-then-hibernate"]
+
   function run(action, args) {
     close();
-    runner.command = ["systemctl", action].concat(args ?? []);
-    runner.running = true;
+    const start = () => {
+      runner.command = ["systemctl", action].concat(args ?? []);
+      runner.running = true;
+    };
+    if (sleepActions.includes(action))
+      Caffeine.release(start);
+    else
+      start();
   }
 
   function power(action) {
@@ -70,6 +78,10 @@ Singleton {
 
   Process {
     id: runner
+    onExited: code => {
+      if (code !== 0)
+        Caffeine.resume();
+    }
   }
 
   IpcHandler {

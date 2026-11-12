@@ -300,7 +300,7 @@ Singleton {
   }
 
   IdleMonitor {
-    enabled: root.phase === "idle" && Settings.idleScreenOff > 0
+    enabled: root.phase === "idle" && Settings.idleScreenOff > 0 && !Caffeine.active
     timeout: Math.max(1, Settings.idleScreenOff) * 60
     onIsIdleChanged: {
       if (isIdle)
@@ -309,7 +309,7 @@ Singleton {
   }
 
   IdleMonitor {
-    enabled: root.phase === "idle" && Settings.idleLock > 0
+    enabled: root.phase === "idle" && Settings.idleLock > 0 && !Caffeine.active
     timeout: Math.max(1, Settings.idleLock) * 60
     onIsIdleChanged: {
       if (isIdle)
@@ -318,7 +318,7 @@ Singleton {
   }
 
   IdleMonitor {
-    enabled: root.phase === "locked" && root.secured && Settings.idleLockedScreenOff > 0
+    enabled: root.phase === "locked" && root.secured && Settings.idleLockedScreenOff > 0 && !Caffeine.active
     timeout: Math.max(1, Settings.idleLockedScreenOff) * 60
     onIsIdleChanged: {
       if (isIdle)
@@ -327,7 +327,7 @@ Singleton {
   }
 
   IdleMonitor {
-    enabled: root.phase === "locked" && root.secured && Settings.idleSuspend > 0
+    enabled: root.phase === "locked" && root.secured && Settings.idleSuspend > 0 && !Caffeine.active
     timeout: Math.max(1, Settings.idleSuspend) * 60
     onIsIdleChanged: {
       if (isIdle)

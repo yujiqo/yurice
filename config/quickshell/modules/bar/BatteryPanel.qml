@@ -37,6 +37,14 @@ Column {
     iconColor: Battery.color
     title: Battery.percent + "%"
     subtitle: Battery.status
+
+    Chip {
+      implicitWidth: 40
+      implicitHeight: 40
+      icon: "coffee"
+      selected: Caffeine.active
+      onClicked: Caffeine.toggle()
+    }
   }
 
   Item {

@@ -48,6 +48,16 @@ Island {
   }
 
   Reveal {
+    shown: Caffeine.active
+    leading: Theme.pillSegmentGap
+
+    Segment {
+      icon: "coffee"
+      color: Theme.primary
+    }
+  }
+
+  Reveal {
     shown: root.expanded
     leading: Theme.pillSegmentGap
 
