@@ -61,6 +61,15 @@ in {
     (lib.mkIf cfg.enable {
       programs.fish.enable = true;
       programs.niri.enable = true;
+
+      services.pipewire = {
+        enable = lib.mkDefault true;
+        pulse.enable = lib.mkDefault true;
+      };
+      services.upower.enable = lib.mkDefault true;
+      services.power-profiles-daemon.enable = lib.mkDefault true;
+      hardware.bluetooth.enable = lib.mkDefault true;
+      networking.networkmanager.enable = lib.mkDefault true;
       programs.dconf.enable = true;
       services.gnome.glib-networking.enable = true;
 

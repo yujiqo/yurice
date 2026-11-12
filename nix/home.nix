@@ -22,6 +22,11 @@ self: {
       force = true;
     };
 
+  wallpapers = builtins.path {
+    name = "yurice-wallpapers";
+    path = self + "/wallpapers";
+  };
+
   noTitlebarButtons = ''
     [Settings]
     gtk-decoration-layout=:
@@ -74,6 +79,10 @@ in {
         if [ ! -e "${config.xdg.configHome}/yurice/custom" ]; then
           run mkdir -p "${config.xdg.configHome}/yurice/custom"
         fi
+      '';
+
+      home.activation.yuriceWallpapers = lib.hm.dag.entryAfter ["writeBoundary"] ''
+        run ${pkgs.runtimeShell} ${../dist/seed-wallpapers.sh} ${wallpapers} "${config.home.homeDirectory}/Pictures/Wallpapers"
       '';
 
       services.cliphist = {
