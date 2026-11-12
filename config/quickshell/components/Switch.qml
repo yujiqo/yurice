@@ -31,13 +31,14 @@ Item {
 
   Rectangle {
     property real size: root.checked ? 18 : 12
+    property real center: root.checked ? root.width - 13 : 13
     anchors.verticalCenter: parent.verticalCenter
-    x: root.checked ? root.width - size - 4 : 7
+    x: center - size / 2
     width: size
     height: size
     radius: size / 2
     color: root.checked ? Theme.textOnPrimary : Theme.outline
-    Behavior on x {
+    Behavior on center {
       NumberAnimation {
         duration: Theme.animMove
         easing.type: Theme.easeOut
