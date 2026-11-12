@@ -1,0 +1,23 @@
+hotkey-overlay {
+  skip-at-startup
+}
+
+layout {
+  background-color "#000000"
+}
+
+overview {
+  backdrop-color "#000000"
+}
+
+cursor {
+  xcursor-size 15
+}
+
+spawn-at-startup "@greeterStart@"
+
+binds {
+  Ctrl+Alt+Delete { quit skip-confirmation=true; }
+}
+
+@extraConfig@
