@@ -101,7 +101,7 @@ PanelWindow {
   implicitHeight: Math.min(Theme.barMarginTop + Theme.barHeight + Theme.dropdownMaxHeight + Theme.toastAreaHeight, modelData.height)
   exclusionMode: ExclusionMode.Normal
   exclusiveZone: Theme.barMarginTop + Theme.barHeight
-  WlrLayershell.keyboardFocus: launcherShown || dropdown === "power" || keyboardPanel !== "" ? WlrKeyboardFocus.Exclusive : dropdown !== "" ? WlrKeyboardFocus.OnDemand : WlrKeyboardFocus.None
+  WlrLayershell.keyboardFocus: dropdown !== "" ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
   color: "transparent"
 
   mask: Region {
