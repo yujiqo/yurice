@@ -30,64 +30,14 @@ Column {
     }
   ]
   readonly property var islands: Islands.list.filter(island => island.id !== "weeb" && Islands.enabled(island.id))
-  readonly property var tabOrder: ["content", "islands", "names"]
   property string tab: "content"
-  property string shownTab: "content"
-  property real tabFade: 1
-  property real tabSlide: 0
-  property int tabDir: 1
-
-  function selectTab(id) {
-    if (id === tab)
-      return;
-    tabDir = tabOrder.indexOf(id) > tabOrder.indexOf(tab) ? 1 : -1;
-    tab = id;
-    tabAnim.restart();
-  }
 
   spacing: 0
 
-  SequentialAnimation {
-    id: tabAnim
-
-    ParallelAnimation {
-      NumberAnimation {
-        target: root
-        property: "tabFade"
-        to: 0
-        duration: Theme.animPress
-        easing.type: Easing.InQuad
-      }
-      NumberAnimation {
-        target: root
-        property: "tabSlide"
-        to: -root.tabDir * Theme.slideDistance / 2
-        duration: Theme.animPress
-        easing.type: Easing.InQuad
-      }
-    }
-    ScriptAction {
-      script: {
-        root.shownTab = root.tab;
-        root.tabSlide = root.tabDir * Theme.slideDistance;
-      }
-    }
-    ParallelAnimation {
-      NumberAnimation {
-        target: root
-        property: "tabFade"
-        to: 1
-        duration: Theme.animMove
-        easing.type: Easing.OutQuad
-      }
-      NumberAnimation {
-        target: root
-        property: "tabSlide"
-        to: 0
-        duration: Theme.animSlide
-        easing.type: Theme.easeOut
-      }
-    }
+  TabTransition {
+    id: transition
+    current: root.tab
+    order: ["content", "islands", "names"]
   }
 
   component HiddenTitle: Item {
@@ -184,18 +134,18 @@ Column {
           }
         ]
         current: root.tab
-        onSelected: id => root.selectTab(id)
+        onSelected: id => root.tab = id
       }
 
       Column {
         width: parent.width
-        opacity: root.tabFade
+        opacity: transition.fade
         transform: Translate {
-          x: root.tabSlide
+          x: transition.slide
         }
 
         Card {
-          visible: root.shownTab === "content"
+          visible: transition.shown === "content"
 
           HiddenTitle {}
 
@@ -214,7 +164,7 @@ Column {
         }
 
         Card {
-          visible: root.shownTab === "islands"
+          visible: transition.shown === "islands"
 
           HiddenTitle {}
 
@@ -247,7 +197,7 @@ Column {
         }
 
         Card {
-          visible: root.shownTab === "names"
+          visible: transition.shown === "names"
 
           NameRow {
             mode: "weeb"

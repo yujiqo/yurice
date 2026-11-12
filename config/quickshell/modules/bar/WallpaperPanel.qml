@@ -14,6 +14,12 @@ Column {
 
   spacing: Theme.menuGap
 
+  TabTransition {
+    id: transition
+    current: root.tab
+    order: ["library", "search"]
+  }
+
   TabBar {
     id: tabs
     anchors.horizontalCenter: parent.horizontalCenter
@@ -38,7 +44,12 @@ Column {
     id: content
     width: parent.width
     focus: true
-    sourceComponent: root.tab === "search" ? searchTab : libraryTab
+    opacity: transition.fade
+    transform: Translate {
+      x: transition.slide
+    }
+    active: transition.shown !== ""
+    sourceComponent: transition.shown === "search" ? searchTab : libraryTab
   }
 
   Component {
