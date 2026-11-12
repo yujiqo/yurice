@@ -29,6 +29,37 @@ Item {
     onDownloadFailed: (key, url, item) => suite.signals = suite.signals.concat([`downloadFailed ${key} ${item.id}`])
   }
 
+  property var prepared: []
+
+  SearchFeed {
+    id: planned
+    urlFor: (q, p) => `https://example.invalid/?q=${q}&page=${p}`
+    parser: body => JSON.parse(body)
+    prepare: (q, done) => suite.prepared = suite.prepared.concat([{
+          query: q,
+          done: done
+        }])
+  }
+
+  function test_prepare_runsBeforeFirstPage(t) {
+    prepared = [];
+    planned.search("old");
+    const stale = planned.requestId;
+    planned.search(" cats ");
+    t.eq([planned.phase, prepared.map(p => p.query)], ["searching", ["old", "cats"]]);
+    planned.pageCount = 2;
+    prepared[1].done();
+    t.ok(planned.requestId > stale + 1, "first page requested after prepare");
+    const first = planned.requestId;
+    prepared[0].done();
+    t.eq(planned.requestId, first, "stale prepare ignored");
+    planned.receive(first, 200, page(["a"], true));
+    t.eq([planned.phase, planned.hasMore], ["results", true]);
+    planned.loadMore();
+    planned.receive(planned.requestId, 200, page(["b"], true));
+    t.eq([planned.page, planned.hasMore], [2, false], "pageCount caps paging");
+  }
+
   function test_search(t) {
     feed.search("  cats ");
     t.eq([feed.query, feed.phase, feed.searching], ["cats", "searching", true]);
@@ -139,14 +170,23 @@ Item {
     Danbooru.phase = "results";
     Danbooru.setSafeOnly(false);
     t.ok(!Danbooru.safeOnly);
+    t.eq(Danbooru.phase, "results", "no new search until the next one");
+    t.ok(Danbooru.buildUrl("x", 2).endsWith("rating%3Ag"), "current search keeps its rating");
   }
 
   function test_danbooruSafeOnly_2_survivesQueryWrite(t) {
     t.ok(!Danbooru.safeOnly, "safeOnly kept after the query write in the same tick");
     t.eq(Danbooru.query, "first");
+    Danbooru.setSorting("newest");
+    t.eq([Danbooru.phase, Danbooru.sorting], ["results", "newest"], "sorting waits for the next search");
   }
 
   function test_danbooruSafeOnly_3_restore(t) {
+    Danbooru.setSorting("random");
+    t.eq(Danbooru.sorting, "random");
+  }
+
+  function test_danbooruSafeOnly_4_restore(t) {
     Danbooru.phase = "idle";
     Danbooru.setSafeOnly(true);
     t.ok(Danbooru.safeOnly);

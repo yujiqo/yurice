@@ -13,6 +13,7 @@ Scope {
   property string parseError: "Unexpected response"
   property string userAgent: ""
   property var curlArgs: []
+  property var prepare: null
 
   property string query: ""
   property string phase: "idle"
@@ -24,6 +25,7 @@ Scope {
   property var downloads: ({})
   property int requestId: 0
   property int emptySkips: 5
+  property int pageCount: 0
   property var pending: null
 
   readonly property bool searching: phase === "searching"
@@ -42,6 +44,23 @@ Scope {
     loadingMore = false;
     error = "";
     phase = "searching";
+    pageCount = 0;
+    if (!prepare) {
+      fetchFirst();
+      return;
+    }
+    const id = ++requestId;
+    pending = {
+      id: id,
+      done: null
+    };
+    prepare(query, () => {
+      if (pending?.id === id)
+        fetchFirst();
+    });
+  }
+
+  function fetchFirst() {
     fetchPage(1, 0, (res, err, p) => {
       if (!res) {
         error = err;
@@ -50,7 +69,7 @@ Scope {
       }
       page = p;
       results = res.items;
-      hasMore = res.more;
+      hasMore = moreAfter(res, p);
       phase = "results";
     });
   }
@@ -68,7 +87,7 @@ Scope {
       const fresh = res.items.filter(r => !seen.has(r.id));
       if (fresh.length > 0)
         results = results.concat(fresh);
-      hasMore = res.more;
+      hasMore = moreAfter(res, p);
     });
   }
 
@@ -79,11 +98,16 @@ Scope {
     hasMore = false;
     loadingMore = false;
     error = "";
+    pageCount = 0;
+  }
+
+  function moreAfter(res, p) {
+    return res.more && (pageCount === 0 || p < pageCount);
   }
 
   function fetchPage(p, skipped, done) {
     request(p, (res, err) => {
-      if (res && res.items.length === 0 && res.more && skipped < emptySkips)
+      if (res && res.items.length === 0 && moreAfter(res, p) && skipped < emptySkips)
         fetchPage(p + 1, skipped + 1, done);
       else
         done(res, err, p);

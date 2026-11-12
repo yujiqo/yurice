@@ -93,6 +93,20 @@ Column {
             }
 
             FilterRow {
+              title: "Sort"
+              Chip {
+                text: "Random"
+                selected: Danbooru.sorting === "random"
+                onClicked: Danbooru.setSorting("random")
+              }
+              Chip {
+                text: "Newest"
+                selected: Danbooru.sorting === "newest"
+                onClicked: Danbooru.setSorting("newest")
+              }
+            }
+
+            FilterRow {
               title: "Key"
               Chip {
                 icon: "key"

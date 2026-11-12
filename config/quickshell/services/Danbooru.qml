@@ -39,7 +39,13 @@ Singleton {
   readonly property string login: keyFile.lines[0] ?? ""
   readonly property string apiKey: keyFile.lines[1] ?? ""
   readonly property bool hasApiKey: login !== "" && apiKey !== ""
+  readonly property string sorting: settings.sorting === "newest" ? "newest" : "random"
   property int tagLimit: 2
+  property int pageLimit: 1000
+  property var plan: []
+  property int planToken: 0
+  property var seenPages: ({})
+  property bool searchSafe: true
 
   function setCredentials(name, key) {
     keyFile.write(name.trim() !== "" && key.trim() !== "" ? `${name.trim()}\n${key.trim()}` : "");
@@ -50,8 +56,13 @@ Singleton {
       return;
     settings.safeOnly = on;
     settingsFile.writeAdapter();
-    if (phase !== "idle")
-      search(query);
+  }
+
+  function setSorting(next) {
+    if (settings.sorting === next)
+      return;
+    settings.sorting = next;
+    settingsFile.writeAdapter();
   }
 
   function showNotice(text) {
@@ -74,8 +85,67 @@ Singleton {
   onWatchingChanged: if (watching)
     checkHealth()
 
+  function tagsFor(q) {
+    return (searchSafe || WeebMode.hidesAdultFilters ? q + " rating:g" : q).trim();
+  }
+
   function buildUrl(q, p) {
-    return `${apiBase}/posts.json?limit=${pageSize}&page=${p}&tags=${encodeURIComponent(q.trim())}`;
+    return `${apiBase}/posts.json?limit=${pageSize}&page=${p}&tags=${encodeURIComponent(tagsFor(q))}`;
+  }
+
+  function seenKey(q) {
+    return (searchSafe ? "g:" : "") + q.trim();
+  }
+
+  function urlFor(q, p) {
+    const real = plan[p - 1] ?? p;
+    if (plan.length > 0) {
+      const key = seenKey(q);
+      seenPages[key] = Object.assign(seenPages[key] ?? {}, {
+        [real]: true
+      });
+    }
+    return buildUrl(q, real);
+  }
+
+  function shuffle(list) {
+    for (let i = list.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [list[i], list[j]] = [list[j], list[i]];
+    }
+    return list;
+  }
+
+  function planPages(total, seen) {
+    const all = Array.from({
+      length: total
+    }, (_, i) => i + 1);
+    return shuffle(all.filter(p => !seen[p])).concat(shuffle(all.filter(p => seen[p])));
+  }
+
+  function prepare(q, done) {
+    const token = ++planToken;
+    searchSafe = safeOnly;
+    plan = [];
+    if (sorting !== "random") {
+      done();
+      return;
+    }
+    countFetcher.createObject(root, {
+      token: token,
+      query: q,
+      done: done
+    }).running = true;
+  }
+
+  function planned(token, q, count, done) {
+    if (token !== planToken)
+      return;
+    if (count > 0) {
+      plan = planPages(Math.min(Math.ceil(count / pageSize), pageLimit), seenPages[seenKey(q)] ?? {});
+      feed.pageCount = plan.length;
+    }
+    done();
   }
 
   function tagsLeft(text) {
@@ -83,18 +153,20 @@ Singleton {
   }
 
   function limitFor(profile) {
-    if (profile?.tag_query_limit > 0)
-      return profile.tag_query_limit;
     const level = profile?.level ?? 0;
-    return level >= 31 ? 12 : level >= 30 ? 6 : 2;
+    const tier = level >= 31 ? 2 : level >= 30 ? 1 : 0;
+    return {
+      tags: profile?.tag_query_limit > 0 ? profile.tag_query_limit : [2, 6, 12][tier],
+      pages: [1000, 2000, 5000][tier]
+    };
   }
 
-  function parse(body, safe = safeOnly) {
+  function parse(body) {
     const list = JSON.parse(body);
     if (!Array.isArray(list))
       throw new Error("unexpected response");
     return {
-      items: list.filter(p => p.file_url && imageExts.includes(p.file_ext) && (!safe || p.rating === "g")).map(p => {
+      items: list.filter(p => p.file_url && imageExts.includes(p.file_ext)).map(p => {
         const variants = p.media_asset?.variants ?? [];
         const preview = variants.find(v => v.type === "360x360") ?? variants.find(v => v.type === "180x180");
         const thumb = preview?.url ?? p.preview_file_url;
@@ -108,7 +180,7 @@ Singleton {
           ext: p.file_ext
         };
       }),
-      more: list.length >= pageSize
+      more: plan.length > 0 || list.length >= pageSize
     };
   }
 
@@ -248,7 +320,8 @@ Singleton {
     userAgent: root.userAgent
     curlArgs: root.hasApiKey ? ["-u", `${root.login}:${root.apiKey}`] : []
     parseError: "Danbooru is unavailable right now"
-    urlFor: (q, p) => root.buildUrl(q, p)
+    urlFor: (q, p) => root.urlFor(q, p)
+    prepare: (q, done) => root.prepare(q, done)
     parser: body => root.parse(body)
     describe: (status, body) => root.describe(status, body)
     onResponded: status => root.setHealth(status >= 500 ? "down" : "up")
@@ -263,13 +336,44 @@ Singleton {
   onLoginChanged: fetchProfile()
   onApiKeyChanged: fetchProfile()
 
+  function applyLimits(profile) {
+    const limits = limitFor(profile);
+    tagLimit = limits.tags;
+    pageLimit = limits.pages;
+  }
+
   function fetchProfile() {
     profileFetch.running = false;
     if (!hasApiKey) {
-      tagLimit = 2;
+      applyLimits(null);
       return;
     }
     profileFetch.running = true;
+  }
+
+  Component {
+    id: countFetcher
+
+    Process {
+      id: counter
+
+      property int token
+      property string query
+      property var done
+
+      command: ["curl", "-sf", "-m", "10", "-A", root.userAgent].concat(feed.curlArgs).concat([`${root.apiBase}/counts/posts.json?tags=${encodeURIComponent(root.tagsFor(query))}`])
+      stdout: StdioCollector {
+        id: counted
+      }
+      onExited: {
+        let count = 0;
+        try {
+          count = JSON.parse(counted.text).counts?.posts ?? 0;
+        } catch (e) {}
+        root.planned(counter.token, counter.query, count, counter.done);
+        counter.destroy();
+      }
+    }
   }
 
   Process {
@@ -278,9 +382,9 @@ Singleton {
     stdout: StdioCollector {
       onStreamFinished: {
         try {
-          root.tagLimit = root.limitFor(JSON.parse(text));
+          root.applyLimits(JSON.parse(text));
         } catch (e) {
-          root.tagLimit = 2;
+          root.applyLimits(null);
         }
       }
     }
@@ -353,6 +457,7 @@ Singleton {
       id: settings
       property string query: ""
       property bool safeOnly: true
+      property string sorting: "random"
     }
   }
 }

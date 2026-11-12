@@ -91,14 +91,24 @@ QtObject {
 
   function test_danbooru_buildUrl(t) {
     t.ok(Danbooru.safeOnly);
-    t.eq(Danbooru.buildUrl("1girl ", 3), "https://danbooru.donmai.us/posts.json?limit=30&page=3&tags=1girl");
-    t.eq(Danbooru.buildUrl("", 1), "https://danbooru.donmai.us/posts.json?limit=30&page=1&tags=");
+    t.eq(Danbooru.buildUrl("1girl ", 3), "https://danbooru.donmai.us/posts.json?limit=30&page=3&tags=1girl%20%20rating%3Ag");
+    t.eq(Danbooru.buildUrl("", 1), "https://danbooru.donmai.us/posts.json?limit=30&page=1&tags=rating%3Ag");
+  }
+
+  function test_danbooru_planPages(t) {
+    const plan = Danbooru.planPages(6, {
+      2: true,
+      5: true
+    });
+    t.eq(plan.slice().sort(), [1, 2, 3, 4, 5, 6], "every page once");
+    t.eq(plan.slice(0, 4).sort(), [1, 3, 4, 6], "unseen pages first");
+    t.eq(Danbooru.planPages(0, {}), []);
   }
 
   function test_danbooru_tagsLeft(t) {
     t.eq(Danbooru.tagLimit, 2);
     t.eq([Danbooru.tagsLeft(""), Danbooru.tagsLeft("  sky "), Danbooru.tagsLeft("scenery  sky"), Danbooru.tagsLeft("a b c")], [2, 1, 0, -1]);
-    t.eq([Danbooru.limitFor(null), Danbooru.limitFor({ level: 20 }), Danbooru.limitFor({ level: 30 }), Danbooru.limitFor({ level: 31 }), Danbooru.limitFor({ level: 50, tag_query_limit: 12 })], [2, 2, 6, 12, 12]);
+    t.eq([null, { level: 20 }, { level: 30 }, { level: 31 }, { level: 50, tag_query_limit: 15 }].map(p => Danbooru.limitFor(p)), [{ tags: 2, pages: 1000 }, { tags: 2, pages: 1000 }, { tags: 6, pages: 2000 }, { tags: 12, pages: 5000 }, { tags: 15, pages: 5000 }]);
   }
 
   function test_danbooru_parse(t) {
@@ -109,7 +119,6 @@ QtObject {
       preview_file_url: "https://d/p5.jpg",
       image_width: 800,
       image_height: 600,
-      rating: "g",
       media_asset: {
         variants: [{
             type: "360x360",
@@ -120,12 +129,6 @@ QtObject {
           }]
       }
     };
-    const explicit = Object.assign({}, post, {
-        id: 8,
-        rating: "e"
-      });
-    t.eq(Danbooru.parse(JSON.stringify([post, explicit]), true).items.map(i => i.id), ["5"]);
-    t.eq(Danbooru.parse(JSON.stringify([post, explicit]), false).items.map(i => i.id), ["5", "8"]);
     const res = Danbooru.parse(JSON.stringify([post, {
         id: 6,
         file_url: "https://d/6.mp4",
