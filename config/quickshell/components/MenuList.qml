@@ -21,4 +21,8 @@ ListView {
     if (followCurrent)
       positionViewAtIndex(currentIndex, ListView.Contain);
   }
+
+  Scrollbar {
+    flickable: root
+  }
 }

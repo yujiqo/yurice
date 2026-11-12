@@ -111,4 +111,8 @@ Item {
       }
     }
   }
+
+  Scrollbar {
+    flickable: flick
+  }
 }

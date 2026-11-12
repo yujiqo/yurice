@@ -223,4 +223,8 @@ Column {
       }
     }
   }
+
+  Scrollbar {
+    flickable: grid
+  }
 }

@@ -317,6 +317,7 @@ Rectangle {
 
   Item {
     id: panelArea
+    objectName: "panelArea"
     x: Theme.panelPadding
     y: Theme.pillHeight
     width: root.openWidth - Theme.panelPadding * 2

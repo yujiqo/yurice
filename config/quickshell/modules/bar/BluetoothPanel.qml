@@ -219,6 +219,7 @@ Column {
   }
 
   Flickable {
+    id: scroller
     width: parent.width
     height: Math.min(contentHeight, Theme.menuListMaxHeight)
     visible: root.powered
@@ -263,5 +264,9 @@ Column {
         font.pixelSize: Theme.menuSubtitleSize
       }
     }
+  }
+
+  Scrollbar {
+    flickable: scroller
   }
 }

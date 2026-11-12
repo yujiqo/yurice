@@ -242,4 +242,8 @@ Column {
       font.pixelSize: Theme.menuSubtitleSize
     }
   }
+
+  Scrollbar {
+    flickable: grid
+  }
 }

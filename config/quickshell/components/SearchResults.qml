@@ -99,4 +99,8 @@ Column {
       onClicked: root.activated(modelData)
     }
   }
+
+  Scrollbar {
+    flickable: grid
+  }
 }

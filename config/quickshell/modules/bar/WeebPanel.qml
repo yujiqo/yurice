@@ -228,4 +228,8 @@ Column {
     current: WeebMode.mode
     onSelected: value => WeebMode.set(value)
   }
+
+  Scrollbar {
+    flickable: islandFlick
+  }
 }

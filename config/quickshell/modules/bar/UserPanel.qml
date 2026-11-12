@@ -185,4 +185,8 @@ Item {
       }
     }
   }
+
+  Scrollbar {
+    flickable: flick
+  }
 }
