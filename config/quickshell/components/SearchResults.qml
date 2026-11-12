@@ -10,6 +10,7 @@ Column {
   required property string label
   required property var busyFor
   required property var checkedFor
+  property var thumbFor: item => item.thumb
   property string emptyText: "Nothing found"
   property color tint: Theme.tertiary
   property bool blocked: false
@@ -55,48 +56,92 @@ Column {
     text: root.feed.phase === "error" ? root.feed.error : root.emptyText
   }
 
-  GridView {
+  Flickable {
     id: grid
 
     readonly property int columns: 3
+    readonly property real gap: 6
+    readonly property real columnWidth: width / columns
+    readonly property real footerHeight: root.feed.loadingMore ? 40 : 0
+    readonly property var layout: {
+      const heights = new Array(columns).fill(0);
+      const cells = [];
+      for (const item of root.feed.results) {
+        const ratio = item.ratio > 0 ? Math.max(0.4, Math.min(2.5, item.ratio)) : 0;
+        const h = ratio > 0 ? (columnWidth - gap) / ratio + gap : Theme.thumbHeight + gap;
+        let c = 0;
+        for (let i = 1; i < columns; i++) {
+          if (heights[i] < heights[c] - 0.5)
+            c = i;
+        }
+        cells.push({
+          x: c * columnWidth,
+          y: heights[c],
+          height: h
+        });
+        heights[c] += h;
+      }
+      return {
+        cells: cells,
+        height: Math.max(...heights)
+      };
+    }
 
     width: parent.width
     height: Math.min(contentHeight, root.maxHeight)
     visible: root.showGrid
     clip: true
-    cellWidth: width / columns
-    cellHeight: Theme.thumbHeight + 6
+    contentWidth: width
+    contentHeight: layout.height + footerHeight
     boundsBehavior: Flickable.StopAtBounds
     interactive: contentHeight > height
-    model: ScriptModel {
-      values: root.feed.results
+    function fill() {
+      if (root.showGrid && root.feed.hasMore && layout.height < root.maxHeight)
+        root.feed.loadMore();
     }
+
+    onLayoutChanged: Qt.callLater(fill)
     onAtYEndChanged: {
       if (atYEnd && contentHeight > height)
         root.feed.loadMore();
     }
 
-    footer: Item {
+    Repeater {
+      model: ScriptModel {
+        values: root.feed.results
+      }
+
+      delegate: ImageTile {
+        required property var modelData
+        required property int index
+        readonly property var cell: grid.layout.cells[index] ?? {
+          x: 0,
+          y: 0,
+          height: 0
+        }
+
+        x: cell.x
+        y: cell.y
+        width: grid.columnWidth
+        height: cell.height
+        source: root.thumbFor(modelData)
+        resolution: modelData.resolution
+        busy: root.busyFor(modelData)
+        checked: root.checkedFor(modelData)
+        onClicked: root.activated(modelData)
+      }
+    }
+
+    Item {
+      y: grid.layout.height
       width: grid.width
-      height: root.feed.loadingMore ? 40 : 0
+      height: grid.footerHeight
 
       Spinner {
         anchors.centerIn: parent
         visible: root.feed.loadingMore
         tint: root.tint
       }
-    }
-
-    delegate: ImageTile {
-      required property var modelData
-
-      width: grid.cellWidth
-      height: grid.cellHeight
-      source: modelData.thumb
-      resolution: modelData.resolution
-      busy: root.busyFor(modelData)
-      checked: root.checkedFor(modelData)
-      onClicked: root.activated(modelData)
     }
   }
 

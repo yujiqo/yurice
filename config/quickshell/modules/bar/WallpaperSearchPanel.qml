@@ -209,19 +209,4 @@ Column {
     checkedFor: item => Wallpapers.current === WallSearch.pathFor(item)
     onActivated: item => WallSearch.download(item)
   }
-
-  component FilterRow: Row {
-    property string title
-    spacing: 6
-
-    Text {
-      anchors.verticalCenter: parent.verticalCenter
-      width: 60
-      leftPadding: 10
-      text: parent.title
-      color: Theme.textVariant
-      font.family: Theme.labelFont
-      font.pixelSize: Theme.menuSubtitleSize
-    }
-  }
 }

@@ -23,6 +23,7 @@ Scope {
   property bool loadingMore: false
   property var downloads: ({})
   property int requestId: 0
+  property int emptySkips: 5
   property var pending: null
 
   readonly property bool searching: phase === "searching"
@@ -41,12 +42,13 @@ Scope {
     loadingMore = false;
     error = "";
     phase = "searching";
-    request(1, (res, err) => {
+    fetchPage(1, 0, (res, err, p) => {
       if (!res) {
         error = err;
         phase = "error";
         return;
       }
+      page = p;
       results = res.items;
       hasMore = res.more;
       phase = "results";
@@ -57,13 +59,15 @@ Scope {
     if (phase !== "results" || !hasMore || loadingMore)
       return;
     loadingMore = true;
-    request(page + 1, (res, err) => {
+    fetchPage(page + 1, 0, (res, err, p) => {
       loadingMore = false;
       if (!res)
         return;
-      page += 1;
+      page = p;
       const seen = new Set(results.map(r => r.id));
-      results = results.concat(res.items.filter(r => !seen.has(r.id)));
+      const fresh = res.items.filter(r => !seen.has(r.id));
+      if (fresh.length > 0)
+        results = results.concat(fresh);
       hasMore = res.more;
     });
   }
@@ -75,6 +79,15 @@ Scope {
     hasMore = false;
     loadingMore = false;
     error = "";
+  }
+
+  function fetchPage(p, skipped, done) {
+    request(p, (res, err) => {
+      if (res && res.items.length === 0 && res.more && skipped < emptySkips)
+        fetchPage(p + 1, skipped + 1, done);
+      else
+        done(res, err, p);
+    });
   }
 
   function request(p, done) {

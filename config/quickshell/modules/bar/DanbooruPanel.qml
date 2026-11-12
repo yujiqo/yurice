@@ -7,6 +7,7 @@ import qs.services
 Column {
   id: root
 
+  property bool showFilters: false
   property bool editingKey: false
   readonly property bool keepOpen: Danbooru.busy || editingKey
   readonly property bool searching: Danbooru.searching
@@ -28,85 +29,134 @@ Column {
 
     Column {
       width: parent.width
-      spacing: Theme.menuGap
 
-      TextField {
-        id: field
+      Item {
         width: parent.width
-        leadingIcon: "sell"
-        clearable: true
-        placeholder: "Tags, up to 2 (e.g. scenery sky)"
-        escapeLeaves: true
-        hint: Danbooru.safeOnly ? "SFW" : ""
-        onAccepted: text => Danbooru.search(text)
+        height: field.implicitHeight
 
-        IconButton {
-          width: 28
-          height: 28
-          icon: Danbooru.safeOnly ? "shield" : "remove_moderator"
-          iconColor: Danbooru.safeOnly ? Theme.primary : Theme.textVariant
-          onClicked: Danbooru.setSafeOnly(!Danbooru.safeOnly)
+        TextField {
+          id: field
+          anchors.left: parent.left
+          anchors.right: tune.left
+          anchors.rightMargin: 6
+          anchors.verticalCenter: parent.verticalCenter
+          leadingIcon: "sell"
+          clearable: true
+          placeholder: "Tags (e.g. scenery sky)"
+          escapeLeaves: true
+          hint: {
+            const left = Danbooru.tagsLeft(field.text);
+            const count = left < 0 ? "too many tags" : left === 1 ? "1 tag left" : `${left} tags left`;
+            return Danbooru.safeOnly ? `SFW · ${count}` : count;
+          }
+          onAccepted: text => Danbooru.search(text)
         }
 
         IconButton {
-          width: 28
-          height: 28
-          icon: "key"
-          iconColor: root.editingKey || Danbooru.hasApiKey ? Theme.primary : Theme.textVariant
-          color: root.editingKey ? Theme.secondaryContainer : "transparent"
-          onClicked: root.editingKey = !root.editingKey
+          id: tune
+          anchors.right: parent.right
+          anchors.rightMargin: 2
+          anchors.verticalCenter: parent.verticalCenter
+          icon: "tune"
+          iconColor: root.showFilters ? Theme.primary : Theme.textVariant
+          color: root.showFilters ? Theme.secondaryContainer : "transparent"
+          onClicked: root.showFilters = !root.showFilters
         }
       }
 
       Collapse {
         width: parent.width
-        shown: root.editingKey
-        onShownChanged: {
-          if (shown) {
-            loginField.text = Danbooru.login;
-            keyField.text = Danbooru.apiKey;
-            loginField.focusInput();
-          }
-        }
+        leading: Theme.menuGap
+        shown: root.showFilters
 
         Column {
           width: parent.width
-          spacing: 6
+          bottomPadding: 6
 
-          TextField {
-            id: loginField
+          Column {
             width: parent.width
-            leadingIcon: "person"
-            placeholder: "Danbooru username"
-            onAccepted: keyField.focusInput()
-            onCanceled: {
-              root.editingKey = false;
-              field.focusInput();
+            spacing: 8
+
+            FilterRow {
+              title: "Rating"
+              visible: !WeebMode.hidesAdultFilters
+              Chip {
+                text: "SFW"
+                selected: Danbooru.safeOnly
+                onClicked: Danbooru.setSafeOnly(true)
+              }
+              Chip {
+                text: "NSFW"
+                selected: !Danbooru.safeOnly
+                onClicked: Danbooru.setSafeOnly(false)
+              }
+            }
+
+            FilterRow {
+              title: "Key"
+              Chip {
+                icon: "key"
+                text: Danbooru.hasApiKey ? "Change API key" : "Add API key"
+                selected: root.editingKey
+                onClicked: root.editingKey = !root.editingKey
+              }
             }
           }
 
-          PasswordField {
-            id: keyField
+          Collapse {
             width: parent.width
-            placeholder: "Danbooru API key"
-            navigable: true
-            onAccepted: key => {
-              Danbooru.setCredentials(loginField.text, key);
-              root.editingKey = false;
-              field.focusInput();
+            leading: 8
+            shown: root.editingKey
+            onShownChanged: {
+              if (shown) {
+                loginField.text = Danbooru.login;
+                keyField.text = Danbooru.apiKey;
+                loginField.focusInput();
+              }
             }
-            onCanceled: {
-              root.editingKey = false;
-              field.focusInput();
-            }
-          }
 
-          Text {
-            leftPadding: 10
-            text: "Create one at danbooru.donmai.us → My Account → API Key · Enter saves, empty removes"
-            color: Theme.textVariant
-            font.family: Theme.labelFont
-            font.pixelSize: Theme.menuSubtitleSize - 2
+            Column {
+              width: parent.width
+              spacing: 4
+
+              TextField {
+                id: loginField
+                width: parent.width
+                leadingIcon: "person"
+                placeholder: "Danbooru username"
+                onAccepted: keyField.focusInput()
+                onCanceled: {
+                  root.editingKey = false;
+                  field.focusInput();
+                }
+              }
+
+              PasswordField {
+                id: keyField
+                width: parent.width
+                placeholder: "Danbooru API key"
+                navigable: true
+                onAccepted: key => {
+                  Danbooru.setCredentials(loginField.text, key);
+                  root.editingKey = false;
+                  field.focusInput();
+                }
+                onCanceled: {
+                  root.editingKey = false;
+                  field.focusInput();
+                }
+              }
+
+              Text {
+                leftPadding: 10
+                width: parent.width
+                wrapMode: Text.Wrap
+                text: "Get it at danbooru.donmai.us/profile · Enter saves, empty removes"
+                color: Theme.textVariant
+                font.family: Theme.labelFont
+                font.pixelSize: Theme.menuSubtitleSize - 2
+              }
+            }
           }
         }
       }
@@ -159,6 +209,7 @@ Column {
     label: "Danbooru"
     blocked: Danbooru.down
     maxHeight: root.gridMaxHeight
+    thumbFor: item => Danbooru.thumbFor(item)
     busyFor: item => Danbooru.isDownloading(item)
     checkedFor: item => Danbooru.isSaved(item)
     onActivated: item => Danbooru.save(item)

@@ -82,6 +82,18 @@ Item {
     t.eq([feed.phase, ids(), feed.hasMore, feed.loadingMore, feed.error], ["idle", [], false, false, ""]);
   }
 
+  function test_emptyPagesSkipped(t) {
+    feed.search("sparse");
+    feed.receive(feed.requestId, 200, page([], true));
+    t.eq(feed.phase, "searching", "keeps going past an empty page");
+    feed.receive(feed.requestId, 200, page(["a"], true));
+    t.eq([feed.phase, ids(), feed.page], ["results", ["a"], 2]);
+    feed.loadMore();
+    for (let i = 0; i <= feed.emptySkips; i++)
+      feed.receive(feed.requestId, 200, page([], true));
+    t.eq([ids(), feed.page, feed.loadingMore, feed.hasMore], [["a"], 2 + feed.emptySkips + 1, false, true]);
+  }
+
   function test_errors(t) {
     signals = [];
     const cases = [[0, "No connection"], [429, "Too many requests, try again in a minute"], [500, "Search failed (500)"]];

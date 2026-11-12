@@ -91,8 +91,14 @@ QtObject {
 
   function test_danbooru_buildUrl(t) {
     t.ok(Danbooru.safeOnly);
-    t.eq(Danbooru.buildUrl("1girl ", 3), "https://danbooru.donmai.us/posts.json?limit=30&page=3&tags=1girl%20%20rating%3Ag");
-    t.eq(Danbooru.buildUrl("", 1), "https://danbooru.donmai.us/posts.json?limit=30&page=1&tags=rating%3Ag");
+    t.eq(Danbooru.buildUrl("1girl ", 3), "https://danbooru.donmai.us/posts.json?limit=30&page=3&tags=1girl");
+    t.eq(Danbooru.buildUrl("", 1), "https://danbooru.donmai.us/posts.json?limit=30&page=1&tags=");
+  }
+
+  function test_danbooru_tagsLeft(t) {
+    t.eq(Danbooru.tagLimit, 2);
+    t.eq([Danbooru.tagsLeft(""), Danbooru.tagsLeft("  sky "), Danbooru.tagsLeft("scenery  sky"), Danbooru.tagsLeft("a b c")], [2, 1, 0, -1]);
+    t.eq([Danbooru.limitFor(null), Danbooru.limitFor({ level: 20 }), Danbooru.limitFor({ level: 30 }), Danbooru.limitFor({ level: 31 }), Danbooru.limitFor({ level: 50, tag_query_limit: 12 })], [2, 2, 6, 12, 12]);
   }
 
   function test_danbooru_parse(t) {
@@ -103,6 +109,7 @@ QtObject {
       preview_file_url: "https://d/p5.jpg",
       image_width: 800,
       image_height: 600,
+      rating: "g",
       media_asset: {
         variants: [{
             type: "360x360",
@@ -113,6 +120,12 @@ QtObject {
           }]
       }
     };
+    const explicit = Object.assign({}, post, {
+        id: 8,
+        rating: "e"
+      });
+    t.eq(Danbooru.parse(JSON.stringify([post, explicit]), true).items.map(i => i.id), ["5"]);
+    t.eq(Danbooru.parse(JSON.stringify([post, explicit]), false).items.map(i => i.id), ["5", "8"]);
     const res = Danbooru.parse(JSON.stringify([post, {
         id: 6,
         file_url: "https://d/6.mp4",
@@ -124,7 +137,9 @@ QtObject {
     t.eq(res, {
       items: [{
           id: "5",
-          thumb: "https://d/720.webp",
+          thumb: "https://d/360.jpg",
+          thumbFile: "5.jpg",
+          ratio: 800 / 600,
           full: "https://d/5.png",
           resolution: "800x600",
           ext: "png"

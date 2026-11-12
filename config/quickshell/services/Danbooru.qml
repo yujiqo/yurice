@@ -9,7 +9,8 @@ import qs.components
 Singleton {
   id: root
 
-  readonly property bool safeOnly: settings.safeOnly
+  readonly property bool safeOnly: settings.safeOnly || WeebMode.hidesAdultFilters
+  readonly property string thumbDir: Paths.cache + "/danbooru"
   readonly property string directory: Settings.danbooruDirectory
   readonly property string userAgent: "yurice/1.0 (quickshell danbooru widget)"
   readonly property string apiBase: "https://danbooru.donmai.us"
@@ -24,6 +25,8 @@ Singleton {
   property alias loadingMore: feed.loadingMore
   property alias downloads: feed.downloads
   property var saved: ({})
+  property var thumbs: ({})
+  property var thumbsPending: ({})
 
   property string health: "unknown"
   property bool watching: false
@@ -36,12 +39,15 @@ Singleton {
   readonly property string login: keyFile.lines[0] ?? ""
   readonly property string apiKey: keyFile.lines[1] ?? ""
   readonly property bool hasApiKey: login !== "" && apiKey !== ""
+  property int tagLimit: 2
 
   function setCredentials(name, key) {
     keyFile.write(name.trim() !== "" && key.trim() !== "" ? `${name.trim()}\n${key.trim()}` : "");
   }
 
   function setSafeOnly(on) {
+    if (settings.safeOnly === on)
+      return;
     settings.safeOnly = on;
     settingsFile.writeAdapter();
     if (phase !== "idle")
@@ -69,21 +75,34 @@ Singleton {
     checkHealth()
 
   function buildUrl(q, p) {
-    const tags = (safeOnly ? q + " rating:g" : q).trim();
-    return `${apiBase}/posts.json?limit=${pageSize}&page=${p}&tags=${encodeURIComponent(tags)}`;
+    return `${apiBase}/posts.json?limit=${pageSize}&page=${p}&tags=${encodeURIComponent(q.trim())}`;
   }
 
-  function parse(body) {
+  function tagsLeft(text) {
+    return tagLimit - text.split(/\s+/).filter(t => t !== "").length;
+  }
+
+  function limitFor(profile) {
+    if (profile?.tag_query_limit > 0)
+      return profile.tag_query_limit;
+    const level = profile?.level ?? 0;
+    return level >= 31 ? 12 : level >= 30 ? 6 : 2;
+  }
+
+  function parse(body, safe = safeOnly) {
     const list = JSON.parse(body);
     if (!Array.isArray(list))
       throw new Error("unexpected response");
     return {
-      items: list.filter(p => p.file_url && imageExts.includes(p.file_ext)).map(p => {
+      items: list.filter(p => p.file_url && imageExts.includes(p.file_ext) && (!safe || p.rating === "g")).map(p => {
         const variants = p.media_asset?.variants ?? [];
-        const preview = variants.find(v => v.type === "720x720") ?? variants.find(v => v.type === "360x360");
+        const preview = variants.find(v => v.type === "360x360") ?? variants.find(v => v.type === "180x180");
+        const thumb = preview?.url ?? p.preview_file_url;
         return {
           id: String(p.id),
-          thumb: preview?.url ?? p.preview_file_url,
+          thumb: thumb,
+          thumbFile: `${p.id}.${String(thumb).split(".").pop()}`,
+          ratio: p.image_height > 0 ? p.image_width / p.image_height : 0,
           full: p.file_url,
           resolution: `${p.image_width}x${p.image_height}`,
           ext: p.file_ext
@@ -152,6 +171,70 @@ Singleton {
     feed.download(name, item.full, `${directory}/${name}`);
   }
 
+  function thumbFor(item) {
+    return thumbs[item.thumbFile] ? Paths.fileUrl(`${thumbDir}/${item.thumbFile}`) : "";
+  }
+
+  function fetchThumbs() {
+    const missing = results.filter(item => item.thumb && !thumbs[item.thumbFile] && !thumbsPending[item.thumbFile]);
+    if (missing.length === 0)
+      return;
+    const pending = Object.assign({}, thumbsPending);
+    const args = [];
+    for (const item of missing) {
+      pending[item.thumbFile] = true;
+      args.push("-o", `${thumbDir}/${item.thumbFile}`, item.thumb);
+    }
+    thumbsPending = pending;
+    thumbFetcher.createObject(root, {
+      files: missing.map(item => item.thumbFile),
+      args: args
+    }).running = true;
+  }
+
+  function thumbFetched(line) {
+    const cut = line.indexOf(" ");
+    if (line.slice(0, cut) !== "200")
+      return;
+    const next = Object.assign({}, thumbs);
+    next[Paths.baseName(line.slice(cut + 1))] = true;
+    thumbs = next;
+  }
+
+  function thumbsSettled(files) {
+    const pending = Object.assign({}, thumbsPending);
+    for (const file of files)
+      delete pending[file];
+    thumbsPending = pending;
+  }
+
+  onResultsChanged: fetchThumbs()
+
+  Component {
+    id: thumbFetcher
+
+    Process {
+      id: fetcher
+
+      property var files: []
+      property var args: []
+
+      command: ["curl", "-sS", "--parallel", "--parallel-max", "8", "--create-dirs", "-m", "20", "-A", root.userAgent, "-w", "%{http_code} %{filename_effective}\n"].concat(args)
+      stdout: SplitParser {
+        onRead: line => root.thumbFetched(line)
+      }
+      onExited: {
+        root.thumbsSettled(fetcher.files);
+        fetcher.destroy();
+      }
+    }
+  }
+
+  Process {
+    running: true
+    command: ["rm", "-rf", root.thumbDir]
+  }
+
   function rebuildSaved() {
     const next = {};
     for (let i = 0; i < folder.count; i++)
@@ -174,6 +257,32 @@ Singleton {
     onDownloadFailed: (key, url) => {
       root.showNotice("Couldn't save image");
       console.warn("Danbooru: download failed", url);
+    }
+  }
+
+  onLoginChanged: fetchProfile()
+  onApiKeyChanged: fetchProfile()
+
+  function fetchProfile() {
+    profileFetch.running = false;
+    if (!hasApiKey) {
+      tagLimit = 2;
+      return;
+    }
+    profileFetch.running = true;
+  }
+
+  Process {
+    id: profileFetch
+    command: ["curl", "-sf", "-m", "10", "-A", root.userAgent, "-u", `${root.login}:${root.apiKey}`, root.apiBase + "/profile.json"]
+    stdout: StdioCollector {
+      onStreamFinished: {
+        try {
+          root.tagLimit = root.limitFor(JSON.parse(text));
+        } catch (e) {
+          root.tagLimit = 2;
+        }
+      }
     }
   }
 
