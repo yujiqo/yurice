@@ -43,7 +43,7 @@ Column {
 
       Label {
         width: parent.width
-        text: AvatarEditor.mode === "normie" ? "Normie picture" : "Weeb picture"
+        text: WeebMode.labelFor(AvatarEditor.mode) + " picture"
         pixelSize: Theme.menuTitleSize
       }
 

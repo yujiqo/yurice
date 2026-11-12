@@ -12,6 +12,7 @@ IconIsland {
   panelWidth: 340
   icon: WeebMode.icon
   label: WeebMode.label
+  smoothLabel: true
   onClicked: mouse => mouse.button === Qt.RightButton ? WeebMode.toggle() : request("weeb")
 
   Component {

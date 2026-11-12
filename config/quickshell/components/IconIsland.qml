@@ -10,6 +10,7 @@ Island {
   property string label: ""
   property bool working: false
   property bool labelShown: expanded
+  property bool smoothLabel: false
 
   padding: (Theme.pillHeight - Theme.iconSize) / 2
   spacing: 0
@@ -63,6 +64,7 @@ Island {
     Row {
       Label {
         text: root.label
+        smooth: root.smoothLabel
       }
 
       Item {

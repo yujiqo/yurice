@@ -24,7 +24,7 @@ Column {
   EmptyState {
     height: 56
     visible: Wallpapers.wallpapers.length === 0
-    text: Wallpapers.hideUnsafe ? "No safe wallpapers yet, mark some in weeb mode" : "No wallpapers in " + Paths.display(Wallpapers.directory)
+    text: Wallpapers.hideUnsafe ? `No safe wallpapers yet, mark some in ${WeebMode.primaryLabel} mode` : "No wallpapers in " + Paths.display(Wallpapers.directory)
   }
 
   GridView {

@@ -12,6 +12,7 @@ IconIsland {
   panelWidth: 340
   icon: "contrast"
   label: ThemeMode.label
+  smoothLabel: true
   onClicked: mouse => mouse.button === Qt.RightButton ? ThemeMode.toggle() : request("theme")
 
   Component {

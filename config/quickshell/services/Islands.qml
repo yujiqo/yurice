@@ -34,7 +34,7 @@ Singleton {
     {
       id: "weeb",
       icon: "visibility",
-      label: "Mode",
+      label: `${WeebMode.primaryLabel} / ${WeebMode.secondaryLabel} mode`,
       panels: ["weeb"]
     },
     {
@@ -79,8 +79,8 @@ Singleton {
   function shown(id) {
     if (!enabled(id))
       return false;
-    if (id === "danbooru")
-      return !WeebMode.hidesDanbooru;
+    if (WeebMode.hidesIsland(id))
+      return false;
     if (id === "media")
       return Media.active !== null;
     if (id === "battery")

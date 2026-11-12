@@ -36,4 +36,17 @@ QtObject {
     t.eq(Settings.hiddenIslands, []);
     Settings.values = before;
   }
+
+  function test_modeLabels(t) {
+    t.eq([WeebMode.primaryLabel, WeebMode.secondaryLabel], ["Weeb", "Normie"]);
+    t.eq(WeebMode.labelFor("normie"), "Normie");
+    t.eq(WeebMode.label, "Weeb");
+  }
+
+  function test_modeIslandDefaults(t) {
+    t.ok(WeebMode.islandHidden("danbooru"));
+    t.ok(!WeebMode.islandHidden("weather"));
+    t.ok(!WeebMode.hidesIsland("danbooru"));
+    t.ok(Islands.shown("weather"));
+  }
 }

@@ -270,13 +270,13 @@ Column {
       AvatarChoice {
         visible: !WeebMode.hidesAvatar
         mode: "weeb"
-        label: "Weeb"
+        label: WeebMode.primaryLabel
         path: Settings.avatarPath
       }
 
       AvatarChoice {
         mode: "normie"
-        label: "Normie"
+        label: WeebMode.secondaryLabel
         path: Settings.normieAvatarPath
       }
     }

@@ -9,6 +9,7 @@ Item {
   property color iconColor: Theme.primary
   property string title: ""
   property string subtitle: ""
+  property bool smoothTitle: false
   default property alias trailing: trailingRow.data
 
   width: parent.width
@@ -34,6 +35,7 @@ Item {
 
     Label {
       text: root.title
+      smooth: root.smoothTitle
       pixelSize: 30
     }
 

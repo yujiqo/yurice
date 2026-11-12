@@ -8,6 +8,7 @@ Rectangle {
   property alias text: input.text
   property alias inputActiveFocus: input.activeFocus
   property string placeholder: ""
+  property real placeholderOpacity: 1
   property string leadingIcon: ""
   property string hint: ""
   property bool clearable: false
@@ -60,6 +61,7 @@ Rectangle {
     verticalAlignment: Text.AlignVCenter
     text: root.placeholder
     visible: input.text === ""
+    opacity: root.placeholderOpacity
     color: Theme.textVariant
     elide: Text.ElideRight
     font.family: Theme.labelFont
