@@ -14,7 +14,7 @@ Singleton {
   readonly property bool isOpen: name !== ""
 
   function open(next) {
-    if (!names.includes(next) || (next === "danbooru" && WeebMode.hidesDanbooru))
+    if (!names.includes(next) || !Islands.panelShown(next))
       return;
     output = Niri.activeOutput;
     name = next;

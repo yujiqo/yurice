@@ -303,6 +303,23 @@ Column {
   }
 
   Group {
+    title: "Bar"
+
+    Repeater {
+      model: Islands.list
+
+      SwitchRow {
+        required property var modelData
+
+        icon: modelData.icon
+        label: modelData.label
+        checked: Islands.enabled(modelData.id)
+        onToggled: Islands.setEnabled(modelData.id, !checked)
+      }
+    }
+  }
+
+  Group {
     title: "Idle"
 
     DurationRow {

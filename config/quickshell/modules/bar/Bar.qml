@@ -77,9 +77,9 @@ PanelWindow {
   }
 
   Connections {
-    target: WeebMode
-    function onHidesDanbooruChanged() {
-      if (WeebMode.hidesDanbooru && root.dropdown === "danbooru")
+    target: Islands
+    function onHiddenChanged() {
+      if (!Islands.panelShown(root.dropdown))
         root.dropdown = "";
     }
   }
@@ -157,28 +157,53 @@ PanelWindow {
     UserIsland {
       host: root
     }
-    MediaIsland {
-      host: root
-    }
-    ThemeIsland {
-      host: root
-    }
-    WallpaperIsland {
-      host: root
+    BarSlot {
+      shown: !Islands.hidden.includes("media")
+      animate: Islands.ready
+
+      MediaIsland {
+        host: root
+      }
     }
     BarSlot {
-      shown: !WeebMode.hidesDanbooru
-      animate: WeebMode.loaded
+      shown: !Islands.hidden.includes("theme")
+      animate: Islands.ready
+
+      ThemeIsland {
+        host: root
+      }
+    }
+    BarSlot {
+      shown: !Islands.hidden.includes("wallpapers")
+      animate: Islands.ready
+
+      WallpaperIsland {
+        host: root
+      }
+    }
+    BarSlot {
+      shown: !Islands.hidden.includes("danbooru")
+      animate: Islands.ready
 
       DanbooruIsland {
         host: root
       }
     }
-    WeebIsland {
-      host: root
+    BarSlot {
+      shown: !Islands.hidden.includes("weeb")
+      animate: Islands.ready
+
+      WeebIsland {
+        host: root
+      }
     }
-    WeatherIsland {
-      host: root
+    BarSlot {
+      shown: !Islands.hidden.includes("weather")
+      animate: Islands.ready
+
+      WeatherIsland {
+        host: root
+      }
     }
   }
 
@@ -194,17 +219,37 @@ PanelWindow {
       y: root.hideOffset
     }
 
-    ConnectivityIsland {
-      host: root
+    BarSlot {
+      shown: !Islands.hidden.includes("connectivity")
+      animate: Islands.ready
+
+      ConnectivityIsland {
+        host: root
+      }
     }
-    LevelsIsland {
-      host: root
+    BarSlot {
+      shown: !Islands.hidden.includes("levels")
+      animate: Islands.ready
+
+      LevelsIsland {
+        host: root
+      }
     }
-    BatteryIsland {
-      host: root
+    BarSlot {
+      shown: !Islands.hidden.includes("battery")
+      animate: Islands.ready
+
+      BatteryIsland {
+        host: root
+      }
     }
-    TimeIsland {
-      host: root
+    BarSlot {
+      shown: !Islands.hidden.includes("time")
+      animate: Islands.ready
+
+      TimeIsland {
+        host: root
+      }
     }
   }
 }

@@ -11,6 +11,7 @@ Singleton {
   id: root
 
   readonly property var display: UPower.displayDevice
+  readonly property bool available: UPower.devices.values.some(d => d.isLaptopBattery)
   readonly property var device: UPower.devices.values.find(d => d.isLaptopBattery) ?? display
   readonly property string sysfsDir: device?.nativePath ? "/sys/class/power_supply/" + device.nativePath + "/" : ""
 
