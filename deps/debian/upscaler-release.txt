@@ -1,0 +1,5 @@
+curl
+ca-certificates
+unzip
+libvulkan1
+libgomp1
