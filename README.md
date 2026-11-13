@@ -1,5 +1,9 @@
 <div align="center">
 
+<img src="https://raw.githubusercontent.com/niri-wm/niri/main/docs/wiki/logo/niri-icon.svg" width="120" alt="niri logo">
+<img src="docs/assets/plus.svg" height="120" alt="+">
+<img src="https://raw.githubusercontent.com/quickshell-mirror/quickshell/master/assets/quickshell.svg" width="120" alt="quickshell logo">
+
 # yurice
 
 _minimal yet pretty. keyboard first. weeb approved._
