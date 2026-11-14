@@ -16,6 +16,7 @@
       curl
       dconf
       nautilus
+      gnome-disk-utility
       ffmpegthumbnailer
       adw-gtk3
       adwaita-icon-theme

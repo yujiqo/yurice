@@ -23,6 +23,7 @@ libglib2.0-bin
 fontconfig
 nautilus
 gnome-sushi
+gnome-disk-utility
 gvfs
 gvfs-backends
 gvfs-fuse
