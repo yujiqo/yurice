@@ -13,7 +13,6 @@ _minimal yet pretty. keyboard first. weeb approved._
 [![matugen](https://img.shields.io/badge/matugen-material%20you-D0BCFF?style=for-the-badge)](https://github.com/InioX/matugen)
 
 ![platforms](https://img.shields.io/badge/platforms-NixOS%20·%20Arch%20·%20Debian%2013-1e1e2e?style=flat-square)
-![flakes](https://img.shields.io/badge/flakes-enabled-1e1e2e?style=flat-square)
 [![license](https://img.shields.io/badge/license-MIT-1e1e2e?style=flat-square)](LICENSE)
 
 ![yurice](screenshots/larp_setup_with_normie_aura.png)
