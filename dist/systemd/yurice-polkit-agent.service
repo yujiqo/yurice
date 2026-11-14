@@ -1,0 +1,11 @@
+[Unit]
+Description=Polkit authentication agent for yurice
+PartOf=graphical-session.target
+After=graphical-session.target
+
+[Service]
+ExecStart=@agent@
+Restart=on-failure
+
+[Install]
+WantedBy=graphical-session.target

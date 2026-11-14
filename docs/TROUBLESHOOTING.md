@@ -105,6 +105,20 @@ To get your old login manager back:
 
 If the greeter starts but at the wrong scale, see [CUSTOMIZING → The greeter](CUSTOMIZING.md#the-greeter).
 
+## Nautilus can't open the trash or a drive
+
+Nautilus needs gvfs for the trash, phones and network shares, udisks2 to see and mount drives, and a polkit agent to ask for your password when a partition needs it. Without the agent, those mounts fail with "Not authorized" and no prompt ever appears.
+
+Check that the agent is running:
+
+```sh
+systemctl --user status yurice-polkit-agent            # Arch / Debian
+systemctl --user status polkit-gnome-authentication-agent-1   # NixOS
+```
+
+- **Arch / Debian:** if `install.sh` warned that no polkit agent was found, install `polkit-gnome` (Arch) or `mate-polkit` (Debian) and run `./install.sh` again.
+- **NixOS:** gvfs and udisks2 come from `programs.yurice.enable` and the agent from `programs.yurice.desktop.enable`, so make sure you didn't turn them off in your host config.
+
 ## Wrong shell in kitty
 
 kitty reads the path to fish from `~/.config/kitty/kitty.local.conf`. Make sure it points at the real binary (`command -v fish`). See [CUSTOMIZING → The kitty quirk](CUSTOMIZING.md#the-kitty-quirk-kittylocalconf).

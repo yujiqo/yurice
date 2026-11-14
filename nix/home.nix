@@ -87,6 +87,8 @@ in {
         allowImages = true;
       };
 
+      services.polkit-gnome.enable = true;
+
       dbus.packages = [pkgs.sushi];
       systemd.user.sessionVariables.GST_PLUGIN_SYSTEM_PATH_1_0 = "${pkgs.gst_all_1.gst-libav}/lib/gstreamer-1.0";
       xdg.dataFile."sushi/viewers/markdown.js".source = pkgs.replaceVars ../dist/sushi-markdown.js {

@@ -16,6 +16,7 @@
       curl
       dconf
       nautilus
+      ffmpegthumbnailer
       adw-gtk3
       adwaita-icon-theme
       material-symbols

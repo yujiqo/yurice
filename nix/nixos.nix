@@ -72,6 +72,14 @@ in {
       hardware.bluetooth.enable = lib.mkDefault true;
       networking.networkmanager.enable = lib.mkDefault true;
       programs.dconf.enable = true;
+      services.gvfs.enable = lib.mkDefault true;
+      services.udisks2.enable = lib.mkDefault true;
+      security.polkit.enable = true;
+      environment.systemPackages = with pkgs; [
+        ntfs3g
+        exfatprogs
+        dosfstools
+      ];
       services.gnome.glib-networking.enable = true;
 
       fonts.packages = with pkgs; [

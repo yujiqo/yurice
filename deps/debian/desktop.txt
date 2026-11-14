@@ -23,6 +23,15 @@ libglib2.0-bin
 fontconfig
 nautilus
 gnome-sushi
+gvfs
+gvfs-backends
+gvfs-fuse
+udisks2
+mate-polkit
+ntfs-3g
+exfatprogs
+dosfstools
+ffmpegthumbnailer
 gstreamer1.0-libav
 cmark-gfm
 adwaita-icon-theme

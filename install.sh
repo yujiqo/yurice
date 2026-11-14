@@ -571,6 +571,28 @@ install_desktop() {
   run systemctl --user enable yurice-cliphist.service yurice-cliphist-images.service ||
     warn "enable the clipboard units later with: systemctl --user enable yurice-cliphist.service yurice-cliphist-images.service"
 
+  say "enabling the polkit agent"
+  agent=""
+  for candidate in \
+    /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 \
+    /usr/libexec/polkit-mate-authentication-agent-1 \
+    /usr/lib/mate-polkit/polkit-mate-authentication-agent-1; do
+    if [ -x "$candidate" ]; then
+      agent=$candidate
+      break
+    fi
+  done
+  if [ -n "$agent" ]; then
+    sed "s|@agent@|$agent|" "$repo/dist/systemd/yurice-polkit-agent.service" |
+      write_user "$config_home/systemd/user/yurice-polkit-agent.service"
+    record "unit yurice-polkit-agent.service"
+    run systemctl --user daemon-reload || true
+    run systemctl --user enable yurice-polkit-agent.service ||
+      warn "enable the polkit agent later with: systemctl --user enable yurice-polkit-agent.service"
+  else
+    warn "no polkit agent found; nautilus will not be able to mount drives that need a password"
+  fi
+
   run gsettings set org.gnome.desktop.interface icon-theme Adwaita ||
     warn "could not set the icon theme; run it again from inside your session"
   run gsettings set org.gnome.desktop.wm.preferences button-layout ':' ||

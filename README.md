@@ -128,7 +128,7 @@ import the modules and turn on what you want:
 imports = [inputs.yurice.nixosModules.default];
 
 programs.yurice = {
-  enable = true;                     # niri, portals, fonts, pipewire, bluetooth, networkmanager, ...
+  enable = true;                     # niri, portals, fonts, pipewire, bluetooth, networkmanager, gvfs, udisks2, ...
   greeter.enable = true;             # quickshell login screen on greetd (optional)
   greeter.niriExtraConfig = ''       # output scaling for the greeter (optional)
     output "eDP-1" { scale 1; }

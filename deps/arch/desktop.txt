@@ -24,6 +24,17 @@ networkmanager
 dconf
 nautilus
 sushi
+gvfs
+gvfs-mtp
+gvfs-gphoto2
+gvfs-afc
+gvfs-smb
+udisks2
+polkit-gnome
+ntfs-3g
+exfatprogs
+dosfstools
+ffmpegthumbnailer
 gst-libav
 cmark-gfm
 adw-gtk-theme
