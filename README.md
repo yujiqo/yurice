@@ -8,7 +8,7 @@
 
 _minimal yet pretty. keyboard first. weeb approved._
 
-[![niri](https://img.shields.io/badge/niri-scrollable--tiling-7E9CD8?style=for-the-badge)](https://github.com/YaLTeR/niri)
+[![niri](https://img.shields.io/badge/niri-scrolling--tiling-7E9CD8?style=for-the-badge)](https://github.com/YaLTeR/niri)
 [![quickshell](https://img.shields.io/badge/quickshell-qml-41CD52?style=for-the-badge&logo=qt&logoColor=white)](https://quickshell.org)
 [![matugen](https://img.shields.io/badge/matugen-material%20you-D0BCFF?style=for-the-badge)](https://github.com/InioX/matugen)
 
@@ -81,7 +81,7 @@ by default they're called "weeb" and "normie", but you decide the naming. some i
 - "regular" and "focus"
 - "casual" and "pro"
 
-i think you get the idea. `mod+shift+s` or right click on the eye icon in the bar.
+i think you get the idea. `mod+shift+s` or right click on the eye icon in the bar let's you switch between modes.
 
 ### keyboard all the way down
 
