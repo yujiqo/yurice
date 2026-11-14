@@ -64,7 +64,7 @@ any island can be hidden if you don't need it.
 | `mod+q`        | power menu: power off, reboot, log out, suspend           |
 | `print screen` | screenshot tool                                           |
 
-the full list is in [docs/KEYBINDS.md](docs/KEYBINDS.md).
+more about keybinds in [docs/KEYBINDS.md](docs/KEYBINDS.md).
 
 ### the switch that makes your system safe for work
 
