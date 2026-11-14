@@ -94,7 +94,13 @@ Item {
               width: section.width
               height: root.step
               radius: Theme.menuItemRadius / 2
-              color: hover.hovered ? Theme.surfaceContainer : "transparent"
+              color: hover.hovered ? Theme.surfaceContainer : Qt.alpha(Theme.surfaceContainer, 0)
+
+              Behavior on color {
+                ColorAnimation {
+                  duration: Theme.animHover
+                }
+              }
 
               HoverHandler {
                 id: hover
