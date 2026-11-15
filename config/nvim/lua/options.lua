@@ -70,3 +70,9 @@ vim.opt.wildmode = "longest:full,full"
 vim.opt.diffopt:append("linematch:60")
 vim.opt.redrawtime = 10000
 vim.opt.maxmempattern = 20000
+
+vim.opt.spelllang = { "en", "ru" }
+vim.opt.spelloptions = { "camel" }
+vim.opt.spellcapcheck = ""
+vim.opt.spellsuggest = { "best", 9 }
+vim.opt.spellfile = vim.fn.stdpath("data") .. "/site/spell/en.utf-8.add"
