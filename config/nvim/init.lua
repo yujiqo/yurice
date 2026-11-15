@@ -23,6 +23,11 @@ require("autocmds")
 -------------
 require("plugins")
 
+------------
+-- splash --
+------------
+require("splash")
+
 ---------
 -- lsp --
 ---------
