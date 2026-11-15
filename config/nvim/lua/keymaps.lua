@@ -18,11 +18,6 @@ vim.keymap.set("n", "<C-u>", "<C-u>zz", { desc = "half page up (centered)" })
 vim.keymap.set("x", "<leader>p", '"_dP', { desc = "paste without yanking" })
 vim.keymap.set({ "n", "v" }, "<leader>d", '"_d', { desc = "delete without yanking" })
 
-vim.keymap.set("n", "<C-h>", "<cmd>TmuxNavigateLeft<CR>", { desc = "move to left window/pane" })
-vim.keymap.set("n", "<C-j>", "<cmd>TmuxNavigateDown<CR>", { desc = "move to bottom window/pane" })
-vim.keymap.set("n", "<C-k>", "<cmd>TmuxNavigateUp<CR>", { desc = "move to top window/pane" })
-vim.keymap.set("n", "<C-l>", "<cmd>TmuxNavigateRight<CR>", { desc = "move to right window/pane" })
-
 vim.keymap.set("n", "<leader>sv", ":vsplit<CR>", { desc = "split window vertically" })
 vim.keymap.set("n", "<leader>sh", ":split<CR>", { desc = "split window horizontally" })
 vim.keymap.set("n", "<C-Up>", ":resize +2<CR>", { desc = "increase window height" })

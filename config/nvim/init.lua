@@ -31,12 +31,12 @@ require("lsp")
 --------------------------
 -- linting & formatting --
 --------------------------
-require("efm")
+require("efmls")
 
 ----------------
 -- completion --
 ----------------
-require("cmp")
+require("completion")
 
 ---------------------
 -- custom settings --
