@@ -46,6 +46,15 @@ PanelWindow {
     return item && item.sourceSize.width > 0 ? item.sourceSize.width / item.width : modelData.devicePixelRatio;
   }
 
+  function select(left, top, right, bottom) {
+    const scale = scaleOf(view);
+    const l = Math.round(Math.min(left, right) * scale) / scale;
+    const t = Math.round(Math.min(top, bottom) * scale) / scale;
+    const r = Math.round(Math.max(left, right) * scale) / scale;
+    const b = Math.round(Math.max(top, bottom) * scale) / scale;
+    Screenshot.setSelection(name, l, t, r - l, b - t);
+  }
+
   function grabRegion(callback) {
     const scale = scaleOf(view);
     region.grabToImage(callback, Qt.size(Math.round(region.width * scale), Math.round(region.height * scale)));
@@ -155,6 +164,7 @@ PanelWindow {
         sourceItem: root.view
         sourceRect: Qt.rect(x, y, width, height)
         textureSize: Qt.size(Math.round(width * root.scaleOf(root.view)), Math.round(height * root.scaleOf(root.view)))
+        smooth: false
         live: true
       }
 
@@ -274,7 +284,7 @@ PanelWindow {
         mode = hitTest(event.x, event.y) || "new";
         start = Qt.rect(Screenshot.selX, Screenshot.selY, Screenshot.selW, Screenshot.selH);
         if (mode === "new")
-          Screenshot.setSelection(root.name, pressX, pressY, 0, 0);
+          root.select(pressX, pressY, pressX, pressY);
       }
 
       onPositionChanged: event => {
@@ -285,9 +295,11 @@ PanelWindow {
         const dx = mx - pressX;
         const dy = my - pressY;
         if (mode === "new") {
-          Screenshot.setSelection(root.name, Math.min(pressX, mx), Math.min(pressY, my), Math.abs(mx - pressX), Math.abs(my - pressY));
+          root.select(pressX, pressY, mx, my);
         } else if (mode === "move") {
-          Screenshot.setSelection(root.name, clamp(start.x + dx, 0, width - start.width), clamp(start.y + dy, 0, height - start.height), start.width, start.height);
+          const x = clamp(start.x + dx, 0, width - start.width);
+          const y = clamp(start.y + dy, 0, height - start.height);
+          root.select(x, y, x + start.width, y + start.height);
         } else {
           let left = start.x, right = start.x + start.width, top = start.y, bottom = start.y + start.height;
           if (mode.includes("l"))
@@ -302,7 +314,7 @@ PanelWindow {
           right = clamp(right, 0, width);
           top = clamp(top, 0, height);
           bottom = clamp(bottom, 0, height);
-          Screenshot.setSelection(root.name, Math.min(left, right), Math.min(top, bottom), Math.abs(right - left), Math.abs(bottom - top));
+          root.select(left, top, right, bottom);
         }
       }
 
