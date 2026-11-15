@@ -11,6 +11,7 @@ if status is-interactive
   alias cat="bat --theme base16-256 -S"
   alias top="btop"
   alias lgit="lazygit"
+  alias notesync="git add -A && git commit -m "notes $(date +%F)" && git push"
 end
 
 function files
