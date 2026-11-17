@@ -12,7 +12,7 @@
     { "type": "custom", "format": "──────── system ────────", "outputColor": "38;2;{{colors.tertiary.default.red}};{{colors.tertiary.default.green}};{{colors.tertiary.default.blue}}" },
     { "type": "os", "key": "    os" },
     { "type": "kernel", "key": "    kernel" },
-    { "type": "packages", "key": "  󰏖  packages", "format": "{} (nixpkgs)" },
+    { "type": "packages", "key": "  󰏖  packages" },
     { "type": "shell", "key": "    shell" },
     { "type": "uptime", "key": "    uptime" },
     { "type": "custom", "format": "──────── desktop ────────", "outputColor": "38;2;{{colors.tertiary.default.red}};{{colors.tertiary.default.green}};{{colors.tertiary.default.blue}}" },
