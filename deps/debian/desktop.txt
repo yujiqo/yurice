@@ -9,7 +9,7 @@ libnotify-bin
 curl
 ca-certificates
 xz-utils
-kitty
+kitty-terminfo
 xwayland
 bluez
 pipewire-pulse

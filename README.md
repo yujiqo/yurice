@@ -173,7 +173,7 @@ cd ~/yurice
 
 useful flags: `--dry-run`, `--no-packages`, `--upscaler=build|aur|release|none`, `-y`. see `./install.sh -h`.
 
-on debian, niri and xwayland-satellite are built from pinned upstream tags into `/usr/local`, and matugen comes from its upstream release (on non-x86_64 it's built too and needs rustc 1.88, newer than debian 13 has).
+on debian, niri and xwayland-satellite are built from pinned upstream tags into `/usr/local`, and matugen comes from its upstream release (on non-x86_64 it's built too and needs rustc 1.88, newer than debian 13 has). kitty and neovim come from their upstream releases too while debian's are too old (kitty needs 0.46 for background blur).
 anything the script would overwrite is backed up first.
 
 <details>

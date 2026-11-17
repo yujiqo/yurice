@@ -25,6 +25,9 @@ matugen_sha256=a2e3b50e49ed6439999ba3c252ed04fabd98ee4e9d12e5e5dff2e66370569751
 nvim_version=v0.12.6
 nvim_sha256_x86_64=474430d53e6264f6d6dd18db42d6dc9df3a1b56ca9e88a325bbf860e1a811d87
 nvim_sha256_arm64=8f1f64a0bdb97247034038c3823c6cbad5bdf9ecd5751b85494b71c3ee04c815
+kitty_version=0.49.2
+kitty_sha256_x86_64=d573618b911e9c461bd421b96c13c74c7f1cb2f1ac9c327818d4ff84366cf5c6
+kitty_sha256_arm64=0c81a995614426cccf0fecaf7d104d47cd63bbccf173d14976e9f92e3d60fce6
 agave_url=https://github.com/ryanoasis/nerd-fonts/releases/download/v3.5.1/Agave.tar.xz
 agave_sha256=0b29420ed47a4cc9bc2743d454ef17ea645ae31e6c348e86154d994b6ccc756e
 symbols_url='https://raw.githubusercontent.com/google/material-design-icons/10ecc14790612ca8fd164e3f4ffe9c16fc50d5b7/variablefont/MaterialSymbolsSharp%5BFILL,GRAD,opsz,wght%5D.ttf'
@@ -73,7 +76,9 @@ sources, and matugen, the fonts and the adw-gtk3 theme are fetched from
 their upstream releases, all into $prefix. matugen is built from source
 too on anything but x86_64, which needs rustc 1.88. Source builds run in
 $build_root
-instead of /tmp, which is a small tmpfs on Debian 13.
+instead of /tmp, which is a small tmpfs on Debian 13. kitty and neovim
+also come from upstream releases while Debian's are too old for the
+configs (kitty before 0.46 has no background blur).
 EOF
 }
 
@@ -297,14 +302,63 @@ install_debian_packages() {
   fi
 
   if has terminal; then
-    candidate=$(apt-cache policy neovim 2>/dev/null | sed -n 's/^ *Candidate: //p')
-    if [ -n "$candidate" ] && [ "$candidate" != "(none)" ] && dpkg --compare-versions "$candidate" ge 0.11; then
+    if apt_candidate_at_least neovim 0.11; then
       run sudo apt-get install neovim
     else
       install_neovim_release
     fi
   fi
+
+  if apt_candidate_at_least kitty 0.46; then
+    run sudo apt-get install kitty
+  else
+    install_kitty_release
+  fi
 }
+
+apt_candidate_at_least() {
+  candidate=$(apt-cache policy "$1" 2>/dev/null | sed -n 's/^ *Candidate: //p')
+  [ -n "$candidate" ] && [ "$candidate" != "(none)" ] && dpkg --compare-versions "$candidate" ge "$2"
+}
+
+install_kitty_release() (
+  case $(uname -m) in
+    x86_64) arch=x86_64 sha=$kitty_sha256_x86_64 ;;
+    aarch64) arch=arm64 sha=$kitty_sha256_arm64 ;;
+    *)
+      warn "Debian's kitty is older than 0.46 and there is no upstream build for $(uname -m); installing it anyway, without background blur"
+      run sudo apt-get install kitty
+      exit 0
+      ;;
+  esac
+  dir=$prefix/lib/yurice-kitty
+  if [ -x "$dir/bin/kitty" ] && "$dir/bin/kitty" --version 2>/dev/null | grep -qF "kitty $kitty_version "; then
+    say "kitty $kitty_version already installed in $dir"
+    exit 0
+  fi
+  say "installing kitty $kitty_version from upstream (Debian's is older than 0.46, which background blur needs)"
+  if [ "$dry" = 1 ]; then
+    printf '  + fetch kitty %s for %s into %s\n' "$kitty_version" "$arch" "$dir"
+    exit 0
+  fi
+  work=$(mktemp -d)
+  trap 'rm -rf "$work"' EXIT
+  fetch "https://github.com/kovidgoyal/kitty/releases/download/v$kitty_version/kitty-$kitty_version-$arch.txz" "$sha" "$work/kitty.txz"
+  mkdir "$work/kitty"
+  tar -xJf "$work/kitty.txz" -C "$work/kitty"
+  sudo rm -rf "$dir"
+  sudo mkdir -p "$prefix/bin" "$prefix/lib" "$prefix/share/applications" "$prefix/share/icons/hicolor/256x256/apps" "$prefix/share/icons/hicolor/scalable/apps"
+  sudo cp -r "$work/kitty" "$dir"
+  record "system $dir"
+  for name in kitty kitten; do
+    sudo ln -sfn "$dir/bin/$name" "$prefix/bin/$name"
+    record "system $prefix/bin/$name"
+  done
+  for file in applications/kitty.desktop applications/kitty-open.desktop icons/hicolor/256x256/apps/kitty.png icons/hicolor/scalable/apps/kitty.svg; do
+    sudo ln -sfn "$dir/share/$file" "$prefix/share/$file"
+    record "system $prefix/share/$file"
+  done
+)
 
 enable_backports() {
   if grep -rqsE "^[^#]*$backports" /etc/apt/sources.list /etc/apt/sources.list.d/; then
