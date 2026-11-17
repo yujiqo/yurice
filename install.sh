@@ -5,6 +5,7 @@ repo=$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)
 config_home=${XDG_CONFIG_HOME:-$HOME/.config}
 data_home=${XDG_DATA_HOME:-$HOME/.local/share}
 state_dir=${XDG_STATE_HOME:-$HOME/.local/state}/yurice
+build_root=${XDG_CACHE_HOME:-$HOME/.cache}/yurice-build
 manifest=$state_dir/installed
 backup_dir=$state_dir/backup/$(date +%Y%m%d-%H%M%S)
 greeter_share=/usr/local/share/yurice
@@ -67,7 +68,9 @@ Options:
 
 On Debian, niri, xwayland-satellite and matugen are built from pinned
 upstream sources, and the fonts and the adw-gtk3 theme are fetched from
-their upstream releases, all into $prefix.
+their upstream releases, all into $prefix. Source builds run in
+$build_root
+instead of /tmp, which is a small tmpfs on Debian 13.
 EOF
 }
 
@@ -159,6 +162,16 @@ fetch_source() {
   git clone --quiet --depth 1 --branch "$3" "$2" "$1"
   [ "$(git -C "$1" rev-parse HEAD)" = "$4" ] ||
     die "the upstream $3 tag of $2 no longer points at $4; refusing to build"
+}
+
+build_dir() {
+  mkdir -p "$build_root"
+  mktemp -d "$build_root/XXXXXX"
+}
+
+clean_build_dir() {
+  rm -rf "$1"
+  rmdir "$build_root" 2>/dev/null || true
 }
 
 install_system() {
@@ -377,8 +390,8 @@ build_upscaler() (
     exit 0
   fi
 
-  work=$(mktemp -d)
-  trap 'rm -rf "$work"' EXIT
+  work=$(build_dir)
+  trap 'clean_build_dir "$work"' EXIT
   fetch_source "$work/src" https://github.com/xinntao/Real-ESRGAN-ncnn-vulkan v0.2.0 "$upscaler_rev"
   git -C "$work/src" apply --directory=src "$repo/dist/upscaler/cmakelists.patch" "$repo/dist/upscaler/models_path.patch"
   sed -i "s|REPLACE_MODELS|$models|" "$work/src/src/main.cpp"
@@ -440,8 +453,8 @@ build_niri() (
     printf '  + build niri %s into %s\n' "$niri_rev" "$prefix"
     exit 0
   fi
-  work=$(mktemp -d)
-  trap 'rm -rf "$work"' EXIT
+  work=$(build_dir)
+  trap 'clean_build_dir "$work"' EXIT
   fetch_source "$work/src" https://github.com/niri-wm/niri "$niri_tag" "$niri_rev"
   cargo_build "$work"
   res=$work/src/resources
@@ -467,8 +480,8 @@ build_rust_tool() (
     printf '  + build %s %s into %s\n' "$name" "$rev" "$prefix/bin/$name"
     exit 0
   fi
-  work=$(mktemp -d)
-  trap 'rm -rf "$work"' EXIT
+  work=$(build_dir)
+  trap 'clean_build_dir "$work"' EXIT
   fetch_source "$work/src" "$url" "$tag" "$rev"
   cargo_build "$work"
   install_system 755 "$work/target/release/$name" "$prefix/bin/$name"

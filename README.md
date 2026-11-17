@@ -176,6 +176,16 @@ useful flags: `--dry-run`, `--no-packages`, `--upscaler=build|aur|release|none`,
 on debian, niri, xwayland-satellite and matugen are built from pinned upstream tags into `/usr/local`.
 anything the script would overwrite is backed up first.
 
+<details>
+<summary>space and memory for the debian builds</summary>
+
+the rust builds run in `~/.cache/yurice-build` (not `/tmp`, which debian 13 keeps in ram at half its size) and are deleted after each one finishes. plan for:
+
+- **disk:** ~5 GB free on top of the packages.
+- **ram:** 4 GB at least, 8 GB is comfortable. cargo runs one job per core and linking niri is heavy, so on a small vm with many cores cap it: `CARGO_BUILD_JOBS=2 ./install.sh`.
+
+</details>
+
 </details>
 
 ### update
