@@ -6,3 +6,5 @@ vulkan-headers
 vulkan-icd-loader
 libwebp
 unzip
+gcc
+make
