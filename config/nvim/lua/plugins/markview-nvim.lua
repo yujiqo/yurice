@@ -1,6 +1,6 @@
 require("markview").setup({
 	preview = {
-		enable = false,
+		-- enable = false,
 		icon_provider = "mini",
 	},
 })
