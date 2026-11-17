@@ -272,6 +272,7 @@ see more details in [docs/PHILOSOPHY.md](docs/PHILOSOPHY.md).
 - [matugen](https://github.com/InioX/matugen) - for turning every wallpaper into a theme.
 - [end-4's dots](https://github.com/end-4/dots-hyprland) and [iNiR](https://github.com/snowarch/inir) - for ideas and inspiration (iNiR is literally the i used the most on my thinkpad).
 - [AngelOS-Dotfiles](https://github.com/MixaDoDs/AngelOS-Dotfiles) - for showing me what claude code is capable of.
+- distro logos in fastfetch: the [debian open use logo](https://www.debian.org/logos/) (© Software in the Public Interest, LGPLv3+ or CC-BY-SA 3.0+), the [arch linux logo](https://archlinux.org/art/) (a trademark of arch linux, icon cut from the official svg), and the [nixos logo](https://github.com/NixOS/nixos-artwork/tree/master/logo) (by Tim Cuthbertson, CC-BY 4.0).
 
 ---
 
