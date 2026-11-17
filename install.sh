@@ -20,6 +20,8 @@ satellite_tag=v0.8.3
 satellite_rev=b83eab900644e4c7c77982ce3d44cb490f0c5e1d
 matugen_tag=v4.2.0
 matugen_rev=bb27a35d7f9e0f57cf638703f3d8e3182aed0304
+matugen_url=https://github.com/InioX/matugen/releases/download/v4.2.0/matugen-4.2.0-x86_64.tar.gz
+matugen_sha256=a2e3b50e49ed6439999ba3c252ed04fabd98ee4e9d12e5e5dff2e66370569751
 nvim_version=v0.12.6
 nvim_sha256_x86_64=474430d53e6264f6d6dd18db42d6dc9df3a1b56ca9e88a325bbf860e1a811d87
 nvim_sha256_arm64=8f1f64a0bdb97247034038c3823c6cbad5bdf9ecd5751b85494b71c3ee04c815
@@ -66,9 +68,10 @@ Options:
   --uninstall     remove the links, files and units this script created
   -h, --help      show this help
 
-On Debian, niri, xwayland-satellite and matugen are built from pinned
-upstream sources, and the fonts and the adw-gtk3 theme are fetched from
-their upstream releases, all into $prefix. Source builds run in
+On Debian, niri and xwayland-satellite are built from pinned upstream
+sources, and matugen, the fonts and the adw-gtk3 theme are fetched from
+their upstream releases, all into $prefix. matugen is built from source
+too on anything but x86_64, which needs rustc 1.88. Source builds run in
 $build_root
 instead of /tmp, which is a small tmpfs on Debian 13.
 EOF
@@ -534,10 +537,31 @@ install_gtk_theme() (
   record "system $dir/adw-gtk3-dark"
 )
 
+install_matugen_release() (
+  if command -v matugen >/dev/null 2>&1; then
+    say "matugen already installed at $(command -v matugen)"
+    exit 0
+  fi
+  say "installing matugen $matugen_tag from upstream"
+  if [ "$dry" = 1 ]; then
+    printf '  + fetch %s (sha256 %s) into %s\n' "$matugen_url" "$matugen_sha256" "$prefix/bin/matugen"
+    exit 0
+  fi
+  work=$(mktemp -d)
+  trap 'rm -rf "$work"' EXIT
+  fetch "$matugen_url" "$matugen_sha256" "$work/matugen.tar.gz"
+  tar -xzf "$work/matugen.tar.gz" -C "$work" matugen
+  install_system 755 "$work/matugen" "$prefix/bin/matugen"
+)
+
 install_debian_desktop_extras() {
   build_niri
   build_rust_tool xwayland-satellite https://github.com/Supreeeme/xwayland-satellite "$satellite_tag" "$satellite_rev"
-  build_rust_tool matugen https://github.com/InioX/matugen "$matugen_tag" "$matugen_rev"
+  if [ "$(uname -m)" = x86_64 ]; then
+    install_matugen_release
+  else
+    build_rust_tool matugen https://github.com/InioX/matugen "$matugen_tag" "$matugen_rev"
+  fi
   install_font "Agave Nerd Font" "$agave_url" "$agave_sha256"
   install_font "Material Symbols Sharp" "$symbols_url" "$symbols_sha256"
   install_gtk_theme
