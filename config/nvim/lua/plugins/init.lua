@@ -8,7 +8,6 @@ vim.pack.add({
 	{ src = github .. "3rd/image.nvim" },
 	{ src = github .. "brenoprata10/nvim-highlight-colors" },
 	{ src = github .. "yousefhadder/markdown-plus.nvim" },
-	{ src = github .. "OXY2DEV/markview.nvim" },
 
 	{ src = github .. "neovim/nvim-lspconfig" },
 	{ src = github .. "mason-org/mason.nvim" },
@@ -22,6 +21,5 @@ require("plugins/nvim-highlight-colors")
 require("plugins/mini-nvim")
 require("plugins/image-nvim")
 require("plugins/markdown-plus-nvim")
-require("plugins/markview-nvim")
 require("plugins/fzf-lua")
 require("plugins/vim-tmux-navigator")
