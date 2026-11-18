@@ -99,7 +99,7 @@ Column {
 
       width: grid.cellWidth
       height: grid.cellHeight
-      source: Paths.fileUrl(modelData)
+      source: Wallpapers.thumbFor(modelData)
       resolution: Wallpapers.resolutionOf(modelData)
       resolutionColor: canUpscale ? Theme.warn : Theme.text
       readonly property bool working: WallpaperTools.isBusy(modelData)

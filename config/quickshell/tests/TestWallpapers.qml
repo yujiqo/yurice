@@ -42,6 +42,30 @@ QtObject {
     Wallpapers.resolutions = before;
   }
 
+  function test_thumbs(t) {
+    const before = Wallpapers.thumbs;
+    const modifiedBefore = Wallpapers.modified;
+    Wallpapers.modified = {
+      "/w/a.jpg": 1
+    };
+    const file = Wallpapers.thumbPath("/w/a.jpg");
+    t.ok(file.startsWith(Wallpapers.thumbDir + "/"));
+    t.eq(Wallpapers.thumbPath("/w/a.jpg"), file, "key is stable");
+    t.eq(Wallpapers.thumbFor("/w/a.jpg"), "", "no preview until generated");
+    t.eq(Wallpapers.thumbFor(""), "");
+    Wallpapers.thumbs = {
+      [file]: true
+    };
+    t.eq(Wallpapers.thumbFor("/w/a.jpg"), Paths.fileUrl(file));
+    Wallpapers.modified = {
+      "/w/a.jpg": 2
+    };
+    t.ok(Wallpapers.thumbPath("/w/a.jpg") !== file, "edits invalidate the preview");
+    t.eq(Wallpapers.thumbFor("/w/a.jpg"), "");
+    Wallpapers.thumbs = before;
+    Wallpapers.modified = modifiedBefore;
+  }
+
   function test_weebModeDefaults(t) {
     t.eq(WeebMode.mode, "weeb");
     t.ok(!WeebMode.hidesWallpapers);

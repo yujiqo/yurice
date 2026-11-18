@@ -28,7 +28,6 @@ PanelWindow {
   readonly property real gap: Theme.pickerGap / Theme.pickerScale
   readonly property int cols: Math.max(1, Math.ceil(Math.sqrt(items.length)))
   readonly property real cornerRadius: Theme.pickerRadius * (1 - zoom) / (1 - Theme.pickerScale) / zoom
-  readonly property size thumbSize: Qt.size(Wallpapers.screenSize.width * Theme.pickerScale * Theme.pickerThumbOversample, Wallpapers.screenSize.height * Theme.pickerScale * Theme.pickerThumbOversample)
 
   screen: targetScreen
   visible: phase !== "closed" && phase !== "loading"
@@ -307,7 +306,7 @@ PanelWindow {
         height: root.tileH * Theme.pickerBlurScale
         fillMode: Image.PreserveAspectCrop
         asynchronous: true
-        source: Paths.fileUrl(root.backdropPath)
+        source: Wallpapers.thumbFor(root.backdropPath)
         sourceSize: Qt.size(width, height)
         visible: false
         onStatusChanged: Qt.callLater(root.tryStart, false)
@@ -366,7 +365,7 @@ PanelWindow {
           onReadyChanged: Qt.callLater(root.tryStart, false)
 
           function done(img) {
-            return img.status === Image.Ready || img.status === Image.Error;
+            return img.source != "" && (img.status === Image.Ready || img.status === Image.Error);
           }
 
           Image {
@@ -375,8 +374,8 @@ PanelWindow {
             fillMode: Image.PreserveAspectCrop
             asynchronous: true
             mipmap: true
-            source: Paths.fileUrl(tile.modelData)
-            sourceSize: root.thumbSize
+            source: Wallpapers.thumbFor(tile.modelData)
+            sourceSize: Wallpapers.thumbSize
             visible: false
           }
 
@@ -385,7 +384,7 @@ PanelWindow {
             anchors.fill: parent
             fillMode: Image.PreserveAspectCrop
             asynchronous: true
-            source: tile.needsFull ? Paths.fileUrl(tile.modelData) : ""
+            source: tile.needsFull ? Paths.fileUrl(tile.modelData === WallpaperPublish.cachedFor ? WallpaperPublish.cacheFile : tile.modelData) : ""
             sourceSize: Qt.size(root.tileW * root.dpr, root.tileH * root.dpr)
             visible: false
           }

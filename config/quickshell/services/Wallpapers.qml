@@ -46,6 +46,69 @@ Singleton {
     return Qt.size(Math.round(w), Math.round(h));
   }
   readonly property string screenResolution: `${screenSize.width}x${screenSize.height}`
+  readonly property string thumbDir: Paths.cache + "/wallpaper-thumbs"
+  readonly property size thumbSize: {
+    if (screenSize.height <= 0)
+      return Qt.size(0, 0);
+    const h = Math.max(Math.round(screenSize.height * Theme.pickerScale * Theme.pickerThumbOversample), Theme.pickerThumbMinHeight);
+    return Qt.size(Math.round(h * screenSize.width / screenSize.height), h);
+  }
+  property var modified: ({})
+  property var thumbs: ({})
+  property bool thumbsDirty: false
+
+  function thumbPath(path) {
+    const key = `${path}|${modified[path] ?? 0}|${thumbSize.width}x${thumbSize.height}`;
+    return `${thumbDir}/${Qt.md5(key)}.jpg`;
+  }
+
+  function thumbFor(path) {
+    if (!path)
+      return "";
+    const file = thumbPath(path);
+    return thumbs[file] ? Paths.fileUrl(file) : "";
+  }
+
+  function makeThumbs() {
+    if (allWallpapers.length === 0 || thumbSize.width <= 0)
+      return;
+    if (thumbGen.running) {
+      thumbsDirty = true;
+      return;
+    }
+    const args = [];
+    for (const p of allWallpapers)
+      args.push(p, thumbPath(p));
+    thumbGen.command = ["sh", Paths.scripts + "/wallpaper-thumbs.sh", `${thumbSize.width}x${thumbSize.height}`, thumbDir].concat(args);
+    thumbGen.running = true;
+  }
+
+  onThumbSizeChanged: thumbDebounce.restart()
+
+  Timer {
+    id: thumbDebounce
+    interval: 300
+    onTriggered: root.makeThumbs()
+  }
+
+  Process {
+    id: thumbGen
+    stdout: SplitParser {
+      onRead: line => {
+        if (line === "")
+          return;
+        const next = Object.assign({}, root.thumbs);
+        next[line] = true;
+        root.thumbs = next;
+      }
+    }
+    onExited: () => {
+      if (root.thumbsDirty) {
+        root.thumbsDirty = false;
+        root.makeThumbs();
+      }
+    }
+  }
 
   function isSafe(path) {
     return safeFiles[Paths.baseName(path)] === true;
@@ -117,7 +180,10 @@ Singleton {
     resolutions = next;
   }
 
-  onAllWallpapersChanged: measure()
+  onAllWallpapersChanged: {
+    measure();
+    thumbDebounce.restart();
+  }
 
   Process {
     id: identify
@@ -172,8 +238,14 @@ Singleton {
 
   function rebuild() {
     const list = [];
-    for (let i = 0; i < folder.count; i++)
-      list.push(folder.get(i, "filePath"));
+    const times = {};
+    for (let i = 0; i < folder.count; i++) {
+      const path = folder.get(i, "filePath");
+      const date = folder.get(i, "fileModified");
+      list.push(path);
+      times[path] = date ? date.getTime() : 0;
+    }
+    modified = times;
     allWallpapers = list;
   }
 
