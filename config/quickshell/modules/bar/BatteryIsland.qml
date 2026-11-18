@@ -66,6 +66,7 @@ Island {
       label: root.profile.label
       color: root.profile.color
       showLabel: true
+      smoothLabel: true
     }
   }
 }
