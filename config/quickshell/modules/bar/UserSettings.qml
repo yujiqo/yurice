@@ -263,15 +263,29 @@ Column {
 
     Row {
       anchors.horizontalCenter: parent.horizontalCenter
-      spacing: 12
       topPadding: 2
       bottomPadding: 2
 
-      AvatarChoice {
-        visible: !WeebMode.hidesAvatar
-        mode: "weeb"
-        label: WeebMode.primaryLabel
-        path: Settings.avatarPath
+      Item {
+        width: (weebChoice.width + 12) * weebSpring.value
+        height: weebChoice.height
+        clip: true
+        visible: weebSpring.value > 0.001
+
+        Spring {
+          id: weebSpring
+          target: WeebMode.hidesAvatar ? 0 : 1
+          Component.onCompleted: snap()
+        }
+
+        AvatarChoice {
+          id: weebChoice
+          mode: "weeb"
+          label: WeebMode.primaryLabel
+          path: Settings.avatarPath
+          opacity: weebSpring.progress
+          scale: 0.85 + 0.15 * weebSpring.progress
+        }
       }
 
       AvatarChoice {

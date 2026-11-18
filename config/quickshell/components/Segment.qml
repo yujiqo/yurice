@@ -9,6 +9,7 @@ Item {
   property string label: ""
   property color color: Theme.text
   property bool showLabel: false
+  property bool smoothLabel: false
   property int maxLabelWidth: 300
   property bool clickable: false
   readonly property bool pressed: mouse.pressed
@@ -49,6 +50,7 @@ Item {
       Label {
         text: root.label
         maxWidth: root.maxLabelWidth
+        smooth: root.smoothLabel
       }
     }
   }
