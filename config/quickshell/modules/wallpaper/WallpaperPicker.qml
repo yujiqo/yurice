@@ -301,21 +301,18 @@ PanelWindow {
 
       Image {
         id: backdropImage
-        width: root.tileW * Theme.pickerBlurScale
-        height: root.tileH * Theme.pickerBlurScale
+        width: root.tileW
+        height: root.tileH
         fillMode: Image.PreserveAspectCrop
         asynchronous: true
         source: Wallpapers.thumbFor(root.backdropPath)
-        sourceSize: Qt.size(width, height)
-        visible: false
+        sourceSize: Qt.size(width * Theme.pickerBlurScale, height * Theme.pickerBlurScale)
         onStatusChanged: Qt.callLater(root.tryStart, false)
       }
 
       Blur {
         width: backdropImage.width
         height: backdropImage.height
-        transformOrigin: Item.TopLeft
-        scale: 1 / Theme.pickerBlurScale
         source: backdropImage
         levels: Theme.pickerBlurLevels
       }

@@ -161,7 +161,7 @@ Singleton {
   readonly property real pickerThumbOversample: 1.0
   readonly property int pickerThumbMinHeight: 720
   readonly property real pickerBlurScale: 0.25
-  readonly property int pickerBlurLevels: 3
+  readonly property int pickerBlurLevels: 7
   readonly property real pickerDim: 0.45
   readonly property int easeOut: Easing.OutCubic
   readonly property int easeInOut: Easing.InOutCubic

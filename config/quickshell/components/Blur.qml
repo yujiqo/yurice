@@ -35,10 +35,11 @@ Item {
   Pass { id: u4; level: 4; sourceItem: u5 }
   Pass { id: u3; level: 3; sourceItem: u4 }
   Pass { id: u2; level: 2; sourceItem: u3 }
+  Pass { id: u1; level: 1; sourceItem: u2 }
 
   Pass {
-    level: 1
-    sourceItem: u2
+    level: 0
+    sourceItem: u1
     opacity: root.amount
     visible: root.amount > 0
   }
