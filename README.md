@@ -145,6 +145,13 @@ programs.yurice = {
 
 the system services are `mkDefault`, so your host can override them.
 
+quickshell comes from your `pkgs`. stable nixos channels can lag behind, so if yours ships an older quickshell, take it from nixos-unstable (here exposed as `pkgs.unstable` through an overlay):
+
+```nix
+programs.yurice.desktop.quickshellPackage = pkgs.unstable.quickshell;  # home.nix
+programs.yurice.greeter.quickshellPackage = pkgs.unstable.quickshell;  # configuration.nix
+```
+
 if you want to edit the rice live without rebuilding, clone it somewhere and point `configDir` at the checkout:
 
 ```nix

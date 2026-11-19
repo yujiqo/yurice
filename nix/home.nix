@@ -32,6 +32,8 @@ in {
   options.programs.yurice = {
     desktop.enable = lib.mkEnableOption "the yurice desktop (niri, quickshell, matugen theming)";
 
+    desktop.quickshellPackage = lib.mkPackageOption pkgs "quickshell" {};
+
     terminal.enable = lib.mkEnableOption "the yurice terminal setup (kitty, fish, starship, tmux, neovim, lazygit, fastfetch)";
 
     configDir = lib.mkOption {
@@ -62,7 +64,7 @@ in {
     })
 
     (lib.mkIf (cfg.desktop.enable && isLinux) {
-      home.packages = packages.desktop pkgs;
+      home.packages = [cfg.desktop.quickshellPackage] ++ packages.desktop pkgs;
 
       xdg.configFile = {
         "niri" = link "niri" {};

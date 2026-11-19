@@ -1,7 +1,6 @@
 {
   desktop = pkgs:
     with pkgs; [
-      quickshell
       xwayland-satellite
       matugen
       cliphist
