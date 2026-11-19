@@ -84,7 +84,7 @@ If the island is missing completely, you're probably in the second mode, which h
 
 ## Something is missing from the bar
 
-An island can be hidden for four reasons:
+An island can be hidden for three reasons:
 
 - **You hid it** in the user panel's settings. It's in `hiddenIslands` in `settings.json`.
 - **The current mode hides it.** Check the mode panel (`Mod+S`).
