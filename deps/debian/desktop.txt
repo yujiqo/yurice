@@ -42,6 +42,5 @@ glib-networking
 libgl1-mesa-dri
 qml6-module-qtqml
 qml6-module-qtquick
-qml6-module-qtquick-effects
 qml6-module-qtquick-shapes
 qml6-module-qt-labs-folderlistmodel

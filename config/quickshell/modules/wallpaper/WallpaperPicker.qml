@@ -2,7 +2,6 @@ pragma ComponentBehavior: Bound
 import Quickshell
 import Quickshell.Wayland
 import QtQuick
-import QtQuick.Effects
 import qs.theme
 import qs.components
 import qs.services
@@ -312,16 +311,13 @@ PanelWindow {
         onStatusChanged: Qt.callLater(root.tryStart, false)
       }
 
-      MultiEffect {
+      Blur {
         width: backdropImage.width
         height: backdropImage.height
         transformOrigin: Item.TopLeft
         scale: 1 / Theme.pickerBlurScale
         source: backdropImage
-        autoPaddingEnabled: false
-        blurEnabled: true
-        blur: 1.0
-        blurMax: Theme.pickerBlurMax
+        levels: Theme.pickerBlurLevels
       }
 
       Rectangle {

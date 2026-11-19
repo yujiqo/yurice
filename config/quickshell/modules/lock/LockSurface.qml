@@ -1,6 +1,5 @@
 pragma ComponentBehavior: Bound
 import QtQuick
-import QtQuick.Effects
 import qs.theme
 import qs.components
 import qs.services
@@ -166,13 +165,11 @@ Item {
     visible: false
   }
 
-  MultiEffect {
+  Blur {
     anchors.fill: parent
     source: snapshotImage
     visible: root.reveal < 1 && snapshotImage.status === Image.Ready
-    blurEnabled: true
-    blurMax: 64
-    blur: root.reveal
+    amount: root.reveal
     opacity: 1 - root.reveal
     scale: 1 - Theme.lockZoom * root.reveal
   }

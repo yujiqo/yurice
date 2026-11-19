@@ -3,7 +3,6 @@ import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
 import QtQuick
-import QtQuick.Effects
 import qs.theme
 import qs.components
 import qs.services
@@ -116,13 +115,11 @@ Scope {
           }
         }
 
-        MultiEffect {
+        Blur {
           anchors.fill: parent
           source: image
           visible: image.status === Image.Ready
-          blurEnabled: true
-          blurMax: 64
-          blur: 1 - root.reveal
+          amount: 1 - root.reveal
           opacity: root.reveal
           scale: 1 + Theme.lockZoom * (1 - root.reveal)
         }
