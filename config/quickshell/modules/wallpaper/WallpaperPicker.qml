@@ -377,6 +377,7 @@ PanelWindow {
             anchors.fill: parent
             fillMode: Image.PreserveAspectCrop
             asynchronous: true
+            mipmap: true
             source: tile.needsFull ? Paths.fileUrl(tile.modelData === WallpaperPublish.cachedFor ? WallpaperPublish.cacheFile : tile.modelData) : ""
             sourceSize: Qt.size(root.tileW * root.dpr, root.tileH * root.dpr)
             visible: false
