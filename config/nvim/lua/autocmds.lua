@@ -83,6 +83,39 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
+local function cursor_in_table(buf)
+	local parser = vim.treesitter.get_parser(buf, "markdown", { error = false })
+	if not parser then
+		return false
+	end
+	parser:parse()
+	local ok, node = pcall(vim.treesitter.get_node, { bufnr = buf })
+	if not ok then
+		return false
+	end
+	while node do
+		if node:type() == "pipe_table" then
+			return true
+		end
+		node = node:parent()
+	end
+	return false
+end
+
+vim.api.nvim_create_autocmd({ "CursorMoved", "CursorMovedI", "BufWinEnter" }, {
+	group = augroup,
+	desc = "disable wrap inside markdown tables",
+	callback = function(args)
+		if vim.bo[args.buf].filetype ~= "markdown" then
+			return
+		end
+		local want_wrap = not cursor_in_table(args.buf)
+		if vim.wo.wrap ~= want_wrap then
+			vim.wo.wrap = want_wrap
+		end
+	end,
+})
+
 local function lsp_on_attach(ev)
 	local client = vim.lsp.get_client_by_id(ev.data.client_id)
 	if not client then
