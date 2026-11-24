@@ -56,5 +56,6 @@ The README is casual and lowercase. Everything in `docs/` uses normal capitaliza
 ## Git
 
 - Work happens on `dev`. `main` only receives tested releases, so never commit to `main` directly.
+- User-visible changes get a line under `## [Unreleased]` in `CHANGELOG.md`, written for users.
 - Commit messages are `area: short lowercase imperative`, like `bar: make battery profile smooth` or `install: build matugen on aarch64`. See CONTRIBUTING for the areas.
 - Don't commit, push, tag or open pull requests unless the person you're working with asks for it.

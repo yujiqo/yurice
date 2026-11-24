@@ -19,6 +19,18 @@ jobs:
         run: |
           tag=$GITHUB_REF_NAME
           prev=$(git describe --tags --abbrev=0 "$tag^" 2>/dev/null || true)
+          awk -v v="${tag#v}" '
+            index($0, "## [" v "]") == 1 { found = 1; next }
+            found && /^## \[/ { exit }
+            found && /^\[[^]]+\]: / { exit }
+            found { print }
+          ' CHANGELOG.md 2>/dev/null > notes.md || true
+          if grep -q '[^[:space:]]' notes.md; then
+            if [ -n "$prev" ]; then
+              printf '\n**Full changelog**: https://github.com/%s/compare/%s...%s\n' "$GITHUB_REPOSITORY" "$prev" "$tag" >> notes.md
+            fi
+            exit 0
+          fi
           if [ -z "$prev" ]; then
             echo "First release of yurice." > notes.md
             exit 0
