@@ -159,7 +159,7 @@ First, `Wallpapers.generatePalette(path)` starts matugen:
 matugen.command = ["matugen", "image", path, "-c", matugenConfig, "-m", matugen.mode, "--source-color-index", "0", "-q"];
 ```
 
-[`services/Wallpapers.qml:169`](../../config/quickshell/services/Wallpapers.qml#L169)
+[`services/Wallpapers.qml:235`](../../config/quickshell/services/Wallpapers.qml#L235)
 
 `-m` is `dark` or `light`, from the theme mode (chapter 17). `--source-color-index 0` always picks the image's dominant color, so you're never asked to choose one.
 
