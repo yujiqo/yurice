@@ -36,7 +36,7 @@ A service is also where the meaning lives. The raw data says `state === Charging
 
 ## Four ways to know things
 
-Every service gets its information in one of four ways. They're listed from most preferred to least.
+Most services get their information in one of four ways. They're listed from most preferred to least.
 
 ### 1. quickshell's built-in services
 
