@@ -1,15 +1,10 @@
 # 1. The pieces
 
-Before writing any code, it helps to know what we're building and what we're building it _on_. yurice isn't one program. It's a bunch of programs that work together. This chapter is the map. Every later chapter focuses on something from here.
+Before writing any code, it helps to know what we're building and what we're building it on. yurice isn't one program. It's a handful of programs that work together, and this chapter is the map. Every later chapter zooms into one spot on it.
 
 ## What you see
 
-Log in and you see four things:
-
-1. **A login screen.** It shows your wallpaper and avatar.
-2. **Windows.** They're laid out in columns that scroll sideways.
-3. **A bar** at the top, made of separate rounded "islands". Click one and it grows into a panel.
-4. **The wallpaper** behind it all. Every color on screen comes from it, including your terminal and your editor.
+Log in and you see a login screen with your wallpaper and avatar. After that come your windows, laid out in columns that scroll sideways. At the top sits a bar made of separate rounded "islands", and clicking one grows it into a panel. Behind everything is the wallpaper, and every color on screen comes from it, including your terminal and your editor.
 
 Each of these is a different program, or a different part of the same one.
 
@@ -17,34 +12,30 @@ Each of these is a different program, or a different part of the same one.
 
 ### niri: the compositor
 
-[niri](https://github.com/YaLTeR/niri) is the Wayland compositor. It owns the screen, draws the windows and handles input. It's a _scrolling tiling_ window manager, so windows sit in columns on an endless horizontal strip, and you scroll the strip instead of squeezing windows to fit like like in hyperland for example.
+[niri](https://github.com/YaLTeR/niri) is the Wayland compositor. It owns the screen, draws the windows and handles input. It's a scrolling tiling window manager: windows sit in columns on an endless horizontal strip, and you scroll the strip instead of squeezing windows to fit like in Hyprland.
 
-niri does **not** draw a bar, a launcher or a wallpaper. It leaves those to other programs, and talks to them in two ways:
-
-- **Keybinds that run commands.** When you press `Alt+Space`, niri runs `qs ipc call launcher toggle`. niri doesn't know what a launcher is. It just runs the command.
-- **An IPC socket.** niri publishes a stream of events (a workspace changed, a window opened) on a Unix socket, and accepts actions back on it ("focus workspace 3").
+niri doesn't draw a bar, a launcher or a wallpaper. It leaves those to other programs and talks to them in two ways. The first is keybinds that run commands. When you press `Alt+Space`, niri runs `qs ipc call launcher toggle`. It has no idea what a launcher is, it just runs the command. The second is an IPC socket: niri publishes a stream of events on a Unix socket (a workspace changed, a window opened) and accepts actions back on it ("focus workspace 3").
 
 Its config lives in [`config/niri/`](../../config/niri). Chapter 21 covers it.
 
 ### quickshell: the shell
 
-[quickshell](https://quickshell.org) is a toolkit for building desktop shells in Qt Meta-Object Language (QML), the declarative UI language from Qt. You write `.qml` files describing windows and what's in them, and quickshell turns them into real Wayland surfaces: a bar glued to the top edge, an overlay over everything, a lock screen, etc.
+[quickshell](https://quickshell.org) is a toolkit for building desktop shells in QML, the declarative UI language from Qt. You write `.qml` files describing windows and what's in them, and quickshell turns them into real Wayland surfaces: a bar glued to the top edge, an overlay over everything, a lock screen.
 
-Almost everything you _see_ that isn't an app window is quickshell running yurice's QML:
+Almost everything on screen that isn't an app window is quickshell running yurice's QML:
 
 - the bar and its panels
 - the launcher and the clipboard history
-- the wallpaper
-- the wallpaper picker
+- the wallpaper and the wallpaper picker
 - the lock screen
 - the screenshot tool
 - the login screen (greeter)
 
-It all lives in [`config/quickshell/`](../../config/quickshell), and it's what the most of this book is about.
+It all lives in [`config/quickshell/`](../../config/quickshell), and it's what most of this book is about.
 
 ### matugen: the colors
 
-[matugen](https://github.com/InioX/matugen) takes an image, pulls a Material You palette out of it, and fills in **templates** with those colors. yurice has one template per program that should follow the wallpaper:
+[matugen](https://github.com/InioX/matugen) takes an image, pulls a Material You palette out of it, and fills in templates with those colors. yurice has one template per program that should follow the wallpaper:
 
 ```text
 config/matugen/templates/
@@ -56,11 +47,11 @@ config/matugen/templates/
 └── fastfetch.jsonc   → ~/.cache/yurice/fastfetch.jsonc
 ```
 
-After writing each file, matugen runs a small _post hook_ that tells the program to reload. For example, kitty gets `pkill -USR1 kitty`. Chapter 3 follows this all the way through.
+After writing each file, matugen runs a post hook that tells the program to reload. kitty, for example, gets `pkill -USR1 kitty`. Chapter 3 follows this all the way through.
 
 ### The terminal side
 
-kitty, fish, starship, tmux, neovim, lazygit and fastfetch each have a plain config in [`config/`](../../config). They don't depend on the shell at all. You can use only the terminal part of yurice on a Mac, and the author does. Chapter 22 covers them.
+kitty, fish, starship, tmux, neovim, lazygit and fastfetch each have a plain config in [`config/`](../../config). They don't depend on the shell at all, so you can use only the terminal part of yurice on a Mac, and the author does. Chapter 22 covers them.
 
 ## How they connect
 
@@ -83,11 +74,11 @@ kitty, fish, starship, tmux, neovim, lazygit and fastfetch each have a plain con
                      nvim, tmux, fastfetch
 ```
 
-No program knows the others exist. They only share **files in agreed places** and **commands**. That loose coupling is why you can use the terminal half without the desktop half, and why every piece can be replaced on its own.
+No program knows the others exist. They share files in agreed places and commands, nothing else. That loose coupling is why you can use the terminal half without the desktop half, and why any piece can be replaced on its own.
 
 ## Where things live
 
-Four directories show up again and again in this book. They're worth learning now:
+Four directories come up again and again in this book:
 
 | Directory                  | What's in it                                | Who writes it           |
 | -------------------------- | ------------------------------------------- | ----------------------- |
@@ -96,11 +87,11 @@ Four directories show up again and again in this book. They're worth learning no
 | `~/.local/state/yurice/`   | what the shell remembers between runs       | the shell               |
 | `~/.cache/yurice/`         | generated colors and thumbnails             | matugen and the shell   |
 
-`config/` is linked into `~/.config/` (`~/.config/niri` → `repo/config/niri`, and so on), so editing a file in the repo changes the live desktop. That's how yurice is developed, and it's how you should read this book: open the file in one window, look at the result in another.
+`config/` is linked into `~/.config/` (`~/.config/niri` → `repo/config/niri`, and so on), so editing a file in the repo changes the live desktop. That's how yurice is developed, and it's how you should read this book: the file open in one window, the result in another.
 
 ## The quickshell folder
 
-Since most of the book happens here, here's the layout of [`config/quickshell/`](../../config/quickshell):
+Most of the book happens in [`config/quickshell/`](../../config/quickshell):
 
 ```text
 config/quickshell/
@@ -126,15 +117,6 @@ The layers only depend downwards:
 modules   →   components + services   →   theme
 ```
 
-- A **module** uses components and services.
-- A **component** only knows the theme, and never talks to the system. The exceptions are three non-visual helpers that services build on: `Poller` runs a command on a timer, `KeyFile` reads and writes a key file, and `SearchFeed` does the paging and downloading shared by the two image searches.
-- A **service** never draws anything.
+A module uses components and services. A service never draws anything. A component only knows the theme and never talks to the system, with three exceptions that services build on: `Poller` runs a command on a timer, `KeyFile` reads and writes a key file, and `SearchFeed` does the paging and downloading shared by the two image searches.
 
-This should explain why a slider can be reused anywhere, and why the audio code doesn't break when the volume panel is redesigned.
-
-## Recap
-
-- niri manages windows and runs commands on keybinds.
-- quickshell runs the QML that draws everything else.
-- matugen turns the wallpaper into color files that every program reloads.
-- They only share files and commands, never code.
+That's why a slider can be reused anywhere, and why the audio code doesn't break when the volume panel is redesigned.

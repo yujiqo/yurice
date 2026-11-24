@@ -1,16 +1,12 @@
 # 4. Primitives
 
-Before we can build a bar, we need text, icons and pictures that look right. QtQuick has `Text`, `Image` and `Rectangle`, but used raw they take the same five lines of setup every time, and those five lines slowly drift apart between files. This chapter wraps each one _once_, in [`components/`](../../config/quickshell/components), so every later file gets them right for free.
+Before we can build a bar, we need text, icons and pictures that look right. QtQuick has `Text`, `Image` and `Rectangle`, but used raw they need the same five lines of setup every time, and those lines slowly drift apart between files. This chapter wraps each one once, in [`components/`](../../config/quickshell/components), so every later file gets them right for free.
 
-The pattern is the same every time:
-
-1. Take a QtQuick type.
-2. Set the theme-related properties.
-3. Expose only the few knobs callers actually need.
+The pattern is always the same: take a QtQuick type, set the theme-related properties, and expose only the few knobs callers actually need.
 
 ## Icon
 
-yurice draws icons with a **font**: Google's Material Symbols. An icon is just a `Text` whose text is the icon's name, like `"wifi"` or `"battery_full"`. The font turns the name into a glyph through a feature called ligatures.
+yurice draws icons with a font, Google's Material Symbols. An icon is a `Text` whose text is the icon's name, like `"wifi"` or `"battery_full"`, and the font turns the name into a glyph through ligatures.
 
 Here's the whole component:
 
@@ -34,22 +30,19 @@ Text {
 
 [`components/Icon.qml`](../../config/quickshell/components/Icon.qml)
 
-Why bother:
+Material Symbols is a variable font. `FILL` goes smoothly from outlined (0) to filled (1), and `wght` sets the stroke weight. Since these are properties, they can be animated, so an icon can fill in when its toggle turns on.
 
-- **Material Symbols is a variable font.** `FILL` goes smoothly from outlined (0) to filled (1), and `wght` sets the stroke weight. Since these are properties, they can be animated. An icon can _fill in_ when its toggle turns on.
-- **`opsz` (optical size)** tells the font which size it's being drawn at, so small icons get slightly thicker strokes and stay readable.
-- **`Text.CurveRendering`** draws glyphs as vector curves instead of cached bitmaps, so icons stay crisp while they're scaled in an animation. There's a whole commit about it: "rework icon rendering to render them as vector graphics".
+`opsz`, the optical size, tells the font what size it's drawn at. Small icons get slightly thicker strokes and stay readable.
+
+`Text.CurveRendering` draws glyphs as vector curves instead of cached bitmaps, so icons stay crisp while they're scaled in an animation. There's a whole commit about it: "rework icon rendering to render them as vector graphics".
 
 Usage: `Icon { text: "wifi"; color: Theme.wifi; fill: 1 }`. The full icon list is at [fonts.google.com/icons](https://fonts.google.com/icons).
 
 ## Label
 
-Text needs a bit more care. The obvious `Text { font.family: Theme.labelFont }` has two problems in a bar:
+Text needs a bit more care. The obvious `Text { font.family: Theme.labelFont }` has two problems in a bar. First, vertical alignment drifts: a `Text`'s height depends on the font's line height, so centering two labels of different sizes puts their baselines at different heights. Second, changing text makes things jump. When the clock goes from `9:59` to `10:00`, the label gets wider in one frame and everything next to it jumps.
 
-1. **Vertical alignment drifts.** A `Text`'s height depends on the font's line height, which varies. Centering two labels with different sizes puts their baselines at different heights.
-2. **Changing text makes things jump.** When the clock goes from `9:59` to `10:00`, the label gets wider in one frame, and everything next to it jumps.
-
-[`components/Label.qml`](../../config/quickshell/components/Label.qml) solves both:
+[`components/Label.qml`](../../config/quickshell/components/Label.qml) fixes both:
 
 ```qml
 Item {
@@ -80,13 +73,15 @@ Item {
 }
 ```
 
-- **The baseline is pinned.** `FontMetrics` gives the font's exact ascent, and the text's baseline is anchored at that distance from the top. Any two `Label`s with the same `pixelSize` line up perfectly.
-- **`smooth: true`** makes the width follow a spring instead of jumping, and fades new text in. This is how the clock changes format without a jolt (the "make clock format change smooth" commit). We build `Spring` in the next chapter.
-- **`maxWidth` plus `ElideRight`** gives long text an ellipsis instead of overflowing.
+The baseline is pinned. `FontMetrics` gives the font's exact ascent, and the text's baseline is anchored that far from the top, so any two `Label`s with the same `pixelSize` line up perfectly.
+
+`smooth: true` makes the width follow a spring instead of jumping, and fades the new text in. That's how the clock changes format without a jolt (the "make clock format change smooth" commit). We build `Spring` in the next chapter.
+
+`maxWidth` with `ElideRight` gives long text an ellipsis instead of letting it overflow.
 
 ## HoverHighlight
 
-Lots of things in the bar react to hover with the same soft pill behind them. Instead of copying that, there's one component:
+Lots of things in the bar react to hover with the same soft pill behind them. Instead of copying that around, there's one component:
 
 ```qml
 Rectangle {
@@ -114,7 +109,7 @@ Rectangle {
 
 [`components/HoverHighlight.qml`](../../config/quickshell/components/HoverHighlight.qml)
 
-It fades in **and** grows from 90% with a slight overshoot (`OutBack`). It's a tiny detail, and it makes hovering feel physical rather than like a color switch. Everything that wants a hover pill uses this, so they all feel identical.
+It fades in and grows from 90% with a slight overshoot (`OutBack`). It's a tiny detail, and it makes hovering feel physical rather than like a color switch. Everything that wants a hover pill uses this one, so they all feel the same.
 
 ## FocusRing
 
@@ -138,10 +133,9 @@ Rectangle {
 
 [`components/FocusRing.qml`](../../config/quickshell/components/FocusRing.qml)
 
-- `radius: parent.radius ?? height / 2` copies the parent's corner radius, so the ring fits buttons, cards and pills alike.
-- Using the ring is one line: `FocusRing {}`. Every interactive component in the next chapters has one. That's a big part of how "everything works by keyboard" stays true as the shell grows.
+`radius: parent.radius ?? height / 2` copies the parent's corner radius, so the same ring fits buttons, cards and pills. Using it is one line, `FocusRing {}`, and every interactive component in the next chapters has one. That's a big part of how "everything works by keyboard" stays true as the shell grows.
 
-Why mouse users never see it is a question of _when_ things get focus, not of the ring itself. Chapter 12 covers that.
+Mouse users never see it, and that's down to when things get focus, not the ring itself. Chapter 12 covers that.
 
 ## Divider
 
@@ -161,13 +155,13 @@ The thin vertical line between parts of an island. It's a primitive, but it alre
 
 [`components/Divider.qml`](../../config/quickshell/components/Divider.qml)
 
-`progress` comes from a spring going from 0 to 1. Keep this pattern in mind: **one number from 0 to 1, with several properties derived from it.** It's the core of chapter 5.
+`progress` comes from a spring going from 0 to 1. Keep this pattern in mind, one number from 0 to 1 with several properties derived from it. It's the core of chapter 5.
 
 ## RoundedImage: our first shader
 
-Avatars, wallpaper thumbnails and album covers all need rounded corners. QtQuick's `Image` can't clip to a rounded rectangle. The usual workarounds (masks, `layer.effect`) cost an extra offscreen pass for every image. With dozens of thumbnails in a grid, that adds up on a laptop GPU.
+Avatars, wallpaper thumbnails and album covers all need rounded corners. QtQuick's `Image` can't clip to a rounded rectangle. The usual workarounds (masks, `layer.effect`) cost an extra offscreen pass per image, and with dozens of thumbnails in a grid that adds up on a laptop GPU.
 
-yurice instead writes a tiny **fragment shader**: a program that runs on the GPU once per pixel and decides that pixel's color. Here it is in full:
+yurice writes a tiny fragment shader instead: a program that runs on the GPU once per pixel and decides that pixel's color. Here it is in full:
 
 ```glsl
 void main() {
@@ -183,12 +177,11 @@ void main() {
 
 [`shaders/roundedimage.frag`](../../config/quickshell/shaders/roundedimage.frag)
 
-Reading it line by line:
+The first two lines after `halfSize` are the standard rounded-box distance formula. They work out how far the pixel is from the edge of the rounded rectangle, as a signed distance `d`: negative inside the shape, zero on the edge, positive outside.
 
-1. **Work out how far the pixel is from the rounded-rectangle edge.** This is called a _signed distance_. `d` is negative inside the shape, zero on the edge and positive outside. The two lines that compute `q` and `d` are the standard rounded-box distance formula.
-2. **Turn distance into coverage, with anti-aliasing.** `fwidth(d)` is how much `d` changes from one pixel to the next. Dividing by it makes the edge exactly one pixel soft at any size, so it's smooth and never blurry.
-3. **Sample the image, cropped.** `uvRect` says which part of the image to use. More on that below.
-4. **Multiply the color by coverage**, so pixels outside the corners become transparent.
+Next, distance becomes coverage. `fwidth(d)` is how much `d` changes from one pixel to the next, and dividing by it makes the edge exactly one pixel soft at any size. Smooth, never blurry.
+
+Then the image is sampled, cropped by `uvRect` (more on that below), and its color is multiplied by the coverage so pixels outside the corners become transparent.
 
 On the QML side, [`RoundedImage.qml`](../../config/quickshell/components/RoundedImage.qml) hides a normal `Image` (`visible: false`) and draws it through a `ShaderEffect`. A `ShaderEffect` passes its own properties to the shader by name: `source`, `size`, `radius`, `uvRect`.
 
@@ -222,15 +215,9 @@ Qt can't load `.frag` source directly. It needs a compiled `.qsb` file, which [`
 
 ## Disc: putting it together
 
-[`components/Disc.qml`](../../config/quickshell/components/Disc.qml), the spinning vinyl record in the media panel, uses nearly every primitive at once:
+[`components/Disc.qml`](../../config/quickshell/components/Disc.qml), the spinning vinyl record in the media panel, uses nearly every primitive at once. Circles are `Rectangle`s with `radius: width / 2`, a `Repeater` draws seven faint groove rings, an `Icon` (`music_note`) stands in while there's no album art, two `RoundedImage`s show the cover cropped to a circle, and a `Shape` with a `ConicalGradient` makes the light glinting off the vinyl.
 
-- `Rectangle`s with `radius: width / 2` make the circles.
-- A `Repeater` draws seven faint groove rings.
-- An `Icon` (`music_note`) is the placeholder while there's no album art.
-- Two `RoundedImage`s show the cover, cropped to a circle.
-- A `Shape` with a `ConicalGradient` makes the light glinting off the vinyl.
-
-The one new idea is the **two covers**. When the track changes, the new art loads into the _hidden_ cover. Only once it's ready does the disc swap which one is shown:
+The one new idea is the two covers. When the track changes, the new art loads into the hidden cover. Only once it's ready does the disc swap which one is shown:
 
 ```qml
   onArtChanged: {
@@ -247,13 +234,6 @@ The one new idea is the **two covers**. When the track changes, the new art load
 
 [`components/Disc.qml:16-25`](../../config/quickshell/components/Disc.qml#L16-L25)
 
-Without this, the disc would flash empty for a few frames on every track change while the image decodes. It's a small trick that removes a flash, which counts as a bug fix by this project's rules.
+Without this, the disc would flash empty for a few frames on every track change while the image decodes. A trick that removes a flash counts as a bug fix by this project's rules.
 
-## Recap
-
-- Every QtQuick basic gets wrapped **once** with the theme applied: `Icon`, `Label`, `HoverHighlight`, `FocusRing`, `Divider`, `RoundedImage`.
-- Icons are a variable font, so they can fill and change weight smoothly.
-- Labels pin their baseline and can change width smoothly.
-- Rounded images use a small signed-distance shader instead of costly masks.
-
-Several of these already mentioned a `Spring`. Time to build it.
+Several of these primitives already mentioned a `Spring`. Time to build it.

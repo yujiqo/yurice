@@ -1,6 +1,6 @@
 # 3. The theme
 
-Open any file in `modules/` and you won't find a single color like `"#80d5cb"`, and almost no raw sizes. Instead you'll find `Theme.primary`, `Theme.panelRadius`, `Theme.animHover`. They all come from one file: [`theme/Theme.qml`](../../config/quickshell/theme/Theme.qml).
+Open any file in `modules/` and you won't find a single color like `"#80d5cb"`, and almost no raw sizes. You'll find `Theme.primary`, `Theme.panelRadius`, `Theme.animHover` instead. They all come from [`theme/Theme.qml`](../../config/quickshell/theme/Theme.qml).
 
 This chapter builds that file. It's the first singleton in the book, and it's the reason a new wallpaper can recolor the whole shell without restarting anything.
 
@@ -8,10 +8,7 @@ This chapter builds that file. It's the first singleton in the book, and it's th
 
 Say the volume slider is teal. You write `color: "#80d5cb"`. Then the brightness slider wants the same teal, and so does the wifi icon. A week later you change the wallpaper and want everything purple, and now you're grepping for a hex code.
 
-There are two problems here:
-
-1. **The same decision is written down in many places.** "Accents are teal" should exist once.
-2. **The decision isn't yours to make.** The wallpaper should make it.
+Two things went wrong. The decision "accents are teal" is written down in many places when it should exist once. And it shouldn't be your decision at all, because the wallpaper should make it.
 
 ## Step 1: a singleton of tokens
 
@@ -27,7 +24,7 @@ Singleton {
 }
 ```
 
-With this saved as `theme/Theme.qml`, any file that does `import qs.theme` can say `color: Theme.primary`. Change it once and everything follows. This is what a **token** is: a named design decision.
+With this saved as `theme/Theme.qml`, any file that does `import qs.theme` can say `color: Theme.primary`. Change it once and everything follows. That's what a token is: a named design decision.
 
 yurice's tokens fall into groups, marked by the only comments in the codebase:
 
@@ -56,7 +53,7 @@ yurice's tokens fall into groups, marked by the only comments in the codebase:
 
 [`theme/Theme.qml:91-166`](../../config/quickshell/theme/Theme.qml#L91-L166)
 
-The animation durations are tokens too. That's how motion stays consistent: every hover takes `animHover` milliseconds, every press takes `animPress`. Chapter 5 explains `animSlowdown` and the spring values.
+The animation durations are tokens too, which is how motion stays consistent: every hover takes `animHover` milliseconds and every press takes `animPress`. Chapter 5 explains `animSlowdown` and the spring values.
 
 ## Step 2: colors come from a file
 
@@ -72,7 +69,7 @@ matugen writes the palette as JSON to `~/.cache/yurice/colors.json`, using the t
 }
 ```
 
-quickshell can read files with `FileView`, and map JSON keys onto properties with `JsonAdapter`:
+quickshell reads files with `FileView`, and maps JSON keys onto properties with `JsonAdapter`:
 
 ```qml
   FileView {
@@ -97,12 +94,11 @@ quickshell can read files with `FileView`, and map JSON keys onto properties wit
 
 [`theme/Theme.qml:62-89`](../../config/quickshell/theme/Theme.qml#L62-L89)
 
-- **`watchChanges: true`** plus `onFileChanged: reload()` means that when matugen rewrites the file, the adapter's properties update a moment later.
-- Since those are just properties, every binding that reads them runs again.
+`watchChanges: true` plus `onFileChanged: reload()` means that when matugen rewrites the file, the adapter's properties update a moment later. They're ordinary properties, so every binding that reads them runs again.
 
 ## Step 3: fallbacks
 
-What if the file doesn't exist yet, for example on the very first start before any wallpaper is set? Every color reads its palette entry, _or_ a built-in default:
+The file might not exist yet, for example on the very first start before any wallpaper is set. So every color reads its palette entry or falls back to a built-in default:
 
 ```qml
   readonly property color surface: palette.surface || "#040e0d"
@@ -113,11 +109,11 @@ What if the file doesn't exist yet, for example on the very first start before a
 
 [`theme/Theme.qml:33-53`](../../config/quickshell/theme/Theme.qml#L33-L53)
 
-An empty string is false in JavaScript, so `||` falls through to the default. The shell always has _some_ theme, even with matugen missing entirely.
+An empty string is falsy in JavaScript, so `||` falls through to the default. The shell always has some theme, even with matugen missing entirely.
 
 ## Step 4: roles, not colors
 
-Notice the names: `surface`, `surfaceContainer`, `primary`, `primaryContainer`, `outline`, `error`. These are **Material You roles**. A role describes what a color is _for_, not what it looks like:
+Look at the names: `surface`, `surfaceContainer`, `primary`, `primaryContainer`, `outline`, `error`. These are Material You roles. A role describes what a color is for, not what it looks like:
 
 | Role                    | Used for                                       |
 | ----------------------- | ---------------------------------------------- |
@@ -131,11 +127,11 @@ Notice the names: `surface`, `surfaceContainer`, `primary`, `primaryContainer`, 
 | `outline`, `divider`    | borders and lines                              |
 | `error`                 | warnings and failures                          |
 
-Because matugen guarantees that `textOnPrimary` is readable on `primary` (and `text` on `surface`) for _any_ wallpaper, components that stick to matching pairs never end up with unreadable text.
+matugen guarantees that `textOnPrimary` is readable on `primary`, and `text` on `surface`, for any wallpaper. Components that stick to matching pairs never end up with unreadable text.
 
 ## Step 5: semantic aliases
 
-Roles are still a bit abstract when you're drawing a wifi icon. So Theme adds one more layer, colors named after the **thing**:
+Roles are still a bit abstract when you're drawing a wifi icon, so Theme adds one more layer: colors named after the thing they color.
 
 ```qml
   // --- Accent palette ---
@@ -151,27 +147,25 @@ Roles are still a bit abstract when you're drawing a wifi icon. So Theme adds on
 
 [`theme/Theme.qml:16-30`](../../config/quickshell/theme/Theme.qml#L16-L30)
 
-The wifi island uses `Theme.wifi`, not `Theme.primary`. If you later decide wifi should use `tertiary`, you change one line here and nowhere else.
+The wifi island uses `Theme.wifi`, not `Theme.primary`. If you later decide wifi should be `tertiary`, you change one line here and nowhere else.
 
 ## The whole loop
 
-Here's what happens between picking a wallpaper and seeing new colors:
+Here's what happens between picking a wallpaper and seeing new colors.
 
-1. `Wallpapers.generatePalette(path)` starts matugen:
+First, `Wallpapers.generatePalette(path)` starts matugen:
 
-   ```qml
-   matugen.command = ["matugen", "image", path, "-c", matugenConfig, "-m", matugen.mode, "--source-color-index", "0", "-q"];
-   ```
+```qml
+matugen.command = ["matugen", "image", path, "-c", matugenConfig, "-m", matugen.mode, "--source-color-index", "0", "-q"];
+```
 
-   [`services/Wallpapers.qml:169`](../../config/quickshell/services/Wallpapers.qml#L169)
-   - `-m` is `dark` or `light`, from the theme mode (chapter 17).
-   - `--source-color-index 0` always picks the image's dominant color, so you're never asked to choose.
+[`services/Wallpapers.qml:169`](../../config/quickshell/services/Wallpapers.qml#L169)
 
-2. matugen reads [`config/matugen/config.toml`](../../config/matugen/config.toml) and fills every template. One of them is `colors.json`.
-3. `Theme`'s `FileView` sees the file change and reloads.
-4. Every `palette.*` property changes. Every token built on them changes. Every binding anywhere that reads a token updates.
+`-m` is `dark` or `light`, from the theme mode (chapter 17). `--source-color-index 0` always picks the image's dominant color, so you're never asked to choose one.
 
-No component ever asked to be recolored. They just _are_ `Theme.surface`, and `Theme.surface` changed.
+matugen then reads [`config/matugen/config.toml`](../../config/matugen/config.toml) and fills every template, `colors.json` among them. `Theme`'s `FileView` sees the file change and reloads. Every `palette.*` property changes, then every token built on them, then every binding anywhere that reads a token.
+
+No component ever asked to be recolored. They just are `Theme.surface`, and `Theme.surface` changed.
 
 ## Theming the rest of the desktop
 
@@ -191,18 +185,12 @@ post_hook = "niri msg action load-config-file || true"
 
 kitty, niri, neovim and tmux each `include` the generated file from their main config. Chapter 22 shows where.
 
-The `[config.custom_colors]` table at the top of that file defines extra named colors (clock gold, music pink, wifi blue…) that matugen **blends** toward the wallpaper's palette, so they shift to fit each wallpaper. They exist for terminals and editors, which need a recognizable red, green, yellow and blue no matter what the wallpaper looks like. kitty's 16 ANSI colors and neovim's base16 palette are built from them. The shell itself sticks to the Material roles from step 5.
+The `[config.custom_colors]` table at the top of that file defines extra named colors (clock gold, music pink, wifi blue) that matugen blends toward the wallpaper's palette, so they shift to fit each wallpaper. They exist for terminals and editors, which need a recognizable red, green, yellow and blue no matter what the wallpaper looks like. kitty's 16 ANSI colors and neovim's base16 palette are built from them. The shell itself sticks to the Material roles from step 5.
 
-## Rules to follow
+## Rules that follow
 
-- **Never write a color literal in a component or module.** Add a token, or use a role.
-- **Use the matching "on" color** for anything drawn on top of an accent.
-- **A new size used in more than one place becomes a token.** A one-off number inside a single component is fine. That's why some layout numbers still live in `PanelHeader.qml` and friends.
+Never write a color literal in a component or module. Add a token or use a role. Anything drawn on top of an accent uses the matching "on" color.
 
-## Recap
-
-- `Theme.qml` is a singleton of tokens: colors, sizes, fonts and durations.
-- Colors come from `~/.cache/yurice/colors.json`, written by matugen, watched live, with built-in fallbacks.
-- Components use _roles_ and _semantic aliases_, never hex codes. That's why one wallpaper change recolors everything.
+A size used in more than one place becomes a token. A one-off number inside a single component is fine, which is why some layout numbers still live in `PanelHeader.qml` and friends.
 
 With a theme in hand, we can build the first real pieces.

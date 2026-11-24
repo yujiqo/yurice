@@ -1,8 +1,8 @@
 # 6. Building blocks
 
-Open any two panels in yurice (battery and weather, say) and they look like siblings: the same big header with an icon, the same rounded cards, the same rows of icon, label and value, the same switches. That's not because someone was careful twice. It's because both are built from the same dozen components.
+Open any two panels in yurice, battery and weather say, and they look like siblings: the same big header with an icon, the same rounded cards, the same rows of icon, label and value, the same switches. Nobody was careful twice. Both are built from the same dozen components.
 
-This chapter goes through those components and the small **keyboard contract** they all follow. It ends by reading a complete real panel, which by then is almost plain English.
+This chapter goes through those components and the small keyboard contract they all follow, then reads a complete real panel, which by that point is almost plain English.
 
 ## Card: a surface to put things on
 
@@ -31,15 +31,11 @@ Rectangle {
 
 [`components/Card.qml`](../../config/quickshell/components/Card.qml)
 
-That's the whole thing:
-
-- A rounded `surfaceContainer` rectangle, one step lighter than the panel behind it, with a `Column` inside.
-- It fills its parent's width and grows to fit its content.
-- `default property alias` (from the last chapter) means you just put rows inside it.
+That's the whole thing: a rounded `surfaceContainer` rectangle, one step lighter than the panel behind it, with a `Column` inside. It fills its parent's width and grows to fit its content, and thanks to `default property alias` (from the last chapter) you just put rows inside it.
 
 ## PanelHeader: the top of every panel
 
-Every panel opens with a large icon, a big title, a smaller subtitle, and optionally a few buttons on the right:
+Every panel opens with a large icon, a big title, a smaller subtitle, and sometimes a few buttons on the right:
 
 ```qml
 Item {
@@ -57,7 +53,7 @@ Item {
 
 [`components/PanelHeader.qml`](../../config/quickshell/components/PanelHeader.qml)
 
-The default property goes to the **trailing row**, so anything you nest inside a `PanelHeader` lines up on its right edge. `smoothTitle` passes through to the title's `Label`, so a title that changes, like a percentage, can animate its width (chapter 4).
+The default property goes to the trailing row, so anything you nest inside a `PanelHeader` lines up on its right edge. `smoothTitle` passes through to the title's `Label`, so a title that changes, like a percentage, can animate its width (chapter 4).
 
 ## Rows
 
@@ -96,7 +92,7 @@ InfoRow {
 
 [`components/SwitchRow.qml`](../../config/quickshell/components/SwitchRow.qml)
 
-When "unify section titles and key rows" happened, it changed a handful of these files and every panel followed.
+The "unify section titles and key rows" commit changed a handful of these files, and every panel followed.
 
 [`SectionTitle`](../../config/quickshell/components/SectionTitle.qml) is the small, spaced-out, uppercase heading above a group of rows. [`EmptyState`](../../config/quickshell/components/EmptyState.qml) is the centered icon and message shown when a list has nothing in it.
 
@@ -117,19 +113,21 @@ When "unify section titles and key rows" happened, it changed a handful of these
   }
 ```
 
-Animating `center` instead of `x` is the subtle part. When the knob grows and moves at the same time, animating `x` makes it wobble, because `x` depends on `size`. Animating the center and deriving `x` from it keeps the knob perfectly on track. That was the "fix switch toggle animation" commit.
+Animating `center` instead of `x` is the subtle part. When the knob grows and moves at the same time, animating `x` makes it wobble, because `x` depends on `size`. Animating the center and deriving `x` from it keeps the knob on track. That was the "fix switch toggle animation" commit.
 
 ### Slider
 
-[`components/Slider.qml`](../../config/quickshell/components/Slider.qml) is used for volume and brightness. Chapter 5 covered its spring. The rest:
+[`components/Slider.qml`](../../config/quickshell/components/Slider.qml) handles volume and brightness. Chapter 5 covered its spring.
 
-- **The track is split by the handle**, with a small gap on each side. The filled part is the accent color and the rest is `surfaceContainerHighest`. The corners next to the handle are less rounded (`topRightRadius: 3`), which reads as "the bar continues behind the handle".
-- **It never sets its own value.** It emits `moved(value)`, and the owner decides. The volume panel passes it to the audio service. The service changes the real volume, and the new volume flows back into `value` through a binding. **One source of truth**: the slider can't drift away from the actual system volume.
-- **Scrolling works** with both mouse wheels and touchpads. Wheel deltas are added up into whole 120-unit notches, so a touchpad's many tiny deltas don't fire hundreds of steps.
+The track is split by the handle, with a small gap on each side. The filled part is the accent color and the rest is `surfaceContainerHighest`. The corners next to the handle are less rounded (`topRightRadius: 3`), which reads as the bar continuing behind the handle.
+
+The slider never sets its own value. It emits `moved(value)` and the owner decides what to do. The volume panel passes it to the audio service, the service changes the real volume, and the new volume flows back into `value` through a binding. With one source of truth, the slider can't drift away from the actual system volume.
+
+Scrolling works with both mouse wheels and touchpads. Wheel deltas are added up into whole 120-unit notches, so a touchpad's many tiny deltas don't fire hundreds of steps.
 
 ### ChoiceGroup
 
-A row of options where one is selected, like power profiles or theme modes. The selected option widens to show its label (a `Reveal`). The others shrink to just an icon. Corner radii change so the group reads as one connected pill:
+A row of options where one is selected, like power profiles or theme modes. The selected option widens to show its label (a `Reveal`) and the others shrink to an icon. Corner radii change so the group reads as one connected pill:
 
 ```qml
         width: active ? root.selectedWidth : root.compactWidth
@@ -143,17 +141,11 @@ A row of options where one is selected, like power profiles or theme modes. The 
 
 ### TextField
 
-[`components/TextField.qml`](../../config/quickshell/components/TextField.qml) is a search box with an optional leading icon, placeholder, hint and clear button. Its interesting part is the keys. A text field normally eats every key, which would trap keyboard users inside it, so it hands navigation keys back out:
-
-- `↓` or `Tab` emits `navigate(1)`, and `↑` or `Shift+Tab` emits `navigate(-1)`. The launcher uses this to move through results while you keep typing.
-- `Esc` emits `canceled`.
-- With `escapeLeaves: true`, `Esc` and the arrows move focus _out_ of the input and back to the panel's normal navigation.
+[`components/TextField.qml`](../../config/quickshell/components/TextField.qml) is a search box with an optional leading icon, placeholder, hint and clear button. The interesting part is the keys. A text field normally eats every key, which would trap keyboard users inside it, so this one hands navigation keys back out. `↓` or `Tab` emits `navigate(1)`, and `↑` or `Shift+Tab` emits `navigate(-1)`; the launcher uses this to move through results while you keep typing. `Esc` emits `canceled`. With `escapeLeaves: true`, `Esc` and the arrows move focus out of the input and back to the panel's normal navigation.
 
 ### Buttons and lists
 
-- [`IconButton`](../../config/quickshell/components/IconButton.qml) is a round, icon-only button.
-- [`Chip`](../../config/quickshell/components/Chip.qml) is a small pill that can be selected.
-- [`MenuList`](../../config/quickshell/components/MenuList.qml) is a `ListView` with the theme's spacing, a maximum height, a [`Scrollbar`](../../config/quickshell/components/Scrollbar.qml), and `followCurrent` to keep the selected row on screen during keyboard navigation.
+[`IconButton`](../../config/quickshell/components/IconButton.qml) is a round, icon-only button, and [`Chip`](../../config/quickshell/components/Chip.qml) is a small pill that can be selected. [`MenuList`](../../config/quickshell/components/MenuList.qml) is a `ListView` with the theme's spacing, a maximum height, a [`Scrollbar`](../../config/quickshell/components/Scrollbar.qml), and `followCurrent` to keep the selected row on screen during keyboard navigation.
 
 ## The keyboard contract
 
@@ -175,12 +167,12 @@ and usually one of:
 
 That's the entire contract between a component and the keyboard:
 
-1. **`activeFocusOnTab: true`** says "I'm focusable". The panel's navigation (chapter 12) collects every visible item with this flag and moves between them with `Tab`, `hjkl` or the arrows.
-2. **`FocusRing {}`** shows where focus is.
-3. **`keyActivate()` or `clicked()`** is what `Enter` and `Space` call. The panel tries `keyActivate` first, then falls back to `clicked`.
-4. **`keyAdjust(±1)`** is what `←` and `→` call, if the item has it.
+1. `activeFocusOnTab: true` says "I'm focusable". The panel's navigation (chapter 12) collects every visible item with this flag and moves between them with `Tab`, `hjkl` or the arrows.
+2. `FocusRing {}` shows where focus is.
+3. `keyActivate()` or `clicked()` is what `Enter` and `Space` call. The panel tries `keyActivate` first, then falls back to `clicked`.
+4. `keyAdjust(±1)` is what `←` and `→` call, if the item has it.
 
-A component never listens for `Enter` itself. It just says _what activating it means_, and the panel does the rest. So any new component that follows these four rules works with the keyboard everywhere, with no extra code.
+A component never listens for `Enter` itself. It only says what activating it means, and the panel does the rest. Any new component that follows these four rules works with the keyboard everywhere, with no extra code.
 
 ## Reading a real panel
 
@@ -240,21 +232,10 @@ Column {
 
 [`modules/bar/BatteryPanel.qml`](../../config/quickshell/modules/bar/BatteryPanel.qml)
 
-Notice what's **not** here:
+Notice what's missing. There are no colors except roles and `Battery.color`, no font sizes, radii or hover handling, no key handling, and no animation code apart from the charge bar's width `Behavior`.
 
-- no colors, except roles and `Battery.color`
-- no font sizes, radii or hover handling
-- no key handling
-- no animation code, apart from the charge bar's width `Behavior`
+The panel says what to show, and the building blocks decide how it looks and behaves. The caffeine chip, the info rows and the power profile buttons are all keyboard-reachable without the panel writing a line for it.
 
-The panel says _what_ to show. The building blocks decide _how_ it looks and behaves. The caffeine chip, the info rows and the power profile buttons are all keyboard-reachable without the panel writing a line for it.
+`Battery`, `Caffeine` and `PowerProfiles` are the other half: services, singletons that talk to the system.
 
-`Battery`, `Caffeine` and `PowerProfiles` are the other half: **services**, singletons that talk to the system. They're where Part II begins.
-
-## Recap
-
-- Panels are built from `PanelHeader`, `Card`, rows (`InfoRow`, `SwitchRow`, `MenuItem`), and inputs (`Switch`, `Slider`, `ChoiceGroup`, `TextField`, `Chip`, `IconButton`).
-- Inputs **report** changes (`moved`, `selected`, `toggled`) and let the owner decide. State lives in one place.
-- The keyboard contract is `activeFocusOnTab`, `FocusRing`, `keyActivate`/`clicked` and `keyAdjust`. Follow it and the keyboard support comes free.
-
-That's the end of Part I. You now know every layer that _draws_ things. Part II is about the layer that _knows_ things: how the shell finds out what your wifi, your volume and your windows are doing.
+That's the end of Part I. You now know every layer that draws things. Part II is about the layer that knows things: how the shell finds out what your wifi, your volume and your windows are doing.
