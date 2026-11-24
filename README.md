@@ -197,14 +197,16 @@ the rust builds run in `~/.cache/yurice-build` (not `/tmp`, which debian 13 keep
 
 ### update
 
-for now updates are manual:
+`main` only moves when there's a new [release](https://github.com/yujiqo/yurice/releases), so pulling it is always safe:
 
 ```sh
 cd ~/yurice && git pull   # configs are symlinks, so this is most of it
 ./install.sh              # re-run if new dependencies showed up. it skips what's already done
 ```
 
-on nixos: `nix flake update yurice`, then rebuild.
+on nixos: `nix flake update yurice`, then rebuild. to stay on one release, pin the input to its tag: `github:yujiqo/yurice/v1.0.0`.
+
+want the newest stuff before it's released? switch to the `dev` branch (`git switch dev`, or `github:yujiqo/yurice/dev`). it's where work lands first, so expect the occasional rough edge.
 
 ### uninstall
 

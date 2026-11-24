@@ -1,0 +1,56 @@
+name: release
+
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: write release notes
+        run: |
+          tag=$GITHUB_REF_NAME
+          prev=$(git describe --tags --abbrev=0 "$tag^" 2>/dev/null || true)
+          if [ -z "$prev" ]; then
+            echo "First release of yurice." > notes.md
+            exit 0
+          fi
+          git log --no-merges --reverse --format='%s' "$prev..$tag" | awk '
+            {
+              if (match($0, /^[a-z0-9-]+: /)) {
+                area = substr($0, 1, RLENGTH - 2)
+                msg = substr($0, RLENGTH + 1)
+              } else {
+                area = "other"
+                msg = $0
+              }
+              if (!(area in seen)) {
+                seen[area] = 1
+                order[++n] = area
+              }
+              items[area] = items[area] "- " msg "\n"
+            }
+            END {
+              for (i = 1; i <= n; i++)
+                printf "### %s\n\n%s\n", order[i], items[order[i]]
+            }
+          ' > notes.md
+          printf '**Full changelog**: https://github.com/%s/compare/%s...%s\n' "$GITHUB_REPOSITORY" "$prev" "$tag" >> notes.md
+
+      - name: publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          flags=""
+          case $GITHUB_REF_NAME in
+            *-*) flags="--prerelease" ;;
+          esac
+          gh release create "$GITHUB_REF_NAME" --title "$GITHUB_REF_NAME" --notes-file notes.md --verify-tag $flags
