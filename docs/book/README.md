@@ -55,9 +55,9 @@ If you want to contribute, read this book, then [PHILOSOPHY.md](../PHILOSOPHY.md
 
 ### Part VI: Shipping it
 
-- 23. Installing
-- 24. Tests and lint
+- [23. Installing](23-installing.md): install.sh step by step, pinned builds, the manifest and uninstall, and the Nix modules
+- [24. Tests and lint](24-tests-and-lint.md): the headless test runner, writing tests, lint, formatting and shaders
 
 ### Appendix
 
-- Glossary
+- [Glossary](appendix-glossary.md): every term the book uses, with the chapter that explains it
