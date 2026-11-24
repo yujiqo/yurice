@@ -50,8 +50,8 @@ If you want to contribute, read this book, then [PHILOSOPHY.md](../PHILOSOPHY.md
 
 ### Part V: The rest of the desktop
 
-- 21. The niri config
-- 22. The terminal
+- [21. The niri config](21-the-niri-config.md): includes and their order, input, layout, rules, and your own additions
+- [22. The terminal](22-the-terminal.md): kitty, fish, starship, tmux, neovim, lazygit, less and fastfetch, and how each follows the wallpaper
 
 ### Part VI: Shipping it
 
