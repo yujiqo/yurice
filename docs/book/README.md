@@ -43,10 +43,10 @@ If you want to contribute, read this book, then [PHILOSOPHY.md](../PHILOSOPHY.md
 
 ### Part IV: Beyond the bar
 
-- 17. Wallpapers and color
-- 18. Launcher, clipboard, power and toasts
-- 19. Screenshots
-- 20. Lock screen, greeter and session
+- [17. Wallpapers and color](17-wallpapers-and-color.md): the wallpaper list, the picker, matugen, light and dark, upscaling and the greeter copy
+- [18. Launcher, clipboard, power and toasts](18-launcher-clipboard-power-and-toasts.md): app search, the calculator, pasting from history, the power menu and notifications
+- [19. Screenshots](19-screenshots.md): freezing the screen, selecting on the pixel grid, and saving
+- [20. Lock screen, greeter and session](20-lock-screen-greeter-and-session.md): session lock, PAM, locking before sleep, crash recovery and greetd
 
 ### Part V: The rest of the desktop
 
