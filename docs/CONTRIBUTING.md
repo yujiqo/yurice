@@ -133,6 +133,10 @@ nix fmt                              # if you touched Nix files
 
 QML is formatted with `qmlformat -w 2` and Markdown with prettier. Then try the change for real: with the mouse, with the keyboard only, in both themes (light and dark), and in both modes if it touches anything the second mode hides. Chapter 24 explains the tests and how to write one.
 
+## Changelog
+
+If your change is something a user would notice, add a line for it under `## [Unreleased]` in [CHANGELOG.md](../CHANGELOG.md), in the right group: `Added`, `Changed`, `Fixed`, `Removed`, or `Breaking` for changes that need users to do something. Write it for users, not for developers: "launcher finds apps by their keywords", not "add keywords to scoreText". Internal refactors, tests and docs fixes don't need an entry.
+
 ## Docs
 
 Update the docs in the same pull request as the code: the README if users see the change, [CUSTOMIZING](CUSTOMIZING.md) or [KEYBINDS](KEYBINDS.md) if it adds a setting, hook or key, and the book chapter that covers the area. Book snippets link to line ranges in the source. If your change moves code a snippet points at, fix the numbers.
@@ -172,7 +176,7 @@ Versions follow semantic versioning, starting from 1.0.0. The patch number goes 
 
 Changing a default keybind, a look or an animation isn't breaking. Mention it in the release notes anyway.
 
-When `dev` has been stable for a while:
+When `dev` has been stable for a while, first turn `## [Unreleased]` in the changelog into the new version on `dev`. Rename the heading to `## [1.1.0] - <date>`, add a fresh empty `## [Unreleased]` above it, and update the two compare links at the bottom of the file. Commit that as `docs: release 1.1.0`, then:
 
 ```sh
 git switch main
@@ -181,4 +185,4 @@ git tag -a v1.1.0 -m v1.1.0
 git push origin main v1.1.0
 ```
 
-`main` only fast-forwards to `dev`, so the two never diverge. Pushing the tag starts [the release workflow](../.github/workflows/release.yml), which creates a GitHub release with notes built from the commit messages since the previous tag, grouped by area. The notes can be edited on GitHub afterwards. A tag with a hyphen, like `v2.0.0-rc.1`, is published as a pre-release.
+`main` only fast-forwards to `dev`, so the two never diverge. Pushing the tag starts [the release workflow](../.github/workflows/release.yml), which creates a GitHub release using that version's section of the changelog as its notes. If the changelog has no section for the tag, it falls back to the commit messages since the previous tag, grouped by area. The notes can be edited on GitHub afterwards. A tag with a hyphen, like `v2.0.0-rc.1`, is published as a pre-release.
