@@ -18,45 +18,45 @@ If you want to contribute, read this book, then [PHILOSOPHY.md](../PHILOSOPHY.md
 
 ### Part I: Foundations
 
-1. [The pieces](01-the-pieces.md): niri, quickshell, matugen and the configs, and how they talk to each other
-2. [QML in one sitting](02-qml-in-one-sitting.md): just enough QML and quickshell to read the rest
-3. [The theme](03-the-theme.md): one file of tokens, and how a wallpaper becomes colors
-4. [Primitives](04-primitives.md): text, icons, rounded images and the small pieces everything is made of
-5. [Motion](05-motion.md): building a spring from scratch, then everything that moves with it
-6. [Building blocks](06-building-blocks.md): cards, rows, switches, sliders and lists that every panel shares
+- [1. The pieces](01-the-pieces.md): niri, quickshell, matugen and the configs, and how they talk to each other
+- [2. QML in one sitting](02-qml-in-one-sitting.md): just enough QML and quickshell to read the rest
+- [3. The theme](03-the-theme.md): one file of tokens, and how a wallpaper becomes colors
+- [4. Primitives](04-primitives.md): text, icons, rounded images and the small pieces everything is made of
+- [5. Motion](05-motion.md): building a spring from scratch, then everything that moves with it
+- [6. Building blocks](06-building-blocks.md): cards, rows, switches, sliders and lists that every panel shares
 
 ### Part II: Talking to the system
 
-1. [Services](07-services.md): singletons that know what the system is doing, and where they keep what they remember
-2. [Talking to niri](08-talking-to-niri.md): the event stream, a live copy of workspaces and windows, and sending actions back
-3. [IPC and keybinds](09-ipc-and-keybinds.md): how a key in niri opens a panel, and the cheatsheet parsed from binds.kdl
+- [7. Services](07-services.md): singletons that know what the system is doing, and where they keep what they remember
+- [8. Talking to niri](08-talking-to-niri.md): the event stream, a live copy of workspaces and windows, and sending actions back
+- [9. IPC and keybinds](09-ipc-and-keybinds.md): how a key in niri opens a panel, and the cheatsheet parsed from binds.kdl
 
 ### Part III: The bar
 
-1. The bar
-2. Islands that become panels
-3. Keyboard everywhere
-4. System islands
-5. The outside world
-6. The user island
-7. Two modes
+- [10. The bar](10-the-bar.md): one tall window per screen, the input mask, and islands that come and go
+- [11. Islands that become panels](11-islands-that-become-panels.md): how a pill grows into its panel, and when it closes again
+- [12. Keyboard everywhere](12-keyboard-everywhere.md): focus, directional navigation and the keys every panel gets for free
+- [13. System islands](13-system-islands.md): workspaces, network, Bluetooth, volume, battery, clock and media
+- [14. The outside world](14-the-outside-world.md): weather, wallhaven and danbooru, and requests that arrive late
+- [15. The user island](15-the-user-island.md): settings, idle, the avatar editor and the display editor
+- [16. Two modes](16-two-modes.md): one service that decides what the second mode hides
 
 ### Part IV: Beyond the bar
 
-1. Wallpapers and color
-2. Launcher, clipboard, power and toasts
-3. Screenshots
-4. Lock screen, greeter and session
+- 17. Wallpapers and color
+- 18. Launcher, clipboard, power and toasts
+- 19. Screenshots
+- 20. Lock screen, greeter and session
 
 ### Part V: The rest of the desktop
 
-1. The niri config
-2. The terminal
+- 21. The niri config
+- 22. The terminal
 
 ### Part VI: Shipping it
 
-1. Installing
-2. Tests and lint
+- 23. Installing
+- 24. Tests and lint
 
 ### Appendix
 
